@@ -1,10 +1,10 @@
-HTML.BR                 Facility functions to write HTML code 
 HTML                    Outputs an object to a HTML file
 HTML.fun                Writes the code of a function to a target HTML
                         file 
-HTML.plot               Insert a graphic into an HTML output 
 HTML.title              Writes a title in a target HTML output 
 HTMLInitFile            Begins / Ends a new HTML report output 
 HTMLStart               Start / Stop the automatic redirection of
                         output to HTML files
+HTMLbr                  Facility functions to write HTML code 
+HTMLplot                Insert a graphic into an HTML output 
 HTLMReplaceNA           Internal R2HTML functions

@@ -1,19 +1,20 @@
-\name{HTML.BR}
-\alias{HTML.BR}
-\alias{HTML.HR}
-\alias{HTML.LI}
+\name{HTMLbr}
+\alias{HTMLbr}
+\alias{HTMLhr}
+\alias{HTMLli}
 
 \title{ Facility functions to write HTML code }
 \description{
   Write <br>, <li> and <hr> tags, which are often used, to an output file.
 }
 \usage{
-HTML.BR(File = .HTML.File)
-HTML.LI(txt="",File = .HTML.File)
-HTML.HR(File = .HTML.File, Width = "100%", Size = "1")
+HTMLbr(x=1,File = .HTML.File)
+HTMLli(txt="",File = .HTML.File)
+HTMLhr(File = .HTML.File, Width = "100%", Size = "1")
 }
 
 \arguments{
+  \item{x}{ number of <br> to put }
   \item{txt}{ text to appear after the <li> tag }
   \item{File}{ HTML target output file}
   \item{Width}{ value of the width HR optional argument, in pixel or percent}  
@@ -39,7 +40,7 @@ HTML.HR(File = .HTML.File, Width = "100%", Size = "1")
 ## Change the path/name of the file to redirect to your test file
 
 myfile <- paste(tempfile(),".html",sep="")
-HTML.HR(File=myfile)
+HTMLhr(File=myfile)
 cat("\n Test output written in: ",myfile)
 
 }

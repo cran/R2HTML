@@ -176,7 +176,7 @@ function(x, File = .HTML.File, ...)
     if (length(x) <= 0) 
         HTML("factor(0)\n<BR>",File=File)
     else HTML(as.character(x), File=File, ...)
-    HTML.BR(File=File)
+    HTMLbr(File=File)
     HTML(paste("Levels: ", paste(levels(x), collapse = " "), "\n<BR>",sep=""),File=File)
     invisible(x)
 }
@@ -206,8 +206,8 @@ function(x, File = .HTML.File, ...)
 
 "HTML.lm"<-function(x,digits= max(3, getOption("digits") - 3),File=.HTML.File,...)
 {
-	HTML.LI(paste("Call: ",deparse(x$call),sep=""),File=File)
-	HTML.LI("Coefficients<BR>",File=File)
+	HTMLli(paste("Call: ",deparse(x$call),sep=""),File=File)
+	HTMLli("Coefficients<BR>",File=File)
 	HTML(round(x$coeff,3),File=File)
 
 }
@@ -215,8 +215,8 @@ function(x, File = .HTML.File, ...)
 #----------------------------------------------------------------------------------------------------#
 "HTML.lm.null" <- function (x, digits = max(3, getOption("digits") - 3), File=.HTML.File,...) 
 {
-    HTML.LI(paste("Call: ", deparse(x$call), "\n<BR>", sep = ""),File=File)
-    HTML.LI("No coefficients<BR>\n")
+    HTMLli(paste("Call: ", deparse(x$call), "\n<BR>", sep = ""),File=File)
+    HTMLli("No coefficients<BR>\n")
     invisible(x)
 }
 #----------------------------------------------------------------------------------------------------#
@@ -301,13 +301,13 @@ function(x, File = .HTML.File, ...)
 {
 
 	HTML("<HR SIZE=1><FONT SIZE=+3>Regression report</FONT><BR>\n",File=File)
-	HTML.LI(paste("Call: ",deparse(x$call),"\n", sep = "", collapse = ""),File=File) 
+	HTMLli(paste("Call: ",deparse(x$call),"\n", sep = "", collapse = ""),File=File) 
 
 	resid <- x$residuals
 	df <- x$df
 	rdf <- df[2]
 
-	HTML.LI(paste(if (!is.null(x$w) && diff(range(x$w))) "Weighted "," Residuals<BR>\n"),File=File)
+	HTMLli(paste(if (!is.null(x$w) && diff(range(x$w))) "Weighted "," Residuals<BR>\n"),File=File)
 	if (rdf > 5) {
 	    nam <- c("Min", "1Q", "Median", "3Q", "Max")
 	    rq <- if (length(dim(resid)) == 2) 
@@ -323,26 +323,26 @@ function(x, File = .HTML.File, ...)
 	}
 	if (nsingular <- df[3] - df[1]) 
 
-		HTML.LI(paste("Coefficients (",nsingular, "not defined because of singularities)<BR>\n",sep=""),File=File)
-	else HTML.LI("Coefficients\n")		
+		HTMLli(paste("Coefficients (",nsingular, "not defined because of singularities)<BR>\n",sep=""),File=File)
+	else HTMLli("Coefficients\n")		
 
 
 	HTML.coefmat(x$coef, digits = digits, signif.stars = signif.stars, File=File,   ...)
 	
-	HTML.LI(paste("Residuals standard error: ",round(x$sigma,digits)," on ",rdf," degrees of freedom\n",sep=""),File=File)
+	HTMLli(paste("Residuals standard error: ",round(x$sigma,digits)," on ",rdf," degrees of freedom\n",sep=""),File=File)
  
 	
 
 	if (!is.null(x$fstatistic)) {
-		HTML.LI(paste("Multiple R-Squared:<B>",round(x$r.squared,digits),"</B>",sep=""),File=File)
-		HTML.LI(paste("Adjusted R-Squared:<B>",round(x$adj.r.squared,digits),"</B>",sep=""),File=File)
-	    	HTML.LI(paste("FALSE-statistics: <B>", round(x$fstatistic[1],digits), "</B> on ",x$fstatistic[2], " and ", x$fstatistic[3], " DF. P-value:<B>",round(1-pf(x$fstatistic[1],x$fstatistic[2],x$fstatistic[3]),digits),"</B>." ,sep=""),File=File)
+		HTMLli(paste("Multiple R-Squared:<B>",round(x$r.squared,digits),"</B>",sep=""),File=File)
+		HTMLli(paste("Adjusted R-Squared:<B>",round(x$adj.r.squared,digits),"</B>",sep=""),File=File)
+	    	HTMLli(paste("FALSE-statistics: <B>", round(x$fstatistic[1],digits), "</B> on ",x$fstatistic[2], " and ", x$fstatistic[3], " DF. P-value:<B>",round(1-pf(x$fstatistic[1],x$fstatistic[2],x$fstatistic[3]),digits),"</B>." ,sep=""),File=File)
 	 	}
 	correl <- x$correlation
 	if (!is.null(correl)) {
 	    p <- NCOL(correl)
 	    if (p > 1) {
-		HTML.LI("Correlation of Coefficients:\n",File=File)
+		HTMLli("Correlation of Coefficients:\n",File=File)
 		if (symbolic.cor) 
 		    HTML(symnum(correl)[-1, -p],File=File)
 		else {
@@ -452,7 +452,7 @@ function(x, File = .HTML.File, ...)
     if (length(nn) != ll) 
         nn <- paste("Component ", seq(ll))
     for (i in seq(length = ll)) {
-        HTML.LI(paste(nn[i],":\n<BR>",sep=""),File=File)
+        HTMLli(paste(nn[i],":\n<BR>",sep=""),File=File)
         HTML(x[[i]], File=File)
     }
     invisible(x)
@@ -569,7 +569,7 @@ function(x, File = .HTML.File, ...)
 		i.name<-paste("<I>Node at indices: ",if (length(i)>1) paste(i,collapse=",") else i,"</I>",sep="")
 		HTML(paste(if (length(i)>1) paste(rep("<UL>",length(i)),collapse="") else "<UL>","<LI>",i.name,"<BR>",if (length(i)>1) paste(rep("</UL>",length(i)),collapse="") else "</UL>",sep=""),File=File)
 		HTML(the.list[[i]],File=File)
-		HTML.BR(File=File)
+		HTMLbr(File=File)
 	      while( (length( i)>1) && (length( the.list[[ i[ -length(i)] ]]) == i[length( i)]) )
 		i<- i[ -length( i)]
 	   	i[ length(i)]<- i[ length( i)]+1
@@ -762,7 +762,7 @@ function(x)
 "HTML.htest" <- function (x, digits = 4, quote = TRUE, prefix = "",File=.HTML.File, ...) 
 {
             HTML(as.title(x$method),File=File)
-            HTML.LI(paste("\n data:",x$data.name,"\n",sep=""),File=File)
+            HTMLli(paste("\n data:",x$data.name,"\n",sep=""),File=File)
            out <- character()
             if (!is.null(x$statistic)) 
                         out <- c(out, paste(names(x$statistic), "=<B>", format(round(x$statistic,4)),"</B>"))
@@ -770,9 +770,9 @@ function(x)
                         out <- c(out, paste(names(x$parameter), "=<B>", format(round(x$parameter,3)),"</B>"))
             if (!is.null(x$p.value)) 
                         out <- c(out, paste("p-value =<B>", format.pval(x$p.value,digits = digits),"</B>"))
-            HTML.LI(paste(out,collapse=" , "),File=File)
+            HTMLli(paste(out,collapse=" , "),File=File)
     if (!is.null(x$alternative)) {
-        HTML.LI("alternative hypothesis: ")
+        HTMLli("alternative hypothesis: ")
         if (!is.null(x$null.value)) {
             if (length(x$null.value) == 1) {
                alt.char <- switch(x$alternative, two.sided = "not equal to", 
@@ -781,18 +781,18 @@ function(x)
                  x$null.value, "\n"),File=File)
             }
             else {
-               HTML.LI(paste(x$alternative, "\nnull values:\n<BR>"),File=File)
+               HTMLli(paste(x$alternative, "\nnull values:\n<BR>"),File=File)
                HTML(x$null.value, File=File)
             }
         }
-        else HTML.LI(paste(x$alternative, "\n<BR>"),File=File)
+        else HTMLli(paste(x$alternative, "\n<BR>"),File=File)
     }
     if (!is.null(x$conf.int)) {
-        HTML.LI(paste("<B>",format(100 * attr(x$conf.int, "conf.level")), "</B> percent confidence interval:\n", 
+        HTMLli(paste("<B>",format(100 * attr(x$conf.int, "conf.level")), "</B> percent confidence interval:\n", 
          "<B>[", paste(format(c(x$conf.int[1], x$conf.int[2])),sep="",collapse=" ;"),"]</B>",sep=""),File=File)
     }
     if (!is.null(x$estimate)) {
-        HTML.LI(paste("sample estimates:<B>\n",x$estimate,"</B>",sep=""),File=File)
+        HTMLli(paste("sample estimates:<B>\n",x$estimate,"</B>",sep=""),File=File)
     }
     invisible(x)
 }
@@ -805,7 +805,7 @@ function(x)
  
  "HTML.aov" <- function (x, intercept = FALSE, tol = .Machine$double.eps^0.5, File=.HTML.File,...) 
 {
-    if (!is.null(cl <- x$call))  HTML.LI(paste("Call:\n<BR>", deparse(cl)),File=File)
+    if (!is.null(cl <- x$call))  HTMLli(paste("Call:\n<BR>", deparse(cl)),File=File)
     asgn <- x$assign[x$qr$pivot[1:x$rank]]
     effects <- x$effects
     if (!is.null(effects)) 
@@ -832,7 +832,7 @@ function(x)
         df <- df[keep]
         ss <- ss[keep, , drop = FALSE]
         nterms <- length(df)    }
-    HTML.LI("Terms:\n<BR>",File=File)
+    HTMLli("Terms:\n<BR>",File=File)
     if (nterms == 0) {
         if (rdf > 0) {
             ss <- colSums(as.matrix(x$residuals)^2)
@@ -848,7 +848,7 @@ function(x)
             else rn <- "Sum of Squares"
             dimnames(tmp) <- list(c(rn, "Deg. of Freedom"), "Residuals")
             HTML(as.data.frame(tmp), File=File,..)
-            HTML.LI(paste("Residual standard error:", paste(sapply(sqrt(ss/rdf),format),collapse=" "), "\n"),File=File)
+            HTMLli(paste("Residual standard error:", paste(sapply(sqrt(ss/rdf),format),collapse=" "), "\n"),File=File)
         }
         else HTML.matrix(matrix(0, 2, 1, dimnames = list(c("Sum of Squares","Deg. of Freedom"), "<empty>")),File=File)
     }
@@ -873,19 +873,19 @@ function(x)
         nobs <- NROW(x$residuals) - !(is.null(int) || int ==      0)
         if (rdf > 0) {
             rs <- sqrt(colSums(as.matrix(x$residuals)^2)/rdf)
-            HTML.LI(paste("Residual standard error:", paste(sapply(rs,format),collapse=" "), "\n"),File=File)       }
+            HTMLli(paste("Residual standard error:", paste(sapply(rs,format),collapse=" "), "\n"),File=File)       }
         coef <- as.matrix(x$coef)[, 1]
         R <- x$qr$qr
        R <- R[1:min(dim(R)), , drop = FALSE]
         R[lower.tri(R)] <- 0
         if (rank < (nc <- length(coef))) {
-            HTML.LI(paste(nc - rank, "out of", nc, "effects not estimable\n"),File=File)
+            HTMLli(paste(nc - rank, "out of", nc, "effects not estimable\n"),File=File)
             R <- R[, 1:rank, drop = FALSE]        }
         d2 <- sum(abs(diag(R)))
         diag(R) <- 0
         if (sum(abs(R))/d2 > tol) 
-            HTML.LI("Estimated effects may be unbalanced\n",File=File)
-        else HTML.LI("Estimated effects are balanced\n",File=File)
+            HTMLli("Estimated effects may be unbalanced\n",File=File)
+        else HTMLli("Estimated effects are balanced\n",File=File)
     }
     invisible(x)
 }
@@ -919,16 +919,16 @@ function(x)
 
 "HTML.glm" <- function (x, digits = max(3, getOption("digits") - 3), na.print = "", File=.HTML.File,...) 
 {
-    HTML.LI(paste("Call: ", deparse(x$call), "\n<BR>\n<BR>"),File=File)
-    HTML.LI("Coefficients",File=File)
+    HTMLli(paste("Call: ", deparse(x$call), "\n<BR>\n<BR>"),File=File)
+    HTMLli("Coefficients",File=File)
     if (is.character(co <- x$contrasts)) 
         HTML(paste("  [contrasts: ", apply(cbind(names(co), co), 1, 
             paste, collapse = "="), "]"),File=File)
-    HTML.BR(File=File)
+    HTMLbr(File=File)
     HTML(format(x$coefficients, digits = digits),File=File)
-    HTML.LI(paste("\nDegrees of Freedom:<B>", x$df.null, "</B>Total (i.e. Null);<B> ", 
+    HTMLli(paste("\nDegrees of Freedom:<B>", x$df.null, "</B>Total (i.e. Null);<B> ", 
         x$df.residual, "</B> Residual\n"),File=File)
-    HTML.LI(paste("Null Deviance:<B>    ", format(signif(x$null.deviance, 
+    HTMLli(paste("Null Deviance:<B>    ", format(signif(x$null.deviance, 
         digits)), "</B> &nbsp;&nbsp; Residual Deviance:<B>", format(signif(x$deviance, 
         digits)), " </B>&nbsp;&nbsp;    AIC:<B>  ", format(signif(x$aic, digits)), "</B>\n<BR>"),File=File)
     invisible(x)
@@ -1066,12 +1066,12 @@ HTML("<CENTER>",File=File)
 "HTML.summary.lm.null" <- function (x, digits = max(3, getOption("digits") - 3), File=.HTML.File,...) 
 {
     
-    HTML.LI(paste("<BR><P>Call: ", paste(deparse(x$call), sep = "\n<BR>", collapse = "\n<BR>"), "</P>" ),File=File)
+    HTMLli(paste("<BR><P>Call: ", paste(deparse(x$call), sep = "\n<BR>", collapse = "\n<BR>"), "</P>" ),File=File)
     resid <- x$residuals
     df <- x$df
     rdf <- df[2]
     if (rdf > 5) {
-        HTML.LI("Residuals:\n<BR>",File=File)
+        HTMLli("Residuals:\n<BR>",File=File)
         if (length(dim(resid)) == 2) {
             rq <- apply(t(resid), 1, quantile)
             dimnames(rq) <- list(c("Min", "1Q", "Median", "3Q", 
@@ -1084,11 +1084,11 @@ HTML("<CENTER>",File=File)
         HTML(round(rq, digits) ,File=File)
     }
     else if (rdf > 0) {
-        HTML.LI("Residuals:\n<BR>",File=File)
+        HTMLli("Residuals:\n<BR>",File=File)
         HTML(round(resid, digits ), File=File)
     }
-    else HTML.LI("\n<BR>No Coefficients:\n<BR>",File=File)
-    HTML.LI(paste("\n<BR>Residual standard error:<B> ", format(signif(x$sigma, 
+    else HTMLli("\n<BR>No Coefficients:\n<BR>",File=File)
+    HTMLli(paste("\n<BR>Residual standard error:<B> ", format(signif(x$sigma, 
         digits)), "on <B> ", rdf, " </B>degrees of freedom\n<BR><BR>",sep=""),File=File)
     invisible(x)
 }
@@ -1099,7 +1099,7 @@ HTML("<CENTER>",File=File)
     symbolic.cor = p > 4, signif.stars = getOption("show.signif.stars"), File=.HTML.File,
     ...) 
 {
-    HTML.LI(paste("\n<P>Call: ",paste(deparse(x$call),collapse=" ")),File=File)
+    HTMLli(paste("\n<P>Call: ",paste(deparse(x$call),collapse=" ")),File=File)
     
     HTML("<P>Deviance Residuals: \n</P>",File=File)
     if (x$df.residual > 5) {
@@ -1133,7 +1133,7 @@ HTML("<CENTER>",File=File)
             }
         }
     }
-    HTML.BR(File=File)
+    HTMLbr(File=File)
     invisible(x)
 }
 
@@ -1275,15 +1275,15 @@ HTML("<CENTER>",File=File)
  "HTML.glm.null" <- function (x, digits = max(3, getOption("digits") - 3), na.print = "", 
     File=.HTML.File,...) 
 {
-    HTML.LI(paste(" Call: ", deparse(x$call), "\n<BR>\n"),File=File)
-    HTML.LI("No coefficients\n<BR>")
-    HTML.LI(paste("Degrees of Freedom:<B>", length(x$residuals), "</B> Total; <B>", 
+    HTMLli(paste(" Call: ", deparse(x$call), "\n<BR>\n"),File=File)
+    HTMLli("No coefficients\n<BR>")
+    HTMLli(paste("Degrees of Freedom:<B>", length(x$residuals), "</B> Total; <B>", 
         x$df.residual, " </B>Residual\n<BR>"),File=File)
-    HTML.LI(paste("Null Deviance:<B>", format(signif(x$null.deviance, digits)), 
+    HTMLli(paste("Null Deviance:<B>", format(signif(x$null.deviance, digits)), 
         "</B>\n<BR>"),File=File)
-    HTML.LI(paste("Residual Deviance: <B>", format(signif(x$deviance, digits)), 
+    HTMLli(paste("Residual Deviance: <B>", format(signif(x$deviance, digits)), 
         " </B><BR>\n"),File=File)
-    HTML.LI(paste("AIC:<B>", format(signif(x$aic, digits)), "</B><BR>\n"),File=File)
+    HTMLli(paste("AIC:<B>", format(signif(x$aic, digits)), "</B><BR>\n"),File=File)
     invisible(x)
 }
 
@@ -1329,7 +1329,7 @@ HTML("<CENTER>",File=File)
 {
     nn <- names(x)
     for (i in nn) {
-        HTML.LI(paste(i, "\n<BR>", sep = ""),File=File)
+        HTMLli(paste(i, "\n<BR>", sep = ""),File=File)
         HTML(x[[i]], File=File)
     }
     invisible(x)
@@ -1341,17 +1341,17 @@ HTML("<CENTER>",File=File)
 "HTML.summary.glm.null" <- function (x, digits = max(3, getOption("digits") - 3), na.print = "", 
     File=.HTML.File,...) 
 {
-    HTML.LI(paste("\nCall: ",paste(deparse(x$call), sep = "\n", collapse = "\n"), 
+    HTMLli(paste("\nCall: ",paste(deparse(x$call), sep = "\n", collapse = "\n"), 
         "\n<BR>\n", sep = ""),File=File)
-    HTML.LI("Deviance Residuals: \n<BR>",File=File)
+    HTMLli("Deviance Residuals: \n<BR>",File=File)
     if (x$df.residual > 5) {
         x$deviance.resid <- quantile(x$deviance.resid)
         names(x$deviance.resid) <- c("Min", "1Q", "Median", "3Q", 
             "Max")
     }
     HTML.default(x$deviance.resid, digits = digits, na = "",File=File)
-    HTML.LI("No coefficients\n<BR>")
-    HTML.LI(paste("\n(Dispersion parameter for ", x$family$family, 
+    HTMLli("No coefficients\n<BR>")
+    HTMLli(paste("\n(Dispersion parameter for ", x$family$family, 
         " family taken to be ", x$dispersion, ")\n\n    Null deviance:<B> ", 
         x$null.deviance, " </B>on <B>", x$df.null, " </B>degrees of freedom\n\n", 
         "Residual deviance: <B>", x$deviance, " </B>on<B> ", x$df.residual, 
@@ -1384,12 +1384,12 @@ HTML("<CENTER>",File=File)
     if (!inherits(x, "summary.table")) 
         stop("x must inherit from class `summary.table'")
     if (!is.null(x$call)) {
-        HTML.LI(paste("Call: ", x$call),File=File)
+        HTMLli(paste("Call: ", x$call),File=File)
     }
-    HTML.LI(paste("Number of cases in table:<B>", x$n.cases, "</B>\n<BR>"),File=File)
-    HTML.LI(paste("Number of factors:<B>", x$n.vars, "</B>\n<BR>"),File=File)
+    HTMLli(paste("Number of cases in table:<B>", x$n.cases, "</B>\n<BR>"),File=File)
+    HTMLli(paste("Number of factors:<B>", x$n.vars, "</B>\n<BR>"),File=File)
     if (x$n.vars > 1) {
-        HTML.LI("Test for independence of all factors:\n<BR>",File=File)
+        HTMLli("Test for independence of all factors:\n<BR>",File=File)
         ch <- x$statistic
         HTML(paste(" Chisq = <B>", format(round(ch, max(0, digits - log10(ch)))), 
             "</B>, df = <B>", x$parameter, "</B>, p-value = <B>", format.pval(x$p.value, 
@@ -1410,7 +1410,7 @@ HTML("<CENTER>",File=File)
     
     if (attr(x, "ordered")) 
         HTML("<CENTER><P>factor levels have been ordered</P></CENTER>\n",File=File)
-    HTML.LI(paste("Fit: ", deparse(attr(x, "orig.call")), "\n<BR>\n", sep = ""),File=File)
+    HTMLli(paste("Fit: ", deparse(attr(x, "orig.call")), "\n<BR>\n", sep = ""),File=File)
     attr(x, "orig.call") <- attr(x, "conf.level") <- attr(x, "ordered") <- NULL
 	lapply(unclass(x),HTML,File=File,...)
     #HTML.default(unclass(x), File=File,...)
@@ -1449,7 +1449,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.ar" <- function (x, digits = max(3, getOption("digits") - 3), File=.HTML.File,...) 
 {
-    HTML.LI(paste("Call:\n", deparse(x$call), "\n\n", sep = ""),File=File)
+    HTMLli(paste("Call:\n", deparse(x$call), "\n\n", sep = ""),File=File)
     nser <- NCOL(x$var.pred)
     if (nser > 1) {
         if (!is.null(x$x.intercept)) 
@@ -1460,7 +1460,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     }
     else {
         if (x$order > 0) {
-            HTML.LI("Coefficients:\n",File=File)
+            HTMLli("Coefficients:\n",File=File)
             coef <- drop(round(x$ar, digits = digits))
             names(coef) <- seq(length = x$order)
             HTML.default(coef, File=File)
@@ -1480,8 +1480,8 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 "HTML.Arima" <- function (x, digits = max(3, getOption("digits") - 3), se = TRUE, 
     File=.HTML.File,...) 
 {
-    HTML.LI(paste("nCall:", deparse(x$call, width = 75), "", sep = "\n"),File=File)
-    HTML.LI("Coefficients:\n<BR>",File=File)
+    HTMLli(paste("nCall:", deparse(x$call, width = 75), "", sep = "\n"),File=File)
+    HTMLli("Coefficients:\n<BR>",File=File)
     coef <- round(x$coef, digits = digits)
     if (se && nrow(x$var.coef)) {
         ses <- rep(0, length(coef))
@@ -1507,8 +1507,8 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 "HTML.arima0" <- function (x, digits = max(3, getOption("digits") - 3), se = TRUE, 
     File=.HTML.File,...) 
 {
-    HTML.LI(paste("\nCall:", deparse(x$call, width = 75), "", sep = "\n"),File=File)
-    HTML.LI("Coefficients:\n<BR>",File=File)
+    HTMLli(paste("\nCall:", deparse(x$call, width = 75), "", sep = "\n"),File=File)
+    HTMLli("Coefficients:\n<BR>",File=File)
     coef <- round(x$coef, digits = digits)
     if (se && nrow(x$var.coef)) {
         ses <- rep(0, length(coef))
@@ -1539,13 +1539,13 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     else paste(if (x$beta == 0) 
         "with ", x$seasonal, sep = ""), "seasonal componenent.\n</B></P>"),File=File)
         
-    HTML.LI(paste("\nCall:\n", deparse(x$call), "\n<BR>"),File=File)
-    HTML.LI("Smoothing parameters:\n<UL>",File=File)
-    HTML.LI(paste(" alpha: ", x$alpha, "\n"),File=File)
-    HTML.LI(paste(" beta: ", x$beta, "\n"),File=File)
-    HTML.LI(paste(" gamma: ", x$gamma, "\n<BR>"),File=File)
+    HTMLli(paste("\nCall:\n", deparse(x$call), "\n<BR>"),File=File)
+    HTMLli("Smoothing parameters:\n<UL>",File=File)
+    HTMLli(paste(" alpha: ", x$alpha, "\n"),File=File)
+    HTMLli(paste(" beta: ", x$beta, "\n"),File=File)
+    HTMLli(paste(" gamma: ", x$gamma, "\n<BR>"),File=File)
     HTML("</UL>",File=File)
-    HTML.LI("Coefficients:\n",File=File)
+    HTMLli("Coefficients:\n",File=File)
     HTML(t(t(x$coefficients)),File=File)
 }
 
@@ -1554,9 +1554,9 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.stl" <- function (x, File=.HTML.File,...) 
 {
-    HTML.LI(paste("Call:\n ",deparse(x$call),"\n<BR>"),File=File)
+    HTMLli(paste("Call:\n ",deparse(x$call),"\n<BR>"),File=File)
     
-    HTML.LI("\nComponents\n",File=File)
+    HTMLli("\nComponents\n",File=File)
     HTML(x$time.series, File=File,...)
     invisible(x)
 }
@@ -1565,8 +1565,8 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.StructTS" <- function (x, digits = max(3, getOption("digits") - 3), File=.HTML.File,...) 
 {
-    HTML.LI(paste("\nCall:", deparse(x$call, width = 75), "\n", sep = " "),File=File)
-    HTML.LI("Variances:\n",File=File)
+    HTMLli(paste("\nCall:", deparse(x$call, width = 75), "\n", sep = " "),File=File)
+    HTMLli("Variances:\n",File=File)
     HTML(x$coef,  digits=digits,File=File)
     invisible(x)
 }
@@ -1589,26 +1589,26 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.pairwise.htest" <- function (x, File=.HTML.File,...) 
 {
-    HTML.LI(paste("Pairwise comparisons using", x$method, "\n<BR>\n<BR>"),File=File)
-    HTML.LI(paste("data: ", x$data.name, "\n<BR>\n<BR>"),File=File)
+    HTMLli(paste("Pairwise comparisons using", x$method, "\n<BR>\n<BR>"),File=File)
+    HTMLli(paste("data: ", x$data.name, "\n<BR>\n<BR>"),File=File)
     pp <- format.pval(x$p.value, 2, na.form = "-")
     attributes(pp) <- attributes(x$p.value)
     HTML(pp, File=File)
-    HTML.LI(paste("\nP value adjustment method:", x$p.adjust.method, "\n"),File=File)
+    HTMLli(paste("\nP value adjustment method:", x$p.adjust.method, "\n"),File=File)
 }
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.power.htest" <- function (x, File=.HTML.File,...) 
 {
-    HTML.LI(paste(x$method,"<BR>"), File=File)
+    HTMLli(paste(x$method,"<BR>"), File=File)
     note <- x$note
     x[c("method", "note")] <- NULL
     HTML(paste(paste(format.char(names(x), width = 15, flag = "+"), 
         format(x), sep = " = 	"), sep = "\n<BR>",collapse="\n<BR>"),File=File)
     if (!is.null(note)) 
         HTML(paste("\n<P>", "NOTE:", note, "\n</P>\n"),File=File)
-    else HTML.BR(File=File)
+    else HTMLbr(File=File)
 }
 
 
@@ -1764,9 +1764,9 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
             else HTML("<P>FOR COX REGRESSION MODEL\n</P>\n",File=File)
         }
     }
-    HTML.LI(paste("\nCall: ",deparse(cl)),File=File)
+    HTMLli(paste("\nCall: ",deparse(cl)),File=File)
     
-    HTML.LI("Bootstrap Statistics :\n<BR>",File=File)
+    HTMLli("Bootstrap Statistics :\n<BR>",File=File)
     if (!is.null(op)) 
         HTML(op, digits = digits,File=File)
     if (length(ind1) > 0) 
@@ -1782,7 +1782,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     simp.out <- x
     HTML("\n<P><B>Linear Programming Results\n</B></P>\n",File=File)
     cl <- simp.out$call
-    HTML.LI(paste("Call : ",deparse(cl)),File=File)
+    HTMLli(paste("Call : ",deparse(cl)),File=File)
 	HTML(paste("<P>", if (simp.out$maxi) "Maximization" else "Minimization", " Problem with Objective Function Coefficients\n</P>"),File=File)
     HTML(simp.out$obj,File=File)
     if (simp.out$solved == 1) {
@@ -1820,14 +1820,14 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     quans <- format(round(sad.d$quantiles, digs))
     quans[, 1] <- paste( format(level), "%     ", sep = "")
     HTML("\n<P><B>Saddlepoint Distribution Approximations\n</B></P>\n",File=File)
-    HTML.LI(paste("Call : ",paste(deparse(cl),collapse="")),File=File)
+    HTMLli(paste("Call : ",paste(deparse(cl),collapse="")),File=File)
     HTML("\n<P>Quantiles of the Distribution\n</P>",File=File)
     HTML(t(t(quans)),File=File)
     HTML(paste("\n<P>\nSmoothing spline used ", nrow(sad.d$points), 
         " points in the range ", rg[1], " to ", rg[2], ".</P>", sep = ""),File=File)
     if (sad.d$LR) 
-        HTML.LI("Lugananni-Rice approximations used.",File=File)
-       HTML.BR(File=File)
+        HTMLli("Lugananni-Rice approximations used.",File=File)
+       HTMLbr(File=File)
     invisible(sad.d)
 }
 
@@ -1917,7 +1917,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     R <- ci.out$R
     HTML(as.title("BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS"),File=File)
     HTML(paste("<P>Based on", R, "bootstrap replicates\n\n</P>"),File=File)
-    HTML.LI(paste("CALL : ",paste(deparse(cl),collapse=" ")),File=File)
+    HTMLli(paste("CALL : ",paste(deparse(cl),collapse=" ")),File=File)
     HTML("\n<P>Intervals : </P>",File=File)
     HTML(paste("\n<P>Level", intlabs[1:n1],"</P>"),File=File)
     HTML(t(ints1),File=File)
@@ -1993,8 +1993,8 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.factanal" <- function (x, digits = 3, File=.HTML.File,...) 
 {
-    HTML.LI(paste("\nCall:\n", deparse(x$call), "\n<BR>\n", sep = ""),File=File)
-    HTML.LI("Uniquenesses:\n<BR>",File=File)
+    HTMLli(paste("\nCall:\n", deparse(x$call), "\n<BR>\n", sep = ""),File=File)
+    HTMLli("Uniquenesses:\n<BR>",File=File)
     HTML(round(x$uniquenesses, digits),File=File,...)
     HTML(x$loadings, digits = digits,File=File, ...)
     p <- nrow(x$loadings)
@@ -2003,7 +2003,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
         dof <- x$dof
         stat <- (x$n.obs - 1 - (2 * p + 5)/6 - (2 * factors)/3) * 
             x$criteria["objective"]
-        HTML.LI(paste("\n<P>Test of the hypothesis that", factors, if (factors == 
+        HTMLli(paste("\n<P>Test of the hypothesis that", factors, if (factors == 
             1) 
             "factor is"
         else "factors are", "sufficient.\n</P>"),File=File)
@@ -2035,7 +2035,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
         mx[abs(Lambda[ind]) < 0.5] <- factors + 1
         Lambda <- Lambda[order(mx, 1:p), ]
     }
-    HTML.LI("Loadings:\n<BR>",File=File)
+    HTMLli("Loadings:\n<BR>",File=File)
     fx <- format(round(Lambda, digits))
     names(fx) <- NULL
     nc <- nchar(fx[1])
@@ -2048,7 +2048,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
         if (factors > 1) 
             varex <- rbind(varex, "Cumulative Var" = cumsum(vx/p))
     }
-    HTML.BR(File=File)
+    HTMLbr(File=File)
     HTML(round(varex, digits),File=File)
     invisible(x)
 }
@@ -2059,12 +2059,12 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 "HTML.hclust" <- function (x, File=.HTML.File,...) 
 {
     if (!is.null(x$call)) 
-        HTML.LI(paste("Call : ", deparse(x$call), "\n<UL>\n", sep = ""),File=File)
+        HTMLli(paste("Call : ", deparse(x$call), "\n<UL>\n", sep = ""),File=File)
     if (!is.null(x$method)) 
-        HTML.LI(paste("Cluster method :", x$method, "\n"),File=File)
+        HTMLli(paste("Cluster method :", x$method, "\n"),File=File)
     if (!is.null(x$dist.method)) 
-        HTML.LI(paste("Distance : ", x$dist.method, "\n"),File=File)
-    HTML.LI(paste("Number of objects: ", length(x$height) + 1, "\n"),File=File)
+        HTMLli(paste("Distance : ", x$dist.method, "\n"),File=File)
+    HTMLli(paste("Number of objects: ", length(x$height) + 1, "\n"),File=File)
 	HTML("</UL><BR>&nbsp;<BR>",File=File)
 	invisible(x)
 }
@@ -2091,7 +2091,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.princomp" <- function (x, File=.HTML.File,...) 
 {
-    HTML.LI(paste("Call: ",deparse(x$call)),File=File)
+    HTMLli(paste("Call: ",deparse(x$call)),File=File)
     HTML("\n<P>Standard deviations:\n</P>",File=File)
     HTML(x$sdev, File=File,...)
     HTML(paste("\n<P><B>", length(x$scale), " </B>variables and <B>", x$n.obs, " </B>observations.\n</P>"),File=File)
@@ -2119,7 +2119,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     HTML(rbind("Standard deviation" = x$sdev, "Proportion of Variance" = vars, 
         "Cumulative Proportion" = cumsum(vars)),File=File)
     if (loadings) {
-        HTML.LI("Loadings:\n")
+        HTMLli("Loadings:\n")
         cx <- format(round(x$loadings, digits = digits))
         cx[abs(x$loadings) < cutoff] <- substring("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", 
             1, nchar(cx[1, 1]))
@@ -2142,7 +2142,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     HTML(x$col, digits = digits, File=File,...)
     HTML("\n<P>Residuals:\n</P>",File=File)
     HTML(x$residuals, digits = max(2, digits - 2), File=File,...)
-    HTML.BR(File=File)
+    HTMLbr(File=File)
     invisible(x)
 }
 
@@ -2150,10 +2150,10 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.tukeyline" <- function (x, digits = max(3, getOption("digits") - 3), File=.HTML.File,...) 
 {
-    HTML.LI(paste("Call:\n", deparse(x$call), "\n<BR>\n", sep = ""),File=File)
+    HTMLli(paste("Call:\n", deparse(x$call), "\n<BR>\n", sep = ""),File=File)
     HTML("<P>Coefficients:\n</P>")
     print.default(format(coef(x), digits = digits),File=File)
-    HTML.BR(File=File)
+    HTMLbr(File=File)
     invisible(x)
 }
 
@@ -2297,7 +2297,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     HTML("<P><B>LR tests for hierarchical log-linear models</B>\n</P>\n",File=File)
     for (i in seq(along = forms)) 
     HTML(paste(paste("<P>Model ", i, ":<BR>", sep = ""), paste(deparse(forms[[i]]),collapse=""), "</P>"),File=File)
-    HTML.BR(File=File)
+    HTMLbr(File=File)
     HTML(R,File=File)
     invisible(x)
 }
@@ -2375,7 +2375,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 {
     if (!is.null(cl <- x$call)) {
         names(cl)[2] <- ""
-        HTML.LI(paste("Call: ",deparse(cl)),File=File)
+        HTMLli(paste("Call: ",deparse(cl)),File=File)
     }
     HTML("\n<P>Prior probabilities of groups:\n</P>",File=File)
     HTML(x$prior, File=File,...)
@@ -2396,7 +2396,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.loglm" <- function (x,File=.HTML.File, ...) 
 {
-    HTML.LI(paste("Call: ",deparse(x$call)),File=File)
+    HTMLli(paste("Call: ",deparse(x$call)),File=File)
     ts.array <- rbind(c(x$lrt, x$df, if (x$df > 0) 1 - pchisq(x$lrt, 
         x$df) else 1), c(x$pearson, x$df, if (x$df > 0) 1 - pchisq(x$pearson, 
         x$df) else 1))
@@ -2411,7 +2411,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.mca" <- function (x, File=.HTML.File,...) 
 {
-    if (!is.null(cl <- x$call)) HTML.LI(paste("Call: ",deparse(cl)),File=File)
+    if (!is.null(cl <- x$call)) HTMLli(paste("Call: ",deparse(cl)),File=File)
     
     HTML(paste("\n<P>Multiple correspondence analysis of <B>", nrow(x$rs), 
         " </B>cases of <B> ", x$p, " </B>factors\n</P>"),File=File)
@@ -2428,7 +2428,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.polr" <- function (x, File=.HTML.File,...) 
 {
-    if (!is.null(cl <- x$call)) HTML.LI(paste("Call: ",deparse(cl)),File=File)
+    if (!is.null(cl <- x$call)) HTMLli(paste("Call: ",deparse(cl)),File=File)
     if (length(coef(x))) {
         HTML("\n<P>Coefficients:\n</P>",File=File)
         HTML(coef(x), File=File,...)
@@ -2449,7 +2449,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 {
     if (!is.null(cl <- x$call)) {
         names(cl)[2] <- ""
-        HTML.LI(paste("Call: ",deparse(cl)),File=File)
+        HTMLli(paste("Call: ",deparse(cl)),File=File)
     }
     HTML("\n<P>Prior probabilities of groups:\n</P>",File=File)
     HTML(x$prior, File=File,...)
@@ -2476,7 +2476,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 "HTML.rlm" <- function (x,File=.HTML.File, ...) 
 {
     if (!is.null(cl <- x$call)) {
-        HTML.LI(paste("Call: ",paste(deparse(cl),collapse=" ")),File=File)
+        HTMLli(paste("Call: ",paste(deparse(cl),collapse=" ")),File=File)
     }
     if (x$converged) 
         HTML(paste("<P>Converged in <B>", length(x$conv), "</B> iterations\n</P>"),File=File)
@@ -2536,7 +2536,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 "HTML.summary.polr" <- function (x, digits = x$digits, File=.HTML.File,...) 
 {
     if (!is.null(cl <- x$call)) {
-        HTML.LI(paste("Call: ",deparse(cl)),File=File)
+        HTMLli(paste("Call: ",deparse(cl)),File=File)
     }
     coef <- format(round(x$coef, digits = digits))
     pc <- x$pc
@@ -2565,7 +2565,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.summary.rlm" <- function (x, digits = max(3, .Options$digits - 3), File=.HTML.File,...) 
 {
-    HTML.LI(paste("\nCall: ",deparse(x$call)),File=File)
+    HTMLli(paste("\nCall: ",deparse(x$call)),File=File)
     resid <- x$residuals
     df <- x$df
     rdf <- df[2]
@@ -2614,7 +2614,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 "HTML.multinom" <- function (x, File=.HTML.File,...) 
 {
     if (!is.null(cl <- x$call)) {
-        HTML.LI(paste("Call: ",paste(deparse(cl),collapse="")),File=File)
+        HTMLli(paste("Call: ",paste(deparse(cl),collapse="")),File=File)
     }
     HTML("\n<P>Coefficients:\n</P>",File=File)
     HTML(coef(x), File=File)
@@ -2637,16 +2637,16 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     HTML("<P>options were -</P>",File=File)
     tconn <- diff(x$nconn)
     if (tconn[length(tconn)] > x$n[2] + 1) 
-        HTML.LI(" skip-layer connections ",File=File)
+        HTMLli(" skip-layer connections ",File=File)
     if (x$nunits > x$nsunits && !x$softmax) 
-        HTML.LI(" linear output units ",File=File)
+        HTMLli(" linear output units ",File=File)
     if (x$entropy) 
-        HTML.LI(" entropy fitting ",File=File)
+        HTMLli(" entropy fitting ",File=File)
     if (x$softmax) 
-        HTML.LI(" softmax modelling ",File=File)
+        HTMLli(" softmax modelling ",File=File)
     if (x$decay[1] > 0) 
-        HTML.LI(paste(" decay=", x$decay[1], sep = ""),File=File)
-    HTML.BR(File=File)
+        HTMLli(paste(" decay=", x$decay[1], sep = ""),File=File)
+    HTMLbr(File=File)
     invisible(x)
 }
 
@@ -2656,7 +2656,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 "HTML.summary.multinom" <- function (x, digits = x$digits, File=.HTML.File,...) 
 {
     if (!is.null(cl <- x$call)) {
-        HTML.LI(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)
+        HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)
     }
     HTML("\n<P>Coefficients:\n</P>",File=File)
     if (x$is.binomial) {
@@ -2697,15 +2697,15 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
         HTML("<P>options were -</P>",File=File)
         tconn <- diff(x$nconn)
         if (tconn[length(tconn)] > x$n[2] + 1) 
-            HTML.LI(" skip-layer connections ",File=File)
+            HTMLli(" skip-layer connections ",File=File)
         if (x$nunits > x$nsunits && !x$softmax) 
-            HTML.LI(" linear output units ",File=File)
+            HTMLli(" linear output units ",File=File)
         if (x$entropy) 
-            HTML.LI(" entropy fitting ",File=File)
+            HTMLli(" entropy fitting ",File=File)
         if (x$softmax) 
-            HTML.LI(" softmax modelling ",File=File)
+            HTMLli(" softmax modelling ",File=File)
         if (x$decay[1] > 0) 
-        HTML.LI(paste(" decay=", x$decay[1], sep = ""),File=File)
+        HTMLli(paste(" decay=", x$decay[1], sep = ""),File=File)
     wts <- format(round(coef.nnet(x), 2))
     lapply(split(wts, rep(1:x$nunits, tconn)), function(x) HTML(x,File=File))
     invisible(x)
@@ -3024,7 +3024,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
            HTML("\n</TABLE></TD></TABLE></CENTER>",File=File) 
         
     }
-	HTML.BR( File=File)
+	HTMLbr( File=File)
     if (x$m > 0) {
         HTML("<P>Approximate significance of smooth terms:\n</P>",File=File)
         width <- max(nchar(names(x$chi.sq)))
@@ -3104,7 +3104,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.loess" <- function (x, digits = max(3, getOption("digits") - 3),File=.HTML.File, ...) 
 {
-    if (!is.null(cl <- x$call)) HTML.LI(paste("Call: ",paste(deparse(cl),collapse=" ")),File=File)
+    if (!is.null(cl <- x$call)) HTMLli(paste("Call: ",paste(deparse(cl),collapse=" ")),File=File)
     HTML(paste("\n<P>Number of Observations:<B>", x$n, "</B>\n</P>"),File=File)
     HTML(paste("<P>Equivalent Number of Parameters:<B>", format(round(x$enp, 
         2)), "</B>\n</P>"),File=File)
@@ -3118,7 +3118,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.ppr" <- function (x, File=.HTML.File,...) 
 {
-    if (!is.null(cl <- x$call)) HTML.LI(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)
+    if (!is.null(cl <- x$call)) HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)
     mu <- x$mu
     ml <- x$ml
     HTML("\n<P>Goodness of fit:\n</P>",File=File)
@@ -3133,7 +3133,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.smooth.spline" <- function (x, digits = getOption("digits"), File=.HTML.File,...) 
 {
-    if (!is.null(cl <- x$call)) HTML.LI(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)
+    if (!is.null(cl <- x$call)) HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)
     ip <- x$iparms
     cv <- cl$cv
     if (is.null(cv)) 
@@ -3156,7 +3156,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.summary.loess" <- function (x, digits = max(3, getOption("digits") - 3), File=.HTML.File,...) 
 {
-   if (!is.null(cl <- x$call)) HTML.LI(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)
+   if (!is.null(cl <- x$call)) HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)
 	HTML(paste("\n<P>Number of Observations:<B>", x$n, "</B>\n</P>"),File=File)
     	HTML(paste("<P>Equivalent Number of Parameters:<B>", format(round(x$enp, 2)), "</B>\n</P>"),File=File)
     if (x$pars$family == "gaussian") 
@@ -3166,12 +3166,12 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
     HTML("<P>Trace of smoother matrix:</P>",File=File)
     HTML(format(round(x$trace.hat,2)), File=File)
     HTML("\n<P>Control settings:\n</P><UL>",File=File)
-    HTML.LI(paste("normalize: ", x$pars$normalize, "\n"),File=File)
-    HTML.LI(paste("  span     : ", format(x$pars$span), "\n"),File=File)
-    HTML.LI(paste("  degree   : ", x$pars$degree, "\n"),File=File)
-    HTML.LI(paste("  family   : ", x$pars$family),File=File)
+    HTMLli(paste("normalize: ", x$pars$normalize, "\n"),File=File)
+    HTMLli(paste("  span     : ", format(x$pars$span), "\n"),File=File)
+    HTMLli(paste("  degree   : ", x$pars$degree, "\n"),File=File)
+    HTMLli(paste("  family   : ", x$pars$family),File=File)
     if (x$pars$family != "gaussian") 
-        HTML.LI(paste("       iterations =", x$pars$iterations),File=File)
+        HTMLli(paste("       iterations =", x$pars$iterations),File=File)
     	HTML("</UL>",File=File)
     HTML(paste("\n<P>  surface  : ", x$pars$surface, if (x$pars$surface == "interpolate")  paste("  cell =", format(x$pars$cell)),"</P>"),File=File)
     invisible(x)
@@ -3247,7 +3247,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 
 "HTML.lqs" <- function (x, digits = max(3, getOption("digits") - 3), File=.HTML.File,...) 
 {
-	if (!is.null(cl <- x$call)) HTML.LI(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)    
+	if (!is.null(cl <- x$call)) HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)    
 	
 	HTML("<P>Coefficients:\n</P>",File=File)
     HTML.default(format(coef(x), digits = digits), File=File)
@@ -3264,10 +3264,10 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
 "HTML.nls" <- function (x, File=.HTML.File,...) 
 {
     HTML("<P><B>Nonlinear regression model\n</B></P>",File=File)
-    HTML.LI(paste("Model: ", paste(deparse(formula(x)),collapse=" "), "\n"),File=File)
-    HTML.LI(paste("Data: ", as.character(x$data), "\n"),File=File)
+    HTMLli(paste("Model: ", paste(deparse(formula(x)),collapse=" "), "\n"),File=File)
+    HTMLli(paste("Data: ", as.character(x$data), "\n"),File=File)
     HTML(x$m$getAllPars(),File=File)
-    HTML.LI(paste("Residual sum-of-squares: ", format(x$m$deviance()),"\n"),File=File)
+    HTMLli(paste("Residual sum-of-squares: ", format(x$m$deviance()),"\n"),File=File)
     invisible(x)
 }
 
@@ -3299,7 +3299,7 @@ HTML(noquote(cbind("<-" = unlist(x))), File=File,...)
             }
         }
     }
-    HTML.BR(File=File)
+    HTMLbr(File=File)
     invisible(x)
 }
 
@@ -3372,7 +3372,7 @@ HTML(x$table, File=File)
 
 "HTML.coxph.null" <- function (x, digits = max(options()$digits - 4, 3), File=.HTML.File,...) 
 {
-	if (!is.null(cl <- x$call)) HTML.LI(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)        
+	if (!is.null(cl <- x$call)) HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),File=File)        
     HTML(paste("<P>Null model  log likelihood=<B>", format(x$loglik), "</B>\n</P>"),File=File)
     omit <- x$na.action
     if (length(omit)) HTML(paste("<P>  n=<B>", x$n, " </B>(", naprint(omit), ")\n</P>", sep = ""),File=File)
@@ -3383,15 +3383,15 @@ HTML(x$table, File=File)
 ### UTILITARY FUNCTIONS
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.BR"<- function(File = .HTML.File) { cat("\n<br>&nbsp;<br>\n", append = TRUE, file = File)}
+"HTMLbr"<- function(x=1,File = .HTML.File) { cat(paste("\n",rep("<br>&nbsp;",x),"\n",sep=""), append = TRUE, file = File)}
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.HR"<- function(File = .HTML.File, Width = "100%", Size = "1"){ cat(paste("<hr width=", Width, " size=", Size, ">", sep = ""), file = File, append = TRUE, sep = "")}
+"HTMLhr"<- function(File = .HTML.File, Width = "100%", Size = "1"){ cat(paste("<hr width=", Width, " size=", Size, ">", sep = ""), file = File, append = TRUE, sep = "")}
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.LI"<- function(txt="", File = .HTML.File) { cat(paste("<br><li>", txt, sep = ""), sep = "", append = TRUE, file = File)}
+"HTMLli"<- function(txt="", File = .HTML.File) { cat(paste("<br><li>", txt, sep = ""), sep = "", append = TRUE, file = File)}
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -3402,27 +3402,25 @@ invisible(x)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.plot" <-
-function(Caption="",File = .HTML.File, GraphDirectory = ".", GraphFileName = "", 
-	GraphSaveAs = "jpg", GraphBorder = 1, Align = "center", ...)
+"HTMLplot" <- function (Caption = "", File = .HTML.File, GraphDirectory = ".", GraphFileName = "", GraphSaveAs = "png", GraphBorder = 1,  Align = "center", ...)
 {
-	if(GraphFileName == "") {
-		nowd <- date()
-	GraphFileName <- paste("GRAPH_", substring(nowd, 5, 7), substring(nowd, 9, 10), "_", substring(nowd, 12, 13), substring(nowd, 15, 16), substring(nowd, 18, 19), sep= "")
-	}
-	GraphFileName<-paste(GraphFileName,".",GraphSaveAs,sep="")
-	AbsGraphFileName <- file.path(GraphDirectory, GraphFileName)
-	dev.print(jpeg,file=AbsGraphFileName,width=400)
-	cat(paste("<P ALIGN=", Align, "><IMG SRC='", GraphFileName, "' BORDER=",
-		GraphBorder, ">", sep = "", collapse = ""), file = File, 
-		append = TRUE, sep = "")
-	if (Caption !="")
-	{
-	cat(paste("<br><i>",Caption,"</i>"),file=File,append=TRUE,sep="")
-	}
-	cat("</P>",file=File,append=TRUE,sep="\n")
-	assign(".HTML.graph",TRUE,env=get("HTMLenv",envir=.GlobalEnv))
-	invisible(return(TRUE))
+    if (GraphFileName == "") {
+        nowd <- date()
+        GraphFileName <- paste("GRAPH_", substring(nowd, 5, 7), substring(nowd, 9, 10), "_", substring(nowd, 12, 13), substring(nowd, 15,  16), substring(nowd, 18, 19), sep = "")
+    }
+    GraphFileName <- paste(GraphFileName, ".", GraphSaveAs, sep = "")
+    AbsGraphFileName <- file.path(GraphDirectory, GraphFileName)
+    if (GraphSaveAs=="png") dev.print(png, file = AbsGraphFileName, width = 400)
+    else if (GraphSaveAs=="jpg") dev.print(jpeg, file = AbsGraphFileName, width = 400)
+    else if (GraphSaveAs=="gif") dev.print(gif, file = AbsGraphFileName, width = 400)
+    else stop("GraphSaveAs must be either jpg, png or gif")
+    cat(paste("<p align=", Align, "><img src='", GraphFileName, "' border=", GraphBorder, ">", sep = "", collapse = ""), file = File, append = TRUE, sep = "")
+    if (Caption != "") {
+        cat(paste("<br><i>", Caption, "</i>"), file = File, append = TRUE, sep = "")
+    }
+    cat("</P>", file = File, append = TRUE, sep = "\n")
+    try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
+    invisible(return())
 }
 
 #----------------------------------------------------------------------------------------------------#
@@ -3499,7 +3497,7 @@ function(Caption="",File = .HTML.File, GraphDirectory = ".", GraphFileName = "",
 						if (echo) HTMLCommand(paste("fix(",FunName,")",sep=""),File,NumCom) else cat(paste("<A NAME=Num",NumCom,">&nbsp</A>",sep=""),file=File,sep="",append=TRUE)
 						if (HTMLframe) HTMLCommand(paste("fix(",FunName,")",sep=""),HTMLMenuFile,NumCom,menu=TRUE,target=target)					
 						dput(get(FunName),file=AbsficName)
-						HTML(paste("<P> Function <A HREF=", ficName, " TARGET=<-blank>", FunName, "</A> fixed. </P>",sep=""))
+						HTML(paste("<P> Function <a href=", ficName, " target=_blank>", FunName, "</a> fixed. </P>",sep=""))
 						
 						assign(".HTML.fix",FALSE,envir=get("HTMLenv",envir=.GlobalEnv))
 
@@ -3523,7 +3521,7 @@ function(Caption="",File = .HTML.File, GraphDirectory = ".", GraphFileName = "",
 
 			# Print the commands and/or it's number 
 			
-				if (echo) HTMLCommand(deparse(expr),File,NumCom) else cat(paste("<A NAME=Num",NumCom,">&nbsp</A>",sep=""),file=File,sep="",append=TRUE)
+				if (echo) HTMLCommand(deparse(expr),File,NumCom) else cat(paste("<a name=Num",NumCom,">&nbsp</A>",sep=""),file=File,sep="",append=TRUE)
 				if (HTMLframe) HTMLCommand(deparse(expr),HTMLMenuFile,NumCom,menu=TRUE,target=target)
 
 				if (ToPrint) HTML(value,File=File)

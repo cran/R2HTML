@@ -1,5 +1,5 @@
 Package: R2HTML
-Version: 1.0
+Version: 1.1
 Title: HTML exportation for R objects
 Author: Eric Lecoutre <lecoutre@stat.ucl.ac.be>, with contribution from Mathieu Ros <ros@jouy.inra.fr>
 Maintainer: Eric Lecoutre <lecoutre@stat.ucl.ac.be>

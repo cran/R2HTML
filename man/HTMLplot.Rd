@@ -1,12 +1,12 @@
-\name{HTML.plot}
-\alias{HTML.plot}
+\name{HTMLplot}
+\alias{HTMLplot}
 
 \title{ Insert a graphic into an HTML output }
 \description{
   Exports the active graphic to a JPEG or GIF file and add it to a target HTML output, by writing the <IMG> tag.
 }
 \usage{
-HTML.plot(Caption="",File = .HTML.File, GraphDirectory = get(".HTML.outdir", env = get("HTMLenv", envir = .GlobalEnv)), GraphFileName = "", GraphSaveAs = "jpg", GraphBorder = 1, Align = "center", ...)
+HTMLplot(Caption="",File = .HTML.File, GraphDirectory = get(".HTML.outdir", env = get("HTMLenv", envir = .GlobalEnv)), GraphFileName = "", GraphSaveAs = "jpg", GraphBorder = 1, Align = "center", ...)
 }
 
 \arguments{
@@ -40,7 +40,7 @@ Note that this function is coded to work automatically when using automatic expo
 
 myfile <- paste(tempfile(),".html",sep="")
 plot(sin, -pi, 2*pi,main="Sinus")
-# HTML.plot(File=myfile,GraphDirectory="/",Caption="Look at this curve!")
+# HTMLplot(File=myfile,GraphDirectory="/",Caption="Look at this curve!")
 }
 
 \keyword{ print }
