@@ -1,0 +1,39 @@
+
+# Version 1.4-3
+
+- HTML.matrix and HTML.data.frame now can use several new output options
+  as they call now format. This allows using a comma "," as decimal
+  separator for example.
+  
+- HTML.data.frame now has a sortableDF option. When using it, a link to
+  an external behavior file is done (suggestion by Tom Short, could be
+  used by Rpad)
+
+- Available options that user may want to change:
+	R2HTML.sortableDF  		(FALSE)
+	R2HTML.format.digits  		(2)
+	R2HTML.format.nsmall  		(0)
+	R2HTML.format.big.mark		("")
+	R2HTML.format.big.interval	(3)
+	R2HTML.format.decimal.mark=	(Sys.localeconv()[["decimal_point"]])
+
+- For data.frames, those optins could be applied for the whole data.frame 
+  or column by column. For this, one can use a vector argument (same size
+  as the number of columns).
+
+- Bugs fixed: HTML.table
+
+Following modifications contributed by Philippe Grosjean 
+
+- Now uses NAMESPACE 
+
+- Renamed .First.lib() into .onLoad()
+
+- In RweaveHTMLSetup(), commented if(!require(R2HTML))
+      stop("R2HTML package is required."). 
+  This is not useful, becasue this function IS in R2HTML package!!!
+
+- Changed utils:::XXX and utils::XXX into XXX everywhere, and added
+  import(utils) in NAMESPACE instead.
+
+  

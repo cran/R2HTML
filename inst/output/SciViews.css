@@ -4,7 +4,12 @@ body {
 	margin: 0%; 
 	}  
 
-
+ .tablesort  {
+    cursor: pointer ;
+    behavior:url(tablesort.htc);
+    -moz-binding: url(tablesort.htc);
+    }
+    
 H1 { background: #ECE6C4; padding: 3px; border-bottom: 1px solid #CCCC99}
 
 H2 { background: #fffacd; color:#0ac92b; padding: 3px; border-bottom: 1px solid #eee8aa; font-family: Comic,Comics,Arial}

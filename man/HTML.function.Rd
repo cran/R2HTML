@@ -38,7 +38,7 @@ myfun <- function(x){
 	cat("\n Euclidian norm")
 	return(sqrt(sum(x^2)))
  }
-HTML.function(myfun,file=myfile)
+HTML(myfun,file=myfile)
 cat("\n Test output written in: ",myfile)
 
 }
