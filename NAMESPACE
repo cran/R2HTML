@@ -1,4 +1,4 @@
-import(graphics, grDevices, utils)
+import(graphics, utils)
 
 export(HTML,
        HTML.title,
@@ -22,7 +22,13 @@ export(HTML,
        RweaveHTMLFinish,
        RweaveHTMLOptions,
        SweaveSyntaxHTML,
-       as.title)
+       as.title,
+       as.latex,
+       HTMLgrid_references,
+       HTMLgrid,
+       HTMLgrid_inline,
+       HTMLgrid_summary
+       )
 
 S3method(HTML, default)
 S3method(HTML, atomic)
@@ -176,3 +182,4 @@ S3method(HTML, date)
 S3method(HTML, cox.zph)
 S3method(HTML, coxph.null)
 S3method(HTML, xtable)
+S3method(HTML, latex)

@@ -2,13 +2,13 @@
 #     R2HTML - Library of exportation to HTML for R
 #     Copyright (C) 2002-2004 - Eric Lecoutre 
 
-#     R2HTML version 1.4	
+#     R2HTML version 1.5	
 
 #     This program is free software; you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
 #     the Free Software Foundation; either version 2 of the License, or
 #     (at your option) any later version.
-# 
+#                         
 #     This program is distributed in the hope that it will be useful,
 #     but WITHOUT ANY WARRANTY; without even the implied warranty of
 #     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -33,7 +33,7 @@
 #----------------------------------------------------------------------------------------------------#
 "HTML"<- function(x,...) {
 	UseMethod("HTML") 
-	}
+  	}
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -621,7 +621,10 @@ function(x, file = .HTML.file,append=TRUE,...)
 {
    cat("\n", file=file,append=append)
 
-   if (sortableDF) cat(paste(c("<style>",".tablesort  {","cursor: pointer ;"," behavior:url(tablesort.htc);"," -moz-binding: url(tablesort.htc);","}","</style>"),collapse="\n"),file=file,append=TRUE)
+    # Handle sortableDF argument
+    if (is.null(sortableDF)) sortableDF=FALSE
+    if (sortableDF==TRUE) cat(paste(c("<style>",".tablesort  {","cursor: pointer ;"," behavior:url(tablesort.htc);"," -moz-binding: url(moz-behaviors.xml#tablesort.htc);","}","</style>"),collapse="\n"),file=file,append=TRUE)
+   
    
   # if (!is.null(digits)) x[] = lapply(x, FUN = function(vec) if (is.numeric(vec)) round(vec, digits) else vec)
 
@@ -642,35 +645,41 @@ function(x, file = .HTML.file,append=TRUE,...)
       txt <- paste(txt,"\n\t<tr class=",classfirstline,">", paste(VecDebut, VecMilieu, VecFin, sep = "",
          collapse = ""),"\n\t</tr>")
    }
-   	#18/10/2004
-   	# MODIF suggested by Arne Henningsen that allows using a different decimal separator and so on as 
-   	# we call format which is very flexible
-       	   if (length(digits)==1) digits <- rep(digits,ncol(x))
-   	   if (length(nsmall)==1) nsmall <- rep(nsmall,ncol(x))
-   	   if (length(big.mark )==1) big.mark  <- rep(big.mark ,ncol(x))
-   	   if (length(big.interval)==1) big.interval <- rep(big.interval,ncol(x))
-   	   if (length(decimal.mark)==1) decimal.mark <- rep(decimal.mark,ncol(x))
+ 
+   x.formatted <- format(x, digits=digits, nsmall=nsmall, big.mark=big.mark, big.interval=big.interval, decimal.mark=decimal.mark)
+   x.formatted <- as.matrix(x.formatted)
+   x.formatted[is.na(x.formatted)] <- " "
+   x.formatted[is.nan(x.formatted)] <- " "
    
-     for(i in 1:dim(x)[1]) {
-                VecDebut <- c("\n\t<tr>",if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-                     "\t\t<td class=", classfirstcolumn, ">", sep = ""),
-                   paste(rep(paste("\t\t<td class=", classcellinside, ">", sep = ""), dim(x)[2])))
-                VecMilieu <- c("",if(is.null(dimnames(x)[[1]]) == FALSE)
-                     dimnames(x)[[1]][i], 
-                    HTMLReplaceNA(
-       	           sapply(1:length(x[i,]),
-       	            FUN=function(j){
-       	            format(x[i,j],digits=digits[j],nsmall=nsmall[j],big.mark=big.mark[j],big.interval=big.interval[j],decimal.mark=decimal.mark[j])
-       	             }
-       	      )))
-                VecFin <- c("",if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
-              rep("</td>", dim(x)[2] - 1), "</td>\n\t</tr>")
-        
-        txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "",collapse = "\n"))
-     }
-  
-   txt <- paste(txt, "\n\t</TBODY>\n\t</table>",if (!is.null(Border)) "\n</td></table>\n","<br>")
+   for(i in 1:dim(x)[1]) {
+      if(i == 1) {
+         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+              "<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste("<td class=", classcellinside, ">", sep = ""),
+            rep(paste("<td class=", classcellinside, ">", sep =
+            ""), dim(x)[2] - 1))
+         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
+              dimnames(x)[[1]][i],
+              HTMLReplaceNA(x.formatted[i,]))
+         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
+            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+      }
+      else {
+         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+              "<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste(rep(paste("<td class=", classcellinside, ">", sep
+             = ""), dim(x)[2])))
+         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
+              dimnames(x)[[1]][i], 
+              HTMLReplaceNA(x.formatted[i,]))
+         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
+            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+      }
+      txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "",collapse = ""))
+   }
+   txt <- paste(txt, "\n\t</TBODY>\n</table>\n",if (!is.null(Border)) "</td></table>\n","<br>")
    cat(txt, "\n", file = file, sep = "", append=TRUE)
+ 
 }
 
 #----------------------------------------------------------------------------------------------------#
@@ -700,34 +709,40 @@ function(x, file = .HTML.file,append=TRUE,...)
       txt <- paste(txt,"<tr class=",classfirstline,">", paste(VecDebut, VecMilieu, VecFin, sep = "",collapse = ""),"</tr>\n")
    }
    
-      #19/10/2004
-         	# MODIF suggested by Arne Henningsen that allows using a different decimal separator and so on as 
-         	# we call format which is very flexible
-      if (length(digits)==1) digits <- rep(digits,ncol(x))
-      if (length(nsmall)==1) nsmall <- rep(nsmall,ncol(x))
-      if (length(big.mark )==1) big.mark  <- rep(big.mark ,ncol(x))
-      if (length(big.interval)==1) big.interval <- rep(big.interval,ncol(x))
-      if (length(decimal.mark)==1) decimal.mark <- rep(decimal.mark,ncol(x))
-
+     x.formatted <- format(x, digits=digits, nsmall=nsmall, big.mark=big.mark, big.interval=big.interval, decimal.mark=decimal.mark)
+   x.formatted <- as.matrix(x.formatted)
+   x.formatted[is.na(x.formatted)] <- " "
+   x.formatted[is.nan(x.formatted)] <- " "
+   
    for(i in 1:dim(x)[1]) {
-              VecDebut <- c("\n\t<tr>",if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-                   "\t\t<td class=", classfirstcolumn, ">", sep = ""),
-                 paste(rep(paste("\t\t<td class=", classcellinside, ">", sep = ""), dim(x)[2])))
-              VecMilieu <- c("",if(is.null(dimnames(x)[[1]]) == FALSE)
-                   dimnames(x)[[1]][i], 
-                  HTMLReplaceNA(
-     	           sapply(1:length(x[i,]),
-     	            FUN=function(j){
-     	            format(x[i,j],digits=digits[j],nsmall=nsmall[j],big.mark=big.mark[j],big.interval=big.interval[j],decimal.mark=decimal.mark[j])
-     	             }
-     	      )))
-              VecFin <- c("",if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
-            rep("</td>", dim(x)[2] - 1), "</td>\n\t</tr>")
-      
-      txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "",collapse = "\n"))
+      if(i == 1) {
+         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+              "<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste("<td class=", classcellinside, ">", sep = ""),
+            rep(paste("<td class=", classcellinside, ">", sep =
+            ""), dim(x)[2] - 1))
+         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
+              dimnames(x)[[1]][i],
+              HTMLReplaceNA(x.formatted[i,]))
+         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
+            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+      }
+      else {
+         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+              "<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste(rep(paste("<td class=", classcellinside, ">", sep
+             = ""), dim(x)[2])))
+         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
+              dimnames(x)[[1]][i], 
+              HTMLReplaceNA(x.formatted[i,]))
+         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
+            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+      }
+      txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "",collapse = ""))
    }
-   txt <- paste(txt, "\n\t</table>",if (!is.null(Border)) "\n</td></table>\n","<br>")
-   cat(txt, "\n", file = file, sep = "", append=TRUE)}
+   txt <- paste(txt, "\n\t</TBODY>\n</table>\n",if (!is.null(Border)) "</td></table>\n","<br>")
+   cat(txt, "\n", file = file, sep = "", append=TRUE)
+   }
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -3696,20 +3711,18 @@ function(x, HR = 2,CSSclass=NULL,file = .HTML.file,append=TRUE, ...)
 }
 #----------------------------------------------------------------------------------------------------#
 
+
 "HTMLReplaceNA"<-
 function(Vec, Replace = " ")
 {
-	
 	Vec <- as.character(Vec)
 	#Vec <- format( Vec, ... )
-	
 	for(i in 1:length(Vec)) 
 	{
 		try(if((Vec[i] == "NA") | (Vec[i] == "NaN") | is.na(Vec[i])){ Vec[i] <- Replace})
 	}	
 	Vec
 }
-
 
 
 #----------------------------------------------------------------------------------------------------#
@@ -3880,13 +3893,38 @@ function(x)
 }
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLInitFile"<-function(outdir = ".",filename="index",extension="html",HTMLframe=FALSE, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output",CSSFile="R2HTML.css")
+"HTMLInitFile"<-function(outdir = tempdir(),filename="index",extension="html",HTMLframe=FALSE, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output",CSSFile="R2HTML.css",useLaTeX=TRUE,useGrid=TRUE)
 {
 if (HTMLframe==FALSE){
 	file<-file.path(outdir,paste(filename,".",extension,sep=""))
-
 	assign(".HTML.file",file,env=.GlobalEnv)
-	cat(paste("<html>\n<head>\n<title>",Title,"\n</title> <meta http-equiv=content-type content=text/html;charset=iso-8859-1> \n <LINK rel=stylesheet href=",CSSFile," type=text/css> \n </head> \n <body bgcolor=", BackGroundColor, if(is.null(BackGroundImg) == FALSE) paste(" background='", BackGroundImg, "'", sep = ""), ">"), append = FALSE, sep = "", file = file)
+
+  txt <- ifelse(useLaTeX,"<html xmlns:mml=\"http://www.w3.org/1998/Math/MathML\">","<html>")
+  #<HEAD>
+    txt <- c(txt, "<head>")
+    txt <- c(txt, paste("<title>",Title,"</title>"))
+    # css  
+    txt <- c(txt, paste("<link rel=stylesheet href=\"",CSSFile,"\" type=text/css>",sep=""))
+    # LaTeX ?
+    if (useLaTeX)   txt <- c(txt, "<object id=\"mathplayer\" classid=\"clsid:32F66A20-7614-11D4-BD11-00104BD3F987\"></object>\n<?import namespace=\"mml\" implementation=\"#mathplayer\"?>\n<script type=\"text/javascript\" src=\"ASCIIMathML.js\"></script>")
+    # Grid?
+    if (useGrid) { 
+      txt <- c(txt, HTMLgrid_references())
+      txt <- c(txt, "<script>\n   nequations=0;\n</script>")
+    }
+  # </HEAD>
+  txt <- c(txt, "</head>")      
+  # <BODY>
+  body <- c("<body")
+  if(useLaTeX) body=c(body," onload=\"translate()\"")
+  body=c(body,paste(" bgcolor=",BackGroundColor))
+   if (!is.null(BackGroundImg)) body = c(body, paste(" background=\"",BackGroundImg,"\"",sep=""))
+   body <- c(body," >")
+   body=paste(body,collapse="")
+   txt <- c(txt, body)
+   txt <- paste(txt, collapse="\n")
+   cat(txt, file=file,append=FALSE) 
+
 	}
 else	{
 	filemenu<-paste(filename,"_menu.",extension,sep="")
@@ -3900,7 +3938,31 @@ else	{
 
 	cat("<html><head><link rel=stylesheet href=",CSSFile," type=text/css> </head><body bgcolor=#E5F5FF>  <center> <img src=R2HTMLlogo.gif> <hr size=1></center><br>",sep="",append=FALSE,file=absfilemenu)
 
-	cat(paste("<html>\n<head>\n <title>",Title,"</title>\n <meta http-equiv=content-type content=text/html;charset=iso-8859-1>\n <LINK rel=stylesheet href=",CSSFile," type=text/css>\n </head><body bgcolor=", BackGroundColor, if(is.null(BackGroundImg) == FALSE) paste(" background='", BackGroundImg, "'", sep = ""), ">"), append = FALSE, sep = "", file = absfilemain)
+     txt <- ifelse(useLaTex,"<html xmlns:mml=\"http://www.w3.org/1998/Math/MathML\">","<html>")
+  #<HEAD>
+    txt <- c(txt, "<head>")
+    txt <- c(txt, paste("<title>",Title,"</title>"))
+    # css  
+    txt <- c(txt, paste("<link rel=stylesheet href=\"",CSSFile,"\" type=text/css>",sep=""))
+    # LaTeX ?
+    if (useLaTeX)   txt <- c(txt, "<object id=\"mathplayer\" classid=\"clsid:32F66A20-7614-11D4-BD11-00104BD3F987\"></object>\n<?import namespace=\"mml\" implementation=\"#mathplayer\"?>\n<script type=\"text/javascript\" src=\"ASCIIMathML.js\"></script>")
+   # Grid?
+    if (useGrid) { 
+      txt <- c(txt, HTMLgrid_references())
+      txt <- c(txt, "<script>\n   nequations=0;\n</script>")
+    }  # </HEAD>
+  txt <- c(txt, "</head>")      
+  # <BODY>
+  body <- c("<body")
+  if(useLaTeX) body=c(body," onload=\"translate()\"")
+  body=c(body,paste(" bgcolor=",BackGroundColor))
+   if (!is.null(BackGroundImg)) body = c(body, paste(" background=\"",BackGroundImg,"\"",sep=""))
+   body <- c(body," >")
+   body=paste(body,collapse="")
+   txt <- c(txt, body)
+   txt <- paste(txt, collapse="\n")
+   cat(txt, file=absfilemain,append=FALSE) 
+
 }
 
 	invisible(return(file))
@@ -4185,23 +4247,45 @@ SweaveSyntaxHTML$trans$syntaxname <- "<!--SweaveSyntax{SweaveSyntaxHTML}!-->"
 #----------------------------------------------------------------------------------------------------#
 
 
+"myunzip"   <-  function (zipname, dest) 
+{
+    if (file.exists(zipname)) {
+      if (.Platform$OS.type=="unix")  system(paste(getOption("unzip"), "-oq", zipname, "-d", dest)) 
+      else .Internal(int.unzip(zipname, NULL, dest))
+    }
+    else stop(paste("zipfile", zipname, "not found"))
+}
+
 ".onLoad" <- function(lib,pkg)
 {
 	#cat("\nLoading R2HTML package...\n")
 	#ps.options(bg="white")
-	file.copy(file.path(lib,pkg,'output','R2HTML.css'), file.path(tempdir(),'R2HTML.css'))
-	file.copy(file.path(lib,pkg,'output','R2HTMLlogo.gif'), file.path(tempdir(),'R2HTMLlogo.gif'))
-	file.copy(file.path(lib,pkg,'output','tablesort.htc.'), file.path(tempdir(),'tablesort.htc'))
+  
+  # Copy all the content of "output" directory to tempdir()
+  # now we use a zip file as there are subdirectories...
+   myunzip(file.path(lib,pkg,'output','R2HTMLstuff.zip'),dest=tempdir())
+
 	# PhG: eliminated! No temp variables in .GlobalEnv, please    assign(".R2HTMLpath",file.path(lib,pkg),pos=.GlobalEnv)
 	# EL: now can use getOption("R2HTML.CSSdir")
-
 	options(R2HTML.CSSdir=file.path(lib,pkg,"output"))
-
-	options(R2HTML.sortableDF=FALSE)
-	options(R2HTML.format.digits=2)
-	options(R2HTML.format.nsmall=0)
-	options(R2HTML.format.big.mark="")
-	options(R2HTML.format.big.interval=3)
-	options(R2HTML.format.decimal.mark=Sys.localeconv()[["decimal_point"]])
+  options(R2HTML.sortableDF=FALSE)
+  options(R2HTML.format.digits=2)
+  options(R2HTML.format.nsmall=0)
+  options(R2HTML.format.big.mark="")
+  options(R2HTML.format.big.interval=3)
+  options(R2HTML.format.decimal.mark=Sys.localeconv()[["decimal_point"]])
+  options(R2HTML.grid.first=TRUE)
+  options(R2HTML.grid.stuffbasepath="./")
 
 }
+
+
+options(R2HTML.sortableDF=FALSE)
+options(R2HTML.format.digits=2)
+options(R2HTML.format.nsmall=0)
+options(R2HTML.format.big.mark="")
+options(R2HTML.format.big.interval=3)
+options(R2HTML.format.decimal.mark=Sys.localeconv()[["decimal_point"]])
+options(R2HTML.grid.first=TRUE)
+options(R2HTML.grid.stuffbasepath="./")
+

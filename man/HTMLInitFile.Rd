@@ -8,7 +8,7 @@
 }
 
 \usage{
-HTMLInitFile(outdir = ".", filename = "index", extension = "html", HTMLframe = FALSE, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output", CSSFile = "R2HTML.css")
+HTMLInitFile(outdir = tempdir(),filename="index",extension="html",HTMLframe=FALSE, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output",CSSFile="R2HTML.css",useLaTeX=TRUE,useGrid=TRUE)
 HTMLEndFile(file = .HTML.file)
 }
 
@@ -23,6 +23,8 @@ HTMLEndFile(file = .HTML.file)
   \item{BackGroundImg}{ option background for HTML tag <body>}
   \item{Title}{ string to pass to HTML <title> tag  }
   \item{CSSFile}{ path and name of a CSS file to use }
+  \item{useLaTeX}{ boolean - add required references to javascript AsciiMathML in order to use \code{as.latex}}
+  \item{useGrid}{ boolean - add required references to javascript grid in order to use R2HTML grid fonctions}
   \item{file}{target HTML file to end}
 }
 \details{
@@ -36,7 +38,7 @@ HTMLEndFile(file = .HTML.file)
 
 \note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }
 
-\seealso{  \code{\link{HTML}}}
+\seealso{  \code{\link{HTML}}, \code{\link{as.latex}}, \code{\link{HTMLgrid}}}
 
 \examples{
 	# Store in target the name of a output file

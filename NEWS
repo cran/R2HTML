@@ -1,15 +1,37 @@
+# 13/01/2005 - Version 1.51
 
-# Version 1.4-3
+- Added as.latex and HTML.latex to write pieces of equations in Latex. 
+  They will be displayed using AsciiMathML 
+
+
+
+# 20/11/2004 - Version 1.5
+
+- Includes a grid xHTML/css/Javascript compoment from ActiveWidgets
+  <http://www.activewidgets.comhttp://www.activewidgets.com>.
+  This grid is used by some functions, basically:
+  	HTMLgrid   (use data exported in a raw text file)
+  	HTMLgrid_inline  (include data within the HTML file)
+  	HTMLgrid_summary (a summary method for data.frames)
+  	
+  WARNING: may not fully work on Firefox.
+
+
+
+# 19/10/2004 - Version 1.4-3
 
 - HTML.matrix and HTML.data.frame now can use several new output options
-  as they call now format. This allows using a comma "," as decimal
-  separator for example.
-  
-- HTML.data.frame now has a sortableDF option. When using it, a link to
-  an external behavior file is done (suggestion by Tom Short, could be
-  used by Rpad)
+  as they call now 'format. This allows using a comma "," as decimal
+  separator for example. All 'format' arguments are allowed and can be used
+  as a single element (value applies to all columns) or a vector (provide
+  values for each column). - Suggestion by Arne Henningsen
 
-- Available options that user may want to change:
+- HTML.data.frame now has a sortableDF option. When using it, a link to
+  an external DHTML behavior file is done (suggestion by Tom Short, could be
+  used by it's wonderful Rpad)
+
+- Available options that user may want to change 
+ (default for every   matrix/DF):
 	R2HTML.sortableDF  		(FALSE)
 	R2HTML.format.digits  		(2)
 	R2HTML.format.nsmall  		(0)
@@ -17,11 +39,7 @@
 	R2HTML.format.big.interval	(3)
 	R2HTML.format.decimal.mark=	(Sys.localeconv()[["decimal_point"]])
 
-- For data.frames, those optins could be applied for the whole data.frame 
-  or column by column. For this, one can use a vector argument (same size
-  as the number of columns).
-
-- Bugs fixed: HTML.table
+- Bug fixed: HTML.table
 
 Following modifications contributed by Philippe Grosjean 
 
