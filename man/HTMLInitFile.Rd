@@ -1,44 +1,59 @@
 \name{HTMLInitFile}
 \alias{HTMLInitFile}
-\title{
-~function to do ???
-}
+\alias{HTMLEndFile}
+
+\title{ Begins / Ends a new HTML report output }
 \description{
-~brief description
+  Those two functions handle the beginning and the ending of a HTML report, by writing the HTML <body><head><title></title></head>...</body> tags and their options. When working manually, the user may need to use it's own functions or to explicitly write to a file using cat("", file=).
 }
+
 \usage{
-HTMLInitFile(File="C:\\TEMP\\1.HTML", BackGroundColor="FFFFFF", BackGroundImg="", Title="S-Plus output")
-~move the above line to just above the first optional argument
+HTMLInitFile(outdir = paste(R.home(), "/library/R2HTML/output/", sep = ""), filename = "index", extension = "html", HTMLframe = F, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output", CSSFile = "R2HTML.CSS")
 }
+HTMLEndFile(File = .HTML.File)
+
+
 \arguments{
-\item{File}{
-~Describe File here
-}
-\item{BackGroundColor}{
-~Describe BackGroundColor here
-}
-\item{BackGroundImg}{
-~Describe BackGroundImg here
-}
-\item{Title}{
-~Describe Title here
-}}
-\value{
-~Describe the value returned
-}
-\section{Side Effects}{
-~describe any side effects if they exist
+  \item{outdir}{ directory to store the output }
+  \item{filename}{ target HTML report filename }
+  \item{extension}{ target HTML report extension (htm, html,...)  }
+  \item{HTMLframe}{ should the output be handled by frames [boolean] }
+  \item{BackGroundColor}{ option bgcolor for HTML tag <body>}
+  \item{BackGroundImg}{ option background for HTML tag <body>}
+  \item{Title}{ string to pass to HTML <title> tag  }
+  \item{CSSFile}{ path and name of a CSS file to use }
 }
 \details{
-~explain details here.
 }
-\references{
-~put references here, make other sections like NOTE and WARNING with .SH
+
+\value{
+	physical path of the main HTML file that will serve for the report.
 }
-\seealso{
-~put functions to SEE ALSO here
-}
+\references{ }
+\author{ Eric Lecoutre }
+
+\note{ For a discussion about .HTML.File default value for File argument, refer to \code{\link{HTMLStart}} }
+
+\seealso{  \code{\link{HTML}}}
+
 \examples{
+
+# Store in target the name of a output file
+
+	dir.create(file.path(tempdir(),"R2HTML"))
+
+	target <- HTMLInitFile(file.path(tempdir(),"R2HTML"),"index", BackGroundColor="#BBBBEE")
+
+	
+	# Use target to write a dataframe
+	HTML(as.title("Here is the data frame"),File=target)
+	HTML("<br>Don't forget to use the CSS file in order to benefit from fixed size police",File=target)
+	tmp <- as.data.frame(matrix(rnorm(100),ncol=10))
+	HTML(tmp,File=target)
+	HTMLEndFile()
+ 
 }
-\keyword{~keyword}
-% Converted by Sd2Rd version 1.10.
+\keyword{ print }
+\keyword{ IO }
+\keyword{ file }
+

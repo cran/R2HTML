@@ -1,41 +1,10 @@
-as.title                 Title Objects
-Clear                    Clear all output
-HTML.BR                  Break Return
-HTMLColumns              ~function to do ???
-HTMLCommand              ~function to do ???
-HTMLConvertTable         ~function to do ???
-HTMLDemo                 ~function to do ???
-HTMLEndFile              ~function to do ???
-HTMLExport.anova         ~function to do ???
-HTMLExport.array         Use ´HTMLExport' on a array object
-HTMLExport.atomic        Use ´HTMLExport' on data with atomic modes.
-HTMLExportBloc           ~function to do ???
-HTMLExport.by            ~function to do ???
-HTMLExport.data.frame    ~function to do ???
-HTMLExport.default       ~function to do ???
-HTMLExport.graphics      ~function to do ???
-HTMLExport.htest         ~function to do ???
-HTMLExport.list          ~function to do ???
-HTMLExport.lm            ~function to do ???
-HTMLExport.matrix        ~function to do ???
-HTMLExport               Export data to HTML - Generic function
-HTMLExport.structure     ~function to do ???
-HTMLExport.summary.lm    ~function to do ???
-HTMLExport.title         Writes a title to an HTML page
-HTML.HR                  Break line
-HTMLInitFile             ~function to do ???
-HTMLInsertBreak          ~function to do ???
-HTMLInsertGraph          Insert a graph in a HTML page
-HTML.LI                  Create lists
-HTMLPlot.lm              ~function to do ???
-HTMLReplaceNA            Replace NA by printable character (-)
-HTMLSink                 ~function to do ???
-HTMLTitre                ~function to do ???
-plotcor                  ~function to do ???
-plotdens                 ~function to do ???
-try                      ~function to do ???
-VisuCor                  ~function to do ???
-VisuDens                 ~function to do ???
-VisuDesc                 Visual Descriptive Statistics
-VisuTest.t               Graphical report of a t-test
-VisuXY                   Scatterplot for two variables
+HTML.BR                 Facility functions to write HTML code 
+HTML                    Outputs an object to a HTML file
+HTML.fun                Writes the code of a function to a target HTML
+                        file 
+HTML.plot               Insert a graphic into an HTML output 
+HTML.title              Writes a title in a target HTML output 
+HTMLInitFile            Begins / Ends a new HTML report output 
+HTMLStart               Start / Stop the automatic redirection of
+                        output to HTML files
+HTLMReplaceNA           Internal R2HTML functions
