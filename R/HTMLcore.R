@@ -1207,6 +1207,11 @@ HTML("<center>",file=file)
 
 #----------------------------------------------------------------------------------------------------#
 
+"HTML.aov" <- function(x,file=.HTML.file,append=TRUE,...)
+{
+NextMethod("HTML")
+}
+
 "HTML.aovlist" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
    cat("\"n", file=file,append=append,...)

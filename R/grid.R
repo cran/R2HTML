@@ -210,7 +210,7 @@
       txt <- paste("<link href=\"",getOption("R2HTML.grid.stuffbasepath"),"runtime/styles/xp/grid.css\" rel=\"stylesheet\" type=\"text/css\" ></link>",sep="")
       txt <- c(txt, "<link href=\"gridR2HTML.css\" rel=\"stylesheet\" type=\"text/css\" ></link>")
     txt <- c(txt,paste("\n<script src=\"",getOption("R2HTML.grid.stuffbasepath"), "runtime/lib/grid.js\"></script>",sep=""))
-    txt <- c(txt, paste("\n<script src=\"",getOption("R2HTML.grid.stuffbasepath"),"gridR2HTML.js\"></script>"))
+    txt <- c(txt, paste("\n<script src=\"",getOption("R2HTML.grid.stuffbasepath"),"gridR2HTML.js\"></script>",sep=""))
     txt <- paste(txt, collapse="\n")
     if (!is.null(file)) cat(txt,file=file,append=TRUE)
     return(txt)

@@ -1,6 +1,5 @@
 # R2HTML.lme.r
 # Formattted HTML printout of lme/nlme results
-# Standalone test version for inclusion in Eric Lecoutres R2HTML
 # Remove R2HTML:::  when in namespace
 # Dieter Menne, (Dr. Menne Biomed Software Tübingen)
 # dieter.menne@menne-biomed.de
@@ -80,7 +79,7 @@ HTML.summary.lme = function (x, file=.HTML.file,
     else {
       f <- deparse(lapply(fixF, function(el) as.name(deparse(el))))
     }
-    HTMLli(paste("Formula:",f),file)
+    HTMLli(paste("Formula:",f),file=file)
     xtTab <- as.data.frame(x$tTable)
     # Note: lme has a "DF" column, which should be printed as an int
     # According to Eric, this will be corrected for in a later
@@ -131,7 +130,7 @@ HTML.reStruct = function (x, sigma = 1, reEstimates, verbose = FALSE,
       p <- NCOL(sm)
       Level <- names(x)[i]
       resid  <-  p==length(x)
-      HTML.summary.pdDiag(sm,sigma,Level=Level,resid=resid)
+      HTML.summary.pdDiag(sm,sigma,Level=Level,resid=resid,file=file)
       if (p > 1) { # for p==1 we let HTML.summary.pdDiag do the job
         # use of cormat has priority over symbolic
         if (use.cormat) {
