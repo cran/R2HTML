@@ -4,17 +4,17 @@
 
 \title{ Writes a title in a target HTML output }
 \description{
-  A title is a string with the class "title". The function \code{as.title} gives this class to an object, so that title method of HTML could apply to it.
+  A title is a string with the S3 class "title". The function \code{as.title} gives this class to an object, so that title method of HTML could apply to it.
 }
 \usage{
-HTML.title(x, HR = 2, class = "bigtitle", file = .HTML.file,append=TRUE, ...)
+HTML.title(x, HR = 2, CSSclass=NULL,file = .HTML.file,append=TRUE,...)
 as.title(x)
 }
 
 \arguments{
   \item{x}{ string }
   \item{HR}{ rank attribute of the HTML <H?> tag }
-  \item{class}{ CSS class to use for personalised reports }
+  \item{CSSclass}{ CSS class to use for personalised reports }
   \item{file}{ the target HTML file }
   \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
   \item{\dots}{ ... }

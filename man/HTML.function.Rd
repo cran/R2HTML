@@ -16,7 +16,7 @@ HTML.function(x, file = .HTML.file, append=TRUE,...)
   \item{\dots}{ ...}
 }
 \details{
-  The code of tyhe function is written in the target HTML file, using HTML <XMP> tag. A CSS class called "function" is used to personalise the output.
+  The code of the function is written in the target HTML file, using HTML <XMP> tag. A CSS class called "function" is used to personalise the output.
 }
 \value{
 	no value returned.  

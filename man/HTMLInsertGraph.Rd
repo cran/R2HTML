@@ -6,7 +6,7 @@
   Write the HTML <img> tag to an output, so that a existant graph could be displayed in the HTML report
 }
 \usage{
-HTMLInsertGraph(GraphFileName = "", Caption = "", GraphBorder = 1, Align = "center", Width = 400, file = .HTML.file, append=TRUE,...)
+function(GraphFileName="",Caption="",GraphBorder=1,Align="center",WidthHTML=500,HeightHTML=NULL,file=.HTML.file,append=TRUE,...)
 }
 
 \arguments{
@@ -14,7 +14,8 @@ HTMLInsertGraph(GraphFileName = "", Caption = "", GraphBorder = 1, Align = "cent
   \item{Caption}{ If non empty, text to be written under the graph, as it's caption}
   \item{GraphBorder}{ Size of the border, in pixels }
   \item{Align}{ Alignment of the graph (center, left or right) }
-  \item{Width}{ Width of the graph, in  pixels}
+  \item{WidthHTML}{ Width of the image in HTML}
+  \item{HeightHTML}{ Height of the image in HTML (NULL for not specified)}
   \item{file}{ Name of the target HTML file (the report) }
   \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
   \item{\dots}{ \dots }

@@ -1,11 +1,13 @@
 \name{HTLMReplaceNA}
 \alias{HTMLReplaceNA}
 \alias{HTMLCommand}
+\alias{HTMLcode}
 \title{Internal R2HTML functions}
 \description{   Internal R2HTML functions}
 \usage{
 HTMLReplaceNA(Vec, Replace = " ")
 HTMLCommand(x, file = .HTML.file, Num = "", menu = FALSE, target= "index<-main.html", append = TRUE, ...)
+HTMLcode(x,...)
 }
 \arguments{
   \item{Vec}{ string }

@@ -43,25 +43,3 @@ TD.cellinside{padding:5 10;background:#FFFFFF;text-align=right}
 
 
 
-
-
-/* CORRELATION MATRIX TRAFFIC HIGHLIGHT*/
-
-TD.corvarname{background-color="#FFFFFF" ;color=black;  height:1.1cm; text-align:right; font-weight:bold}
-TD.corsep{width:0.5cm}
-TD.cordiag{background-color=#fffff;color=white}
-TD.cor0{background-color="#FFFFFF" ;color=black;  width:1.1cm; height:1.1cm; text-align:center}
-TD.cor1{background-color="#E6E6E6" ;color=black;  width:1.1cm; height:1.1cm; text-align:center}
-TD.cor2{background-color="#CCCCCC" ;color=black;   width:1.1cm; height:1.1cm; text-align:center}
-TD.cor3{background-color="#B3B3B3" ;color=black;   width:1.1cm; height:1.1cm; text-align:center}
-TD.cor4{background-color="#999999" ;color=black;   width:1.1cm; height:1.1cm; text-align:center}
-TD.cor5{background-color="#808080" ;color=white;   width:1.1cm; height:1.1cm; text-align:center}
-TD.cor6{background-color="#666666" ;color=white;  width:1.1cm; height:1.1cm; text-align:center} 
-TD.cor7{background-color="#4D4D4D" ;color=white;  width:1.1cm; height:1.1cm; text-align:center} 
-TD.cor8{background-color="#333333" ;color=white;  width:1.1cm; height:1.1cm; text-align:center} 
-TD.cor9{background-color="#1A1A1A" ;color=yellow; width:1.1cm; height:1.1cm; text-align:center} 
-TD.cor10{background-color="#000000";color=yellow;  width:1.1cm; height:1.1cm; text-align:center}
-						
-
-
- 

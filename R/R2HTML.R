@@ -1,9 +1,9 @@
-#----------------------------------------------------------------------------------------------------#
-#
+
 #     R2HTML - Library of exportation to HTML for R
-#
-#     Copyright (C) 2002-2003  Eric Lecoutre 
-# 
+#     Copyright (C) 2002-2004 - Eric Lecoutre 
+
+#     R2HTML version 1.3	
+
 #     This program is free software; you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
 #     the Free Software Foundation; either version 2 of the License, or
@@ -23,7 +23,7 @@
 #     Contact:
 #
 #     Eric Lecoutre
-#     lecoutre@stat.ucl.ac.be
+#     <lecoutre@stat.ucl.ac.be>
 #
 #     Institut de statistique
 #     Voie du Roman Pays, 20
@@ -32,25 +32,16 @@
 #
 #----------------------------------------------------------------------------------------------------#
 
-###
-###  HTML print FUNCTIONS
-###
-
-#----------------------------------------------------------------------------------------------------#
-
-"HTML"<- function(x, ...) { UseMethod("HTML") }
+"HTML"<- function(x,...) { 
+	UseMethod("HTML") 
+	}
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.default"<-
 function(x, file = .HTML.file,append=TRUE,...)
 {
-	a <- attributes(x)
-	if(cl <- length(class(x)) > 0)
-		x <- unclass(x)	# avoid methods (class is in a, so is printed)
-	if(length(a) - (is.recursive(x) && length(names(x))) > 0)
-		HTML.structure(x, a, file = file,append=append,...)
-	if(cl) class(x) <- a$class
+	HTML(paste(capture.output(x),collapse="<br>"),file=file,append=append,...)
 	invisible(x)
 }
 
@@ -58,53 +49,70 @@ function(x, file = .HTML.file,append=TRUE,...)
 #----------------------------------------------------------------------------------------------------#
  
 "HTML.atomic"<- function(x, file = .HTML.file,append=TRUE, ...){ 
-	cat(paste("<p>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("<p class='atomic'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
 }
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.complex"<- function(x, file = .HTML.file, append=TRUE,...){
-	cat(paste("<p>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("<p><font class='complexRe'>",Re(x),"</font>",ifelse(sign(Im(z))<0,"-","+"),"<font class='complexIm'>",Im(z),"</font><font class='complexI'>i</font>","</p>",sep="",collapse=""), file= file, append = append, sep = " ")
 	}
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.numeric"<- function(x, file = .HTML.file,append=TRUE, ...){
-	cat(paste("<p>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("<p class='numeric'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	}
+#----------------------------------------------------------------------------------------------------#
+
+"HTML.integer"<- function(x, file = .HTML.file,append=TRUE, ...){
+	cat(paste("<p class='integer'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
 	}
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.logical"<- function(x, file = .HTML.file, append=TRUE,...){ 
-	cat(paste("<p>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("<p class='logical'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
 	}
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.character"<- function(x, file = .HTML.file,append=TRUE, ...){ 
-	cat(paste("<p>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("<p class='character'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	}
+
+#----------------------------------------------------------------------------------------------------#
+
+"HTML.call"<- function(x, file = .HTML.file,append=TRUE, ...){ 
+	cat(paste("<font class='call'>",deparse(x),"</font>",sep="",collapse=""), file= file, append = append, sep = " ")
 	}
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.function"<-function(x,file=.HTML.file,append=TRUE,...){
-	cat(paste("<br><xmp class=function>",paste(attributes(x)$source,collapse="\n"),"</xmp><br>",sep=""),
+	 cat(paste("<br><xmp class=function>",
+	 paste(capture.output(x),collapse="\n"),"</xmp><br>",sep=""),
 	file=file,append=append,sep="<br>")
 	invisible(x)
 }
 
 #----------------------------------------------------------------------------------------------------#
 
+"HTML.environment"<-function(x,file=.HTML.file,append=TRUE,...){
+	cat(paste("<br>environment: <font class='environment'>",attributes(x)$name,"</font><br>\n",sep=""),
+	file=file,append=append)
+	invisible(x)
+}
+#----------------------------------------------------------------------------------------------------#
+
 "HTML.formula"<-function(x,file=.HTML.file,append=TRUE,...) {
-	HTML(deparse(unclass(x)),file=file,append=append,...)
+	HTML(paste("<font class='formula'>",deparse(unclass(x)),"</font>",collapse=""),file=file,append=append,...)
 	}
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.array"<- function(x, file= .HTML.file,append=TRUE, ...)
 {
-
-	# note: odometer is an utilitary function to knwow if a value belongs in a circle.
 	odometer <- function(current, radix)
 	{
 		if(any(c(current, radix) < 0))
@@ -147,10 +155,10 @@ function(x, file = .HTML.file,append=TRUE,...)
 		ndim <- ndim - 2
 		counter <- rep(0, length(d))
 		for(i in 1:(length(x)/nm)) {
-			cat("<BR>, , ", file = file, append = TRUE)
+			cat("<br>, , ", file = file, append = TRUE)
 			for(j in 1:ndim)
 				cat(dn[[j]][counter[j] + 1], if(j < ndim) ", "
-				   else "<BR>", sep = "", file = file, append
+				   else "<br>", sep = "", file = file, append
 				   = TRUE)
 			xm[1:nm] <- x[which]
 			HTML.matrix(xm, Border = 0, file = file, append=TRUE,...)
@@ -190,24 +198,25 @@ function(x, file = .HTML.file,append=TRUE,...)
 
 "HTML.family" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
-    HTML(paste("\n<br><b>Family</B>:", x$family, "\n<br>",sep=""),file=.HTML.file,append=append,...)
-    HTML(paste("\n<b>Link function</B>:", x$link, "\n<br>\n<br>",sep=""),file=.HTML.file,append=TRUE,...)
+    HTML(paste("\n<br><b>Family</b>:<font class='family'>", x$family, "\n</font><br>",sep=""),file=.HTML.file,append=append,...)
+    HTML(paste("\n<b>Link function</b>:<font class='link'>", x$link, "\n</font><br>\n<br>",sep=""),file=.HTML.file,append=TRUE,...)
 }
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.terms" <- function (x, file=.HTML.file,append=TRUE,...)	HTML.default(unclass(x),file=file,append=append,...)
+"HTML.terms" <- function (x, file=.HTML.file,append=TRUE,...)	HTML.default(paste("<font class='terms'>",unclass(x),"</font>",sep=""),file=file,append=append,...)
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.factor" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
-    HTML("\n",file=file,append=append,...)
+    HTML("\n<font class='factor'>",file=file,append=append,...)
     if (length(x) <= 0) 
-        HTML("factor(0)\n<BR>",file=file,append=TRUE,...)
+        HTML("factor(0)\n<br>",file=file,append=TRUE,...)
     else HTML(as.character(x), file=file,append=TRUE, ...)
+    HTML("</font>",file=file,append=TRUE,...)
     HTMLbr(file=file,append=TRUE,...)
-    HTML(paste("Levels: ", paste(levels(x), collapse = " "), "\n<BR>",sep=""),file=file,append=TRUE,...)
+    HTML(paste("Levels:<font class='factorlevels'> ", paste(levels(x), collapse = " "), "</font>\n<br>",sep=""),file=file,append=TRUE,...)
     invisible(x)
 }
 
@@ -215,8 +224,8 @@ function(x, file = .HTML.file,append=TRUE,...)
 "HTML.density" <- function (x,file=.HTML.file,  digits=4,append=TRUE,...) 
 {
 
-    HTML(paste("\n<br><b>Call</b>:\n      ", deparse(x$call), "<br><br>\n\n<B>Data</B>: ", x$data.name, 
-        " (", x$n, " obs.);", " <B>Bandwidth</B> 'bw' = ", round(x$bw, digits), "\n<br>\n<br>", sep = ""),append=append,file=file)
+    HTML(paste("\n<br><b>Call</b>:<font class='call'>\n      ", deparse(x$call), "</font><br><br>\n\n<b>Data</b><font class='dataname'>: ", x$data.name, 
+        "</font> (", x$n, " obs.);", " <b>Bandwidth</b> 'bw' = ", round(x$bw, digits), "\n<br>\n<br>", sep = ""),append=append,file=file)
     HTML(summary(as.data.frame(x[c("x", "y")])),append=TRUE, ...)
     invisible(x)
 }
@@ -225,7 +234,7 @@ function(x, file = .HTML.file,append=TRUE,...)
 #----------------------------------------------------------------------------------------------------#
 "HTML.infl" <- function (x,  file=.HTML.file,digits = max(3, getOption("digits") - 4),append=TRUE,...) 
 {
-    HTML(paste("Influence measures of\n<BR>        ", deparse(x$call), ":\n<BR>\n<BR>",sep=""),file=file,append=append,...)
+    HTML(paste("\n<br>Influence measures of\n<br>      <font class='call'>  ", deparse(x$call), ":</font>\n<br>\n<br>",sep=""),file=file,append=append,...)
     is.star <- apply(x$is.inf, 1, any, na.rm = TRUE)
     HTML(data.frame(round(x$infmat,digits), inf = ifelse(is.star, "*", " ")),file=file, append=TRUE,...)
     invisible(x)
@@ -236,8 +245,8 @@ function(x, file = .HTML.file,append=TRUE,...)
 
 "HTML.lm"<-function(x,file=.HTML.file,digits= max(3, getOption("digits") - 3),append=TRUE,...)
 {
-	HTMLli(paste("Call: ",deparse(x$call),sep=""),file=file,append=append,...)
-	HTMLli("Coefficients<BR>",file=file,append=TRUE,...)
+	HTMLli(paste("Call: <font class='call'>",deparse(x$call),"</font>",sep=""),file=file,append=append,...)
+	HTMLli("Coefficients<br>",file=file,append=TRUE,...)
 	HTML(round(x$coeff,3),file=file,append=TRUE,...)
 
 }
@@ -245,8 +254,8 @@ function(x, file = .HTML.file,append=TRUE,...)
 #----------------------------------------------------------------------------------------------------#
 "HTML.lm.null" <- function (x, file=.HTML.file,digits = max(3, getOption("digits") - 3),append=TRUE,...) 
 {
-    HTMLli(paste("Call: ", deparse(x$call), "\n<BR>", sep = ""),file=file,append=append,...)
-    HTMLli("No coefficients<BR>\n",append=TRUE,...)
+    HTMLli(paste("Call: <font class='call'>", deparse(x$call),"</font>", "\n<br>", sep = ""),file=file,append=append,...)
+    HTMLli("No coefficients<br>\n",append=TRUE,...)
     invisible(x)
 }
 #----------------------------------------------------------------------------------------------------#
@@ -256,10 +265,6 @@ function(x, file = .HTML.file,append=TRUE,...)
 {
  if (!inherits(x, "ftable")) 
         stop("x must be an `ftable'")
-
-	# This is write.ftable function excepted the end 
-	# This function arranges and prepares the flat table
-
     ox <- x
     makeLabels <- function(lst) {
         lens <- sapply(lst, length)
@@ -291,15 +296,16 @@ function(x, file = .HTML.file,append=TRUE,...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.POSIXlt" <- function (x, file=.HTML.file,append=TRUE,...) HTML(paste("<P>",format(x, usetz = TRUE),"</P>",sep=""), file=file,append=append,...)
+"HTML.POSIXlt" <- function (x, file=.HTML.file,append=TRUE,...) HTML(paste("<P class='POSIXlt'>",format(x, usetz = TRUE),"</p>",sep=""), file=file,append=append,...)
 
+#----------------------------------------------------------------------------------------------------#
 
-"HTML.POSIXct" <- function (x, file=.HTML.file,append=TRUE,...) HTML(paste("<P>",format(x, usetz = TRUE),"</P>",sep=""), file=file,append=append,...)
+"HTML.POSIXct" <- function (x, file=.HTML.file,append=TRUE,...) HTML(paste("<P class='POSIXct'>",format(x, usetz = TRUE),"</p>",sep=""), file=file,append=append,...)
 
     
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.octmode" <- function (x, file=.HTML.file,append=TRUE,...)  HTML(paste("<P>",format(x),"</P>",sep=""), file=file,append=append,...)
+"HTML.octmode" <- function (x, file=.HTML.file,append=TRUE,...)  HTML(paste("<P class='octmode'>",format(x),"</p>",sep=""), file=file,append=append,...)
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -313,7 +319,7 @@ function(x, file = .HTML.file,append=TRUE,...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.logLik" <- function (x, file=.HTML.file,digits = getOption("digits"),append=TRUE,...)    HTML(paste("<P>`log Lik.' ", format(c(x), digits = digits), " (df=",  format(attr(x, "df")), ")\n</P>", sep = ""),file=file,append=append,...)
+"HTML.logLik" <- function (x, file=.HTML.file,digits = getOption("digits"),append=TRUE,...)    HTML(paste("<p>`log Lik.' ", format(c(x), digits = digits), " (df=",  format(attr(x, "df")), ")\n</p>", sep = ""),file=file,append=append,...)
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -330,14 +336,14 @@ function(x, file = .HTML.file,append=TRUE,...)
 "HTML.summary.lm"<-function (x, file=.HTML.file,digits = max(3, getOption("digits") - 3), symbolic.cor = p >   4, signif.stars = getOption("show.signif.stars"),append=TRUE,...) 
 {
 
-	HTML("<HR SIZE=1><FONT SIZE=+3>Regression report</FONT><BR>\n",file=file,append=append,...)
-	HTMLli(paste("Call: ",deparse(x$call),"\n", sep = "", collapse = ""),file=file,append=TRUE,...) 
+	HTML("\n",file=file,append=append)
+	HTMLli(paste("Call:<font class='call'> ",deparse(x$call),"</font>","\n", sep = "", collapse = ""),file=file,append=TRUE,...) 
 
 	resid <- x$residuals
 	df <- x$df
 	rdf <- df[2]
 
-	HTMLli(paste(if (!is.null(x$w) && diff(range(x$w))) "Weighted "," Residuals<BR>\n"),file=file,append=TRUE,...)
+	HTMLli(paste(if (!is.null(x$w) && diff(range(x$w))) "Weighted "," Residuals<br>\n"),file=file,append=TRUE,...)
 	if (rdf > 5) {
 	    nam <- c("Min", "1Q", "Median", "3Q", "Max")
 	    rq <- if (length(dim(resid)) == 2) 
@@ -349,11 +355,11 @@ function(x, file = .HTML.file,append=TRUE,...)
 	    HTML(resid,file=file,append=TRUE,...)
 	}
 	else {
-	    HTML(paste("ALL", df[1], "residuals are 0: no residual degrees of freedom!<BR>\n",sep=""),file=file,append=TRUE,...)
+	    HTML(paste("ALL", df[1], "residuals are 0: no residual degrees of freedom!<br>\n",sep=""),file=file,append=TRUE,...)
 	}
 	if (nsingular <- df[3] - df[1]) 
 
-		HTMLli(paste("Coefficients (",nsingular, "not defined because of singularities)<BR>\n",sep=""),file=file,append=TRUE,...)
+		HTMLli(paste("Coefficients (",nsingular, "not defined because of singularities)<br>\n",sep=""),file=file,append=TRUE,...)
 	else HTMLli("Coefficients\n",file=file,append=TRUE,...)		
 
 
@@ -364,9 +370,9 @@ function(x, file = .HTML.file,append=TRUE,...)
 	
 
 	if (!is.null(x$fstatistic)) {
-		HTMLli(paste("Multiple R-Squared:<B>",round(x$r.squared,digits),"</B>",sep=""),file=file,append=TRUE,...)
-		HTMLli(paste("Adjusted R-Squared:<B>",round(x$adj.r.squared,digits),"</B>",sep=""),file=file,append=TRUE,...)
-	    	HTMLli(paste("FALSE-statistics: <B>", round(x$fstatistic[1],digits), "</B> on ",x$fstatistic[2], " and ", x$fstatistic[3], " DF. P-value:<B>",round(1-pf(x$fstatistic[1],x$fstatistic[2],x$fstatistic[3]),digits),"</B>." ,sep=""),file=file,append=TRUE,...)
+		HTMLli(paste("Multiple R-Squared:<b>",round(x$r.squared,digits),"</b>",sep=""),file=file,append=TRUE,...)
+		HTMLli(paste("Adjusted R-Squared:<b>",round(x$adj.r.squared,digits),"</b>",sep=""),file=file,append=TRUE,...)
+	    	HTMLli(paste("F-statistics: <b>", round(x$fstatistic[1],digits), "</b> on ",x$fstatistic[2], " and ", x$fstatistic[3], " DF. P-value:<b>",round(1-pf(x$fstatistic[1],x$fstatistic[2],x$fstatistic[3]),digits),"</b>." ,sep=""),file=file,append=TRUE,...)
 	 	}
 	correl <- x$correlation
 	if (!is.null(correl)) {
@@ -381,8 +387,7 @@ function(x, file = .HTML.file,append=TRUE,...)
 		}
 	    }
 	}
-	HTML("<HR SIZE=1>",file=file,append=TRUE,...)
-	invisible(NULL)
+	invisible(x)
 }
 
 
@@ -465,14 +470,21 @@ function(x, file = .HTML.file,append=TRUE,...)
     else signif.stars <- FALSE
     
     HTML.matrix(Cf, file=file,  ...)
-    if (signif.stars)     HTML(paste("\n<P>--- Signif. codes: ", attr(Signif, "legend"), "</P>\n",sep=""),file=file)
+    if (signif.stars)     HTML(paste("\n<p>--- Signif. codes: ", attr(Signif, "legend"), "</p>\n",sep=""),file=file)
     invisible(x)
 }
 
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.table"<-function(x,file=.HTML.file,append=TRUE,...) HTML(as.matrix(x),file=file,append=append,...)
+"HTML.table"<- function(x, file = .HTML.file,append=TRUE,digits=NULL,...)
+{
+	cat("\n",file=file,append=append)
+	if (!is.null(digits)) x <- round(x,digits)
+	if (is.null(dim(x))) HTML(t(as.matrix(x)),file=file,append=TRUE,digits=NULL,...)
+	else HTML(unclass(x),file=file,append=TRUE,...)
+}
+	
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -484,7 +496,7 @@ function(x, file = .HTML.file,append=TRUE,...)
     if (length(nn) != ll) 
         nn <- paste("Component ", seq(ll))
     for (i in seq(length = ll)) {
-        HTMLli(paste(nn[i],":\n<BR>",sep=""),file=file)
+        HTMLli(paste(nn[i],":\n<br>",sep=""),file=file)
         HTML(x[[i]], file=file)
     }
     invisible(x)
@@ -503,9 +515,9 @@ function(x, file = .HTML.file,append=TRUE,...)
     if (!calendar) 
         header <- function(x) {
             if ((fr.x <- frequency(x)) != 1) 
-		HTML(paste("\n<BR><B>Time series</B>:\n<BR><LI>Start=",deparse(start(x)),"\n<BR><LI>End=",deparse(end(x)),"\n<BR><LI>Frequency=",deparse(fr.x),"\n<BR>",sep=""),file=file)
+		HTML(paste("\n<br><b>Time series</b>:\n<br><li>Start=",deparse(start(x)),"\n<br><li>End=",deparse(end(x)),"\n<br><li>Frequency=",deparse(fr.x),"\n<br>",sep=""),file=file)
             else
-            HTML(paste("\n<BR><B>Time series</B>:\n<BR><LI>Start=",format(tsp(x)[1]),"\n<BR><LI>End=",format(tsp(x)[2]),"\n<BR><LI>Frequency=",deparse(fr.x),"\n<BR>",sep=""),file=file)
+            HTML(paste("\n<br><b>Time series</b>:\n<br><li>Start=",format(tsp(x)[1]),"\n<br><li>End=",format(tsp(x)[2]),"\n<br><li>Frequency=",deparse(fr.x),"\n<br>",sep=""),file=file)
 	        }
     if (NCOL(x) == 1) {
         if (calendar) {
@@ -570,7 +582,7 @@ function(x, file = .HTML.file,append=TRUE,...)
 "HTML.list" <- function(x,file=.HTML.file,first=TRUE,append=TRUE,...)
 {
 	cat("\n", file=file,append=append,...)
-	if (first) {HTML("<hr size=1 width=100%",file=file,append=TRUE,sep="\n")}
+	if (first) {HTML("<hr class='hr'>",file=file,append=TRUE,sep="\n")}
 	for (i in 1:length(x))  {
 		cat("<ul>",file=file,append=TRUE,sep="\n")
 		cat("</center><li>",file=file,append=TRUE,sep="\n")
@@ -578,14 +590,14 @@ function(x, file = .HTML.file,append=TRUE,...)
 		cat("</ul>",file=file,append=TRUE,sep="\n")
 	
 	}
-	cat("<br><hr size=1 width=100%>",file=file,append=TRUE,sep="\n")
+	cat("<br><hr class='hr'>",file=file,append=TRUE,sep="\n")
 }
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.pairlist" <- function(x,file=.HTML.file,first=TRUE,append=TRUE,...)
 {
 	cat("\n", file=file,append=append,...)
-	if (first) {HTML("<hr size=1 width=100%",file=file,append=TRUE,sep="\n")}
+	if (first) {HTML("<hr class='hr'>",file=file,append=TRUE,sep="\n")}
 	for (i in 1:length(x))  {
 		cat("<ul>",file=file,append=TRUE,sep="\n")
 		cat("</center><li>",file=file,append=TRUE,sep="\n")
@@ -593,29 +605,28 @@ function(x, file = .HTML.file,append=TRUE,...)
 		cat("</ul>",file=file,append=TRUE,sep="\n")
 	
 	}
-	cat("<br><hr size=1 width=100%>",file=file,append=TRUE,sep="\n")
+	cat("<br><hr class='hr'>",file=file,append=TRUE,sep="\n")
 }
 
 
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.data.frame"<-
-function(x, file = .HTML.file, append=TRUE,...)
-{
-	x<-as.matrix(x)
-	NextMethod("HTML",Border=0,...)
-}
-
-#----------------------------------------------------------------------------------------------------#
-
-"HTML.matrix"<-
-function(x, file = .HTML.file, Border = 1, classfirstline = "firstline", classfirstcolumn = 
-	"firstcolumn", classcellinside = "cellinside",  digits=6,append=TRUE,...)
+"HTML.data.frame" <- function(x, file = .HTML.file, Border = 1, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  digits=2,append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",...)
 {
 	cat("\n", file=file,append=append,...)
-	if (is.numeric(x)) x<-round(x,digits=digits)
-	txt <- paste("<p align=center>",if (Border==1) "<table cellspacing=0 border=1><td>","<table cellspacing=0>", sep = "")
+	if (!is.null(digits)){
+		nam=names(x)
+		x <- as.data.frame(lapply(x,FUN=function(vec) if (is.numeric(vec)) round(vec,digits) else vec))
+		names(x)=nam
+	}
+	txt <- paste("<p align=",align,">")
+	txtcaption <- ifelse(is.null(caption),"",paste("<caption align=",captionalign," class=",classcaption,">",caption,"</caption>",sep=""))
+
+	if (!is.null(Border)) txt <- paste(txt, "<table cellspacing=0 border=",Border,">",txtcaption,"<td>","<table class=",classtable,">", sep = "")
+	else txt <- paste(txt, "<table class=",classtable," cellspacing=0>", txtcaption, sep = "")
+
+
 	if(is.null(dimnames(x)[[2]]) == FALSE) {
 		VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
 				"<th>", sep = ""), 
@@ -655,9 +666,65 @@ function(x, file = .HTML.file, Border = 1, classfirstline = "firstline", classfi
 		txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "", 
 			collapse = ""))
 	}
-	txt <- paste(txt, "</table>",if (Border==1)"</td></table>","</p><br>")
+	txt <- paste(txt, "</table>",if (!is.null(Border)) "</td></table>","</p><br>")
 	cat(txt, "\n", file = file, sep = "", append=TRUE,...)
 }
+	
+#----------------------------------------------------------------------------------------------------#
+
+"HTML.matrix" <- function(x, file = .HTML.file, Border = 1, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  digits=2,append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",...)
+{
+	cat("\n", file=file,append=append,...)
+	if (is.numeric(x) & !is.null(digits)) x<-round(x,digits=digits)
+	txt <- paste("<p align=",align,">")
+	txtcaption <- ifelse(is.null(caption),"",paste("<caption align=",captionalign," class=",classcaption,">",caption,"</caption>",sep=""))
+
+	if (!is.null(Border)) txt <- paste(txt, "<table cellspacing=0 border=",Border,">",txtcaption,"<td>","<table class=",classtable,">", sep = "")
+	else txt <- paste(txt, "<table class=",classtable," cellspacing=0>", txtcaption, sep = "")
+
+
+	if(is.null(dimnames(x)[[2]]) == FALSE) {
+		VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+				"<th>", sep = ""), 
+			rep(paste("<th>", sep = ""), dim(
+			x)[2] - 1))
+		VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "", 
+			as.character(dimnames(x)[[2]]))
+		VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</th>", rep(
+			"</th>", dim(x)[2] - 1), "</th>")
+		txt <- paste(txt,"<tr class=",classfirstline,">", paste(VecDebut, VecMilieu, VecFin, sep = "", 
+			collapse = ""),"</tr>")
+	}
+	for(i in 1:dim(x)[1]) {
+		if(i == 1) {
+			VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+				  "<tr><td class=", classfirstcolumn, ">", sep = ""), 
+				paste("<td class=", classcellinside, ">", sep = ""), 
+				rep(paste("<td class=", classcellinside, ">", sep = 
+				""), dim(x)[2] - 1))
+			VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) 
+				  dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
+				x[i,  ])))
+			VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>", 
+				rep("</td>", dim(x)[2] - 1), "</td></tr>")
+		}
+		else {
+			VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+				  "<tr><td class=", classfirstcolumn, ">", sep = ""), 
+				paste(rep(paste("<td class=", classcellinside, ">", sep
+				 = ""), dim(x)[2])))
+			VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) 
+				  dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
+				x[i,  ])))
+			VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>", 
+				rep("</TD>", dim(x)[2] - 1), "</td></tr>")
+		}
+		txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "", 
+			collapse = ""))
+	}
+	txt <- paste(txt, "</table>",if (!is.null(Border)) "</td></table>","</p><br>")
+	cat(txt, "\n", file = file, sep = "", append=TRUE,...)}
+	
 	
 #----------------------------------------------------------------------------------------------------#
 
@@ -703,57 +770,7 @@ function(x, a = attributes(x), prefix = "", file = .HTML.file,append=TRUE, ...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLCommand" <- function(x,file=.HTML.file,Num="",menu=FALSE,target="index<-main.html",append=TRUE,...)
-	{
-	cat("\n",file=file,append=append,...)
-	if (menu==TRUE)
-	cat(paste("<BR><LI><A CLASS=command HREF='./",target,"#Num",Num,"' TARGET=main> ",paste(x,collapse=""),"</A>",sep=""),file=file,append=TRUE,sep="")
-	else {
-	if (Num!="") cat(paste("<A NAME=Num",Num,">&nbsp;</A>",sep=""),file=file,append=TRUE,sep="")
-	cat(paste("<P><XMP CLASS=command>> ",x,"</XMP></P>",sep=""),file=file,append=TRUE,sep="")
-	}
-	}
-
-#----------------------------------------------------------------------------------------------------#
-
-"HTML.title"<-
-function(x, HR = 2, class = "bigtitle", file = .HTML.file,append=TRUE, ...)
-{
-	cat(paste("\n <H", HR, " class=", class, "> ", x, "</H", HR, ">", sep = 
-		""), file = file, append=append, sep = "")
-}
-
-#----------------------------------------------------------------------------------------------------#
-
-"HTMLReplaceNA"<-
-function(Vec, Replace = " ")
-{
-	Vec <- as.character(Vec)
-	
-	for(i in 1:length(Vec)) 
-	{
-		try(if((Vec[i] == "NA") | (Vec[i] == "NaN") | is.na(Vec[i])){ Vec[i] <- Replace})
-	}	
-	Vec
-}
-
-
-#----------------------------------------------------------------------------------------------------#
-
-"as.title"<-
-function(x)
-{
-	if (!is.character(x)) {
-		x<-try(as.character(x))
-		if (!is.character(x)) stop("Input argument must be of character mode")
-	}
-	class(x) <- "title"
-	return(x)
-}
-
-#----------------------------------------------------------------------------------------------------#
-
-"HTML.connection" <- function(x,file=.HTML.file,append=TRUE,...) HTML(unlist(summary(x)),file=file,append=append,...)
+"HTML.connection" <- function(x,file=.HTML.file,append=TRUE,...) HTML(paste("<font class='connection'>",unlist(summary(x)),"</font>",sep=""),file=file,append=append,...)
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -762,26 +779,26 @@ function(x)
     if (length(port <- as.integer(x$socket)) != 1) 
         stop("invalid `socket' argument")
     HTML(paste("Socket connection #", x$socket, "to", x$host, "on port", 
-        x$port, "\n<BR>",sep=""),file=file,append=append,...)
+        x$port, "\n<br>",sep=""),file=file,append=append,...)
     invisible(x)
 }
  
 #----------------------------------------------------------------------------------------------------#
-
 "HTML.htest" <- function (x, digits = 4, quote = TRUE, prefix = "",file=.HTML.file,append=TRUE, ...) 
 {
-            HTML(as.title(x$method),file=file,append=append,...)
-            HTMLli(paste("\n data:",x$data.name,"\n",sep=""),file=file,append=TRUE,...)
+            HTML("\n", file=file,append=append)
+            HTML(as.title(paste("&nbsp;",x$method,sep="")),file=file,append=TRUE,...)
+            HTMLli(paste("\n data:<font class=dataname>",x$data.name,"</font>\n",sep=""),file=file,append=TRUE,...)
            out <- character()
             if (!is.null(x$statistic)) 
-                        out <- c(out, paste(names(x$statistic), "=<B>", format(round(x$statistic,4)),"</B>"))
+                        out <- c(out, paste(names(x$statistic), "=<b>", format(round(x$statistic,4)),"</b>"))
             if (!is.null(x$parameter)) 
-                        out <- c(out, paste(names(x$parameter), "=<B>", format(round(x$parameter,3)),"</B>"))
+                        out <- c(out, paste(names(x$parameter), "=<b>", format(round(x$parameter,3)),"</b>"))
             if (!is.null(x$p.value)) 
-                        out <- c(out, paste("p-value =<B>", format.pval(x$p.value,digits = digits),"</B>"))
+                        out <- c(out, paste("p-value =<font class='pvalue'>", format.pval(x$p.value,digits = digits),"</font>"))
             HTMLli(paste(out,collapse=" , "),file=file,append=TRUE,...)
     if (!is.null(x$alternative)) {
-        HTMLli("alternative hypothesis: ")
+        HTMLli("alternative hypothesis: ",file=file)
         if (!is.null(x$null.value)) {
             if (length(x$null.value) == 1) {
                alt.char <- switch(x$alternative, two.sided = "not equal to", 
@@ -790,18 +807,19 @@ function(x)
                  x$null.value, "\n"),file=file,append=TRUE,...)
             }
             else {
-               HTMLli(paste(x$alternative, "\nnull values:\n<BR>"),file=file,append=TRUE,...)
+               HTMLli(paste(x$alternative, "\nnull values:\n<br>"),file=file,append=TRUE,...)
                HTML(x$null.value, file=file,append=TRUE,...)
             }
         }
-        else HTMLli(paste(x$alternative, "\n<BR>"),file=file,append=TRUE,...)
+        else HTML(paste(x$alternative, "\n<br>"),file=file,append=TRUE,...)
     }
     if (!is.null(x$conf.int)) {
-        HTMLli(paste("<B>",format(100 * attr(x$conf.int, "conf.level")), "</B> percent confidence interval:\n", 
-         "<B>[", paste(format(c(x$conf.int[1], x$conf.int[2])),sep="",collapse=" ;"),"]</B>",sep=""),file=file,append=TRUE,...)
+        HTMLli(paste("<b>",format(100 * attr(x$conf.int, "conf.level")), "</b> percent confidence interval:\n", 
+         "<b>[", paste(format(c(x$conf.int[1], x$conf.int[2])),sep="",collapse=" ;"),"]</b>",sep=""),file=file,append=TRUE,...)
     }
     if (!is.null(x$estimate)) {
-        HTMLli(paste("sample estimates:<B>\n",x$estimate,"</B>",sep=""),file=file,append=TRUE,...)
+        HTMLli("sample estimates:\n",file=file,...)
+        HTML(t(as.matrix(x$estimate)),file=file,...)
     }
     invisible(x)
 }
@@ -812,7 +830,7 @@ function(x)
  "HTML.aov" <- function (x, intercept = FALSE, tol = .Machine$double.eps^0.5, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n", file=file,append=append,...)
-    if (!is.null(cl <- x$call))  HTMLli(paste("Call:\n<BR>", deparse(cl)),file=file)
+    if (!is.null(cl <- x$call))  HTMLli(paste("Call:\n<br><font class='call'>", deparse(cl)),"</font>",file=file)
     asgn <- x$assign[x$qr$pivot[1:x$rank]]
     effects <- x$effects
     if (!is.null(effects)) 
@@ -839,7 +857,7 @@ function(x)
         df <- df[keep]
         ss <- ss[keep, , drop = FALSE]
         nterms <- length(df)    }
-    HTMLli("Terms:\n<BR>",file=file)
+    HTMLli("Terms:\n<br>",file=file)
     if (nterms == 0) {
         if (rdf > 0) {
             ss <- colSums(as.matrix(x$residuals)^2)
@@ -903,7 +921,7 @@ function(x)
 {
    cat("\n", file=file,append=append,...)
     if (!is.null(heading <- attr(x, "heading"))) 
-        HTML(paste("<P><B>",heading, "</B></P>"),file=file)
+        HTML(paste("<p><b>",heading, "</b></p>"),file=file)
    nc <- (d <- dim(x))[2]
     if (is.null(cn <- colnames(x))) 
         stop("anova object must have colnames(.)!")
@@ -928,18 +946,18 @@ function(x)
 "HTML.glm" <- function (x, digits = max(3, getOption("digits") - 3), na.print = "", file=.HTML.file,append=TRUE,...) 
 {
     cat("\n", file=file,append=append,...)
-    HTMLli(paste("Call: ", deparse(x$call), "\n<BR>\n<BR>"),file=file)
+    HTMLli(paste("Call: <font class='call'>", deparse(x$call),"</font>", "\n<br>\n<br>"),file=file)
     HTMLli("Coefficients",file=file)
     if (is.character(co <- x$contrasts)) 
         HTML(paste("  [contrasts: ", apply(cbind(names(co), co), 1, 
             paste, collapse = "="), "]"),file=file)
     HTMLbr(file=file)
     HTML(format(x$coefficients, digits = digits),file=file)
-    HTMLli(paste("\nDegrees of Freedom:<B>", x$df.null, "</B>Total (i.e. Null);<B> ", 
-        x$df.residual, "</B> Residual\n"),file=file)
-    HTMLli(paste("Null Deviance:<B>    ", format(signif(x$null.deviance, 
-        digits)), "</B> &nbsp;&nbsp; Residual Deviance:<B>", format(signif(x$deviance, 
-        digits)), " </B>&nbsp;&nbsp;    AIC:<B>  ", format(signif(x$aic, digits)), "</B>\n<BR>"),file=file)
+    HTMLli(paste("\nDegrees of Freedom:<b>", x$df.null, "</b>Total (i.e. Null);<b> ", 
+        x$df.residual, "</b> Residual\n"),file=file)
+    HTMLli(paste("Null Deviance:<b>    ", format(signif(x$null.deviance, 
+        digits)), "</b> &nbsp;&nbsp; Residual Deviance:<b>", format(signif(x$deviance, 
+        digits)), " </b>&nbsp;&nbsp;    AIC:<b>  ", format(signif(x$aic, digits)), "</b>\n<br>"),file=file)
     invisible(x)
 }
 
@@ -954,11 +972,11 @@ HTML("<center>",file=file)
      se.aov <- if (se <- !is.na(match("se", names(x)))) 
          x$se
      type <- attr(x, "type")
-     switch(type, effects = HTML("<P CLASS=partitle>Tables of effects\n</P>",file=file), means = HTML("<P CLASS=partitle>Tables of means\n</P>",file=file), 
+     switch(type, effects = HTML("<p class=partitle>Tables of effects\n</p>",file=file), means = HTML("<P CLASS=partitle>Tables of means\n</p>",file=file), 
          residuals = if (length(tables.aov) > 1) 
-             HTML("<P CLASS=partitle>Table of residuals from each stratum\n</P>",file=file))
+             HTML("<p class=partitle>Table of residuals from each stratum\n</p>",file=file))
      if (!is.na(ii <- match("Grand mean", names(tables.aov)))) {
-         HTML("<P>Grand mean\n</P>",file=file)
+         HTML("<p>Grand mean\n</p>",file=file)
          gmtable <- tables.aov[[ii]]
          HTML.mtable(gmtable, digits = digits, file=file)
      }
@@ -966,7 +984,7 @@ HTML("<center>",file=file)
          if (i == "Grand mean") 
              next
          table <- tables.aov[[i]]
-         HTML(paste("\n<P>", i, "\n</P>"),file=file)
+         HTML(paste("\n<p>", i, "\n</p>"),file=file)
          if (!is.list(n.aov)) 
              HTML.mtable(table, digits = digits,file=file,append=TRUE, ...)
          else {
@@ -998,9 +1016,9 @@ HTML("<center>",file=file)
          if (type == "residuals") 
              rn <- "df"
          else rn <- "replic."
-         switch(attr(se.aov, "type"), effects = HTML("\n<p class=partitle>Standard errors of effects\n</P>",file=file), 
-             means = HTML("\n<p class=partitle>Standard errors for differences of means\n</P>",file=file), 
-             residuals = HTML("\n<p class=partitle>Standard errors of residuals\n</P>",file=file))
+         switch(attr(se.aov, "type"), effects = HTML("\n<p class=partitle>Standard errors of effects\n</p>",file=file), 
+             means = HTML("\n<p class=partitle>Standard errors for differences of means\n</p>",file=file), 
+             residuals = HTML("\n<p class=partitle>Standard errors of residuals\n</p>",file=file))
          if (length(unlist(se.aov)) == length(se.aov)) {
              n.aov <- n.aov[!is.na(n.aov)]
              se.aov <- unlist(se.aov)
@@ -1053,7 +1071,7 @@ HTML("<center>",file=file)
     }
     HTML(x, file=file, ...)
     if (length(xx)) {
-        HTML("\n<BR>Notes:\n<BR>",file=file)
+        HTML("\n<br>Notes:\n<br>",file=file)
         HTML(xx,file=file)
     }
     invisible(xxx)
@@ -1065,9 +1083,9 @@ HTML("<center>",file=file)
 {
    cat("\"n", file=file,append=append,...)
     if (x$message == "OK") 
-        HTML(paste("<P>",format(x$value, digits = digits), " with absolute error < ", 
-            format(x$abs.error, digits = 2), "\n</P>", sep = ""),file=file)
-    else HTML(paste("<P>failed with message `", x$message, "'\n</P>", sep = ""),file=file)
+        HTML(paste("<p>",format(x$value, digits = digits), " with absolute error < ", 
+            format(x$abs.error, digits = 2), "\n</p>", sep = ""),file=file)
+    else HTML(paste("<p>failed with message `", x$message, "'\n</p>", sep = ""),file=file)
     invisible(x)
 }
 
@@ -1078,12 +1096,12 @@ HTML("<center>",file=file)
 {
     
     cat("\"n", file=file,append=append,...)
-    HTMLli(paste("<BR><P>Call: ", paste(deparse(x$call), sep = "\n<BR>", collapse = "\n<BR>"), "</P>" ),file=file)
+    HTMLli(paste("<br><p>Call:<font class=call> ", paste(deparse(x$call), sep = "\n<br>", collapse = "\n<br>"), "</font></p>" ),file=file)
     resid <- x$residuals
     df <- x$df
     rdf <- df[2]
     if (rdf > 5) {
-        HTMLli("Residuals:\n<BR>",file=file)
+        HTMLli("Residuals:\n<br>",file=file)
         if (length(dim(resid)) == 2) {
             rq <- apply(t(resid), 1, quantile)
             dimnames(rq) <- list(c("Min", "1Q", "Median", "3Q", 
@@ -1096,12 +1114,12 @@ HTML("<center>",file=file)
         HTML(round(rq, digits) ,file=file)
     }
     else if (rdf > 0) {
-        HTMLli("Residuals:\n<BR>",file=file)
+        HTMLli("Residuals:\n<br>",file=file)
         HTML(round(resid, digits ), file=file)
     }
-    else HTMLli("\n<BR>No Coefficients:\n<BR>",file=file)
-    HTMLli(paste("\n<BR>Residual standard error:<B> ", format(signif(x$sigma, 
-        digits)), "on <B> ", rdf, " </B>degrees of freedom\n<BR><BR>",sep=""),file=file)
+    else HTMLli("\n<br>No Coefficients:\n<br>",file=file)
+    HTMLli(paste("\n<br>Residual standard error:<b> ", format(signif(x$sigma, 
+        digits)), "on <b> ", rdf, " </b>degrees of freedom\n<br><br>",sep=""),file=file)
     invisible(x)
 }
  
@@ -1111,33 +1129,33 @@ HTML("<center>",file=file)
     symbolic.cor = p > 4, signif.stars = getOption("show.signif.stars"), file=.HTML.file,append=TRUE,
     ...) 
 {
-    cat("\"n", file=file,append=append,...)
-    HTMLli(paste("\n<P>Call: ",paste(deparse(x$call),collapse=" ")),file=file)
+    cat("\n", file=file,append=append,...)
+    HTMLli(paste("\n<p>Call: <font class=call>",paste(deparse(x$call),collapse=" "),"</font>"),file=file)
     
-    HTML("<P>Deviance Residuals: \n</P>",file=file)
+    HTML("<p>Deviance Residuals: \n</p>",file=file)
     if (x$df.residual > 5) {
         x$deviance.resid <- quantile(x$deviance.resid, na.rm = TRUE)
         names(x$deviance.resid) <- c("Min", "1Q", "Median", "3Q", 
             "Max")
     }
-    HTML.default(round(x$deviance.resid,digits) , file=file)
-    HTML("\n<P>Coefficients:\n</P>",file=file)
+    HTML(t(round(x$deviance.resid,digits)) , file=file)
+    HTML("\n<p>Coefficients:\n</p>",file=file)
     HTML.coefmat(x$coef, signif.stars = signif.stars, file=file)
     
-    HTML(paste("\n<P>(Dispersion parameter for ", x$family$family, " family taken to be ", 
-        format(x$dispersion), ")\n</P>\n"),file=file)
+    HTML(paste("\n<p>(Dispersion parameter for ", x$family$family, " family taken to be ", 
+        format(x$dispersion), ")\n</p>\n"),file=file)
         
-       HTML(paste("<LI>Null deviance:<B>", x[c("null.deviance")], "</B> on <B>", x[c("df.null")],"</B> degrees of freedom."),file=file)
+       HTML(paste("<li>Null deviance:<b>", round(x$null.deviance,digits), "</b> on <b>", x[c("df.null")],"</b> degrees of freedom."),file=file)
        
-       HTML(paste("<LI>Residual deviance:<B>", x[c("deviance")], "</B> on <B>", x[c("df.residual")],"</B> degrees of freedom."),file=file)
+       HTML(paste("<li>Residual deviance:<b>", round(x$deviance,digits), "</b> on <b>", x[c("df.residual")],"</b> degrees of freedom."),file=file)
        
        
-       HTML(paste("<P>AIC:<B> ", format(x$aic, digits = max(4, digits + 1)), "</B>\n</P>\n<P>Number of Fisher Scoring iterations: <B>",     x$iter, "</B>\n</P>", sep = ""),file=file)
+       HTML(paste("<p>AIC:<b> ", format(x$aic, digits = max(4, digits + 1)), "</b>\n</p>\n<p>Number of Fisher Scoring iterations: <b>",     x$iter, "</b>\n</p>", sep = ""),file=file)
     correl <- x$correlation
     if (!is.null(correl)) {
         p <- NCOL(correl)
         if (p > 1) {
-            HTML("\n<P>Correlation of Coefficients:\n</P>")
+            HTML("\n<p>Correlation of Coefficients:\n</p>")
             if (symbolic.cor) 
                 HTML(symnum(correl)[-1, -p],file=file)
             else {
@@ -1159,14 +1177,14 @@ HTML("<center>",file=file)
     fields <- paste(x$fields, collapse = " or ")
     db <- x$matches
     if (NROW(db) > 0) {
-        HTML(paste("<P>Help files with ", fields, " matching `", 
+        HTML(paste("<p>Help files with ", fields, " matching `", 
             x$pattern, "',\n", "type `help(FOO, package = PKG)' to inspect ", 
-            "entry `FOO(PKG) TITLE':", "\n</P>", sep = ""), file=file)
+            "entry `FOO(PKG) TITLE':", "\n</p>", sep = ""), file=file)
         dbnam <- paste(db[, "name"], "(", db[, "Package"], ")",sep = "")
         dbtit <- paste(db[, "title"], sep = "")
         HTML(cbind(dbnam, dbtit), file=file)
     }
-    else HTML(paste("<P>No help files found with ", fields, " matching `", x$pattern, "'\n</P>", sep = ""),file=file)
+    else HTML(paste("<p>No help files found with ", fields, " matching `", x$pattern, "'\n</p>", sep = ""),file=file)
 }
 
 #----------------------------------------------------------------------------------------------------#
@@ -1176,8 +1194,9 @@ HTML("<center>",file=file)
    cat("\"n", file=file,append=append,...)
     cl <- attr(x, "call")
     if (!is.null(cl)) {
-        cat("\nCall:\n",file=file,append=TRUE,...)
+        cat("\nCall:\n<font class=call>",file=file,append=TRUE,...)
         dput(cl,file=file)
+        cat("\n</font>",file=file,append=TRUE,...)
     }
     if (!is.null(attr(x, "weights"))) 
         cat("Note: The results below are on the weighted scale\n",file=file,append=TRUE,...)
@@ -1207,10 +1226,10 @@ HTML("<center>",file=file)
 {
 	cat("\"n",file=file,append=append,...)
     if (x[[1]] != 31416) {
-        HTML("<P>object is not of class `SavedPlots'</P>\n<BR>",file=file)
+        HTML("<p>object is not of class `SavedPlots'</p>\n<br>",file=file)
         return()
     }
-    HTML("<P>Saved Plots from R version 1.4.0 or later</P>\n<BR>\n<BR>",file=file,append=TRUE,...)
+    HTML("<p>Saved Plots from R version 1.4.0 or later</p>\n<br>\n<br>",file=file,append=TRUE,...)
     HTML("  Contains", x[[2]], "out of a maximum", x[[3]], "plots\n",file=file,append=TRUE,...)
     lens <- sapply(x[[5]], length)[1:x[[2]]]
     cat("  #plot calls are", paste(lens, collapse = ", "), "\n",file=file,append=TRUE,...)
@@ -1223,9 +1242,9 @@ HTML("<center>",file=file)
 {
     cat("\n",file=file,append=append,...)
     if (length(x) <= 0) 
-        HTML("\n<P>ordered(0)\n</P>",file=file,append=TRUE,...)
+        HTML("\n<p>ordered(0)\n</p>",file=file,append=TRUE,...)
     else HTML(as.character(x), file,file, append=TRUE,...)
-    HTML(paste("\n<P>Levels: ", paste(levels(x), collapse = " < "), "\n</P>"),file=file,append=TRUE,...)
+    HTML(paste("\n<p>Levels<font class=factorlevels>: ", paste(levels(x), collapse = " < "), "</font>\n</p>"),file=file,append=TRUE,...)
     invisible(x)
 }
 
@@ -1235,10 +1254,10 @@ HTML("<center>",file=file)
 {
     cat("\n",file=file,append=append,...)
     if (length(x) > 1) 
-        HTML(paste("<P>Time differences of ", paste(format(unclass(x), 
+        HTML(paste("<p>Time differences of ", paste(format(unclass(x), 
             digits = digits), collapse = ", "), " ", attr(x, 
-            "units"), "\n</P>", sep = ""),file=file,append=TRUE,...)
-    else HTML(paste("<P>Time difference of ", format(unclass(x), digits = digits), 
+            "units"), "\n</p>", sep = ""),file=file,append=TRUE,...)
+    else HTML(paste("<p>Time difference of ", format(unclass(x), digits = digits), 
         " ", attr(x, "units"), "\n", sep = ""),file=file,append=TRUE,...)
     invisible(x)
 }
@@ -1272,9 +1291,9 @@ HTML("<center>",file=file)
     }
     rownames(ans) <- rn
     colnames(ans) <- rep("", nm)
-    HTML(paste("\n<P>",if (title=="") 
+    HTML(paste("\n<p>",if (title=="") 
         "Full coefficients are"
-    else title, "\n</P>"),file=file,append=TRUE,...)
+    else title, "\n</p>"),file=file,append=TRUE,...)
     HTML.matrix(ans[1:line, , drop = FALSE],file=file,append=TRUE,...)
     invisible(x)
 }
@@ -1285,7 +1304,7 @@ HTML("<center>",file=file)
 "HTML.dummy.coef.list" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    for (strata in names(x)) HTML.dummy.coef(x[[strata]], file=file, title = paste("\n<P>     Error:", strata,"</P>"),append=TRUE,...)
+    for (strata in names(x)) HTML.dummy.coef(x[[strata]], file=file, title = paste("\n<p>     Error:", strata,"</p>"),append=TRUE,...)
     invisible(x)
 }
 
@@ -1297,18 +1316,29 @@ HTML("<center>",file=file)
 {
 
       cat("\n",file=file,append=append,...)
-    HTMLli(paste(" Call: ", deparse(x$call), "\n<BR>\n"),file=file)
-    HTMLli("No coefficients\n<BR>")
-    HTMLli(paste("Degrees of Freedom:<B>", length(x$residuals), "</B> Total; <B>", 
-        x$df.residual, " </B>Residual\n<BR>"),file=file)
-    HTMLli(paste("Null Deviance:<B>", format(signif(x$null.deviance, digits)), 
-        "</B>\n<BR>"),file=file)
-    HTMLli(paste("Residual Deviance: <B>", format(signif(x$deviance, digits)), 
-        " </B><BR>\n"),file=file)
-    HTMLli(paste("AIC:<B>", format(signif(x$aic, digits)), "</B><BR>\n"),file=file)
+    HTMLli(paste(" Call: <font class='call'>", deparse(x$call),"</font>", "\n<br>\n"),file=file)
+    HTMLli("No coefficients\n<br>")
+    HTMLli(paste("Degrees of Freedom:<b>", length(x$residuals), "</b> Total; <b>", 
+        x$df.residual, " </b>Residual\n<br>"),file=file)
+    HTMLli(paste("Null Deviance:<b>", format(signif(x$null.deviance, digits)), 
+        "</b>\n<br>"),file=file)
+    HTMLli(paste("Residual Deviance: <b>", format(signif(x$deviance, digits)), 
+        " </b><br>\n"),file=file)
+    HTMLli(paste("AIC:<b>", format(signif(x$aic, digits)), "</b><br>\n"),file=file)
     invisible(x)
 }
 
+#----------------------------------------------------------------------------------------------------#
+
+"HTML.MethodsFunction"<- function (x,file=.HTML.file,append=TRUE, ...) 
+{
+    	cat("\n",file=file,append=append,...)
+	info=attr(x,"info")
+	if (dim(info)[1]==0) HTML("<p>No available generic function for the class",file=file,append=TRUE)
+	HTML("<p>Available generic functions which does handle the class</p>",file=file,append=TRUE)
+	HTML(info,file=file,append=TRUE,...)
+	invisible(x)
+}
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -1323,21 +1353,20 @@ HTML("<center>",file=file)
         c("Package", "Title"), drop = FALSE])
     first <- TRUE
     for (lib in names(out)) {
-        HTML(paste(paste("<P>Packages in library ", 
-            sQuote(lib), ":</P>", sep = "")),file=file,append=TRUE,...)
+        HTML(paste(paste("<p>Packages in library ", 
+            sQuote(lib), ":</p>", sep = "")),file=file,append=TRUE,...)
         HTML(cbind(out[[lib]][, "Package"], out[[lib]][, 
             "Title"]), file=file,append=TRUE,...)
         first <- FALSE
     }
     if (first) {
-        HTML("<P>no packages found</P>",file=file, append=TRUE,...)    }
+        HTML("<p>no packages found</p>",file=file, append=TRUE,...)    }
     invisible(x)
 }
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.summary.aov" <- function (x, digits = max(3, getOption("digits") - 3), symbolic.cor = p > 
-    4, signif.stars = getOption("show.signif.stars"), file=.HTML.file,append=TRUE,...) 
+"HTML.summary.aov" <- function (x, digits = max(3, getOption("digits") - 3), file=.HTML.file,append=TRUE,...) 
 {
       cat("\n",file=file,append=append,...)
     if (length(x) == 1) 
@@ -1354,7 +1383,7 @@ HTML("<center>",file=file)
     cat("\n",file=file,append=append,...)
     nn <- names(x)
     for (i in nn) {
-        HTMLli(paste(i, "\n<BR>", sep = ""),file=file)
+        HTMLli(paste(i, "\n<br>", sep = ""),file=file)
         HTML(x[[i]], file=file)
     }
     invisible(x)
@@ -1367,22 +1396,22 @@ HTML("<center>",file=file)
     file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("\nCall: ",paste(deparse(x$call), sep = "\n", collapse = "\n"), 
-        "\n<BR>\n", sep = ""),file=file)
-    HTMLli("Deviance Residuals: \n<BR>",file=file)
+    HTMLli(paste("\nCall:<font class=call> ",paste(deparse(x$call), sep = "\n", collapse = "\n"), 
+        "</font>\n<br>\n", sep = ""),file=file)
+    HTMLli("Deviance Residuals: \n<br>",file=file)
     if (x$df.residual > 5) {
         x$deviance.resid <- quantile(x$deviance.resid)
         names(x$deviance.resid) <- c("Min", "1Q", "Median", "3Q", 
             "Max")
     }
     HTML.default(x$deviance.resid, digits = digits, na = "",file=file)
-    HTMLli("No coefficients\n<BR>")
+    HTMLli("No coefficients\n<br>")
     HTMLli(paste("\n(Dispersion parameter for ", x$family$family, 
-        " family taken to be ", x$dispersion, ")\n\n    Null deviance:<B> ", 
-        x$null.deviance, " </B>on <B>", x$df.null, " </B>degrees of freedom\n\n", 
-        "Residual deviance: <B>", x$deviance, " </B>on<B> ", x$df.residual, 
-        " </B>degrees of freedom\n\n", "Number of Fisher Scoring iterations<B>: ", 
-        x$iter, "</B>\n<BR>\n", sep = ""),file=file)
+        " family taken to be ", x$dispersion, ")\n\n    Null deviance:<b> ", 
+        x$null.deviance, " </b>on <b>", x$df.null, " </b>degrees of freedom\n\n", 
+        "Residual deviance: <b>", x$deviance, " </b>on<b> ", x$df.residual, 
+        " </b>degrees of freedom\n\n", "Number of Fisher Scoring iterations<b>: ", 
+        x$iter, "</b>\n<br>\n", sep = ""),file=file)
     invisible(x)
 }
 
@@ -1396,7 +1425,7 @@ HTML("<center>",file=file)
         HTML.anova(stats,file=file)
     }
     else {
-        HTML("<P>No error degrees of freedom</P>\n")
+        HTML("<p>No error degrees of freedom</p>\n")
         HTML(data.frame(Df = x$Df, row.names = x$row.names),file=file)
     }
     invisible(x)
@@ -1412,18 +1441,18 @@ HTML("<center>",file=file)
     if (!inherits(x, "summary.table")) 
         stop("x must inherit from class `summary.table'")
     if (!is.null(x$call)) {
-        HTMLli(paste("Call: ", x$call),file=file)
+        HTMLli(paste("Call:<font class='call'> ", x$call,"</font>"),file=file)
     }
-    HTMLli(paste("Number of cases in table:<B>", x$n.cases, "</B>\n<BR>"),file=file)
-    HTMLli(paste("Number of factors:<B>", x$n.vars, "</B>\n<BR>"),file=file)
+    HTMLli(paste("Number of cases in table:<b>", x$n.cases, "</b>\n<br>"),file=file)
+    HTMLli(paste("Number of factors:<b>", x$n.vars, "</b>\n<br>"),file=file)
     if (x$n.vars > 1) {
-        HTMLli("Test for independence of all factors:\n<BR>",file=file)
+        HTMLli("Test for independence of all factors:\n<br>",file=file)
         ch <- x$statistic
-        HTML(paste(" Chisq = <B>", format(round(ch, max(0, digits - log10(ch)))), 
-            "</B>, df = <B>", x$parameter, "</B>, p-value = <B>", format.pval(x$p.value, 
-                digits, eps = 0), "</B>\n<BR>", sep = ""),file=file)
+        HTML(paste(" Chisq = <b>", format(round(ch, max(0, digits - log10(ch)))), 
+            "</b>, df = <b>", x$parameter, "</b>, p-value = <b>", format.pval(x$p.value, 
+                digits, eps = 0), "</b>\n<br>", sep = ""),file=file)
         if (!x$approx.ok) 
-            HTML("<P>Chi-squared approximation may be incorrect</P>\n",file=file)
+            HTML("<p>Chi-squared approximation may be incorrect</p>\n",file=file)
     }
     invisible(x)
 }
@@ -1439,7 +1468,7 @@ HTML("<center>",file=file)
     
     if (attr(x, "ordered")) 
         HTML("<center><p>factor levels have been ordered</p></center>\n",file=file)
-    HTMLli(paste("Fit: ", deparse(attr(x, "orig.call")), "\n<BR>\n", sep = ""),file=file)
+    HTMLli(paste("Fit: ", deparse(attr(x, "orig.call")), "\n<br>\n", sep = ""),file=file)
     attr(x, "orig.call") <- attr(x, "conf.level") <- attr(x, "ordered") <- NULL
 	lapply(unclass(x),HTML,file=file,append=TRUE,...)
     #HTML.default(unclass(x), file=file,...)
@@ -1483,7 +1512,7 @@ HTML("<center>",file=file)
 "HTML.ar" <- function (x, digits = max(3, getOption("digits") - 3), file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("Call:\n", deparse(x$call), "\n\n", sep = ""),file=file)
+    HTMLli(paste("Call:\n<font class='call'>", deparse(x$call), "</font>\n", sep = ""),file=file)
     nser <- NCOL(x$var.pred)
     if (nser > 1) {
         if (!is.null(x$x.intercept)) 
@@ -1500,11 +1529,11 @@ HTML("<center>",file=file)
             HTML.default(coef, file=file)
         }
         if (!is.null(xint <- x$x.intercept) && !is.na(xint)) 
-            HTML(paste("<P>Intercept: <B>", format(xint, digits = digits), 
-                "</B> (", format(x$asy.se.coef$x.mean, digits = digits), 
-                ") ", "\n</P>", sep = ""),file=file)
-        HTML(paste("<P>Order selected <B>", x$order, " </B>sigma^2 estimated as <B>", 
-            format(x$var.pred, digits = digits), "</B>\n<</P>"),file=file)
+            HTML(paste("<p>Intercept: <b>", format(xint, digits = digits), 
+                "</b> (", format(x$asy.se.coef$x.mean, digits = digits), 
+                ") ", "\n</p>", sep = ""),file=file)
+        HTML(paste("<p>Order selected <b>", x$order, " </b>sigma^2 estimated as <b>", 
+            format(x$var.pred, digits = digits), "</b>\n<</p>"),file=file)
     }
     invisible(x)
 }
@@ -1515,8 +1544,8 @@ HTML("<center>",file=file)
     file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("nCall:", deparse(x$call, width = 75), "", sep = "\n"),file=file)
-    HTMLli("Coefficients:\n<BR>",file=file)
+    HTMLli(paste("nCall:<font class='call'>", deparse(x$call, width = 75), "</font>", sep = "\n"),file=file)
+    HTMLli("Coefficients:\n<br>",file=file)
     coef <- round(x$coef, digits = digits)
     if (se && nrow(x$var.coef)) {
         ses <- rep(0, length(coef))
@@ -1527,12 +1556,12 @@ HTML("<center>",file=file)
     HTML.default(coef,file=file)
     cm <- x$call$method
     if (is.null(cm) || cm != "CSS") 
-        HTML(paste("\n<P>sigma^2 estimated as <B>", format(x$sigma2, digits = digits), 
-            "</B>:  log likelihood = <B>", format(round(x$loglik, 2)), 
-            "</B>,  aic = <B>", format(round(x$aic, 2)), "</B>\n</P>", sep = ""),file=file)
-    else HTML("<P>sigma^2 estimated as <B>", format(x$sigma2, digits = digits), 
-        "</B>:  part log likelihood =<B> ", format(round(x$loglik, 2)), 
-        "</B>\n</P>", sep = "")
+        HTML(paste("\n<p>sigma^2 estimated as <b>", format(x$sigma2, digits = digits), 
+            "</b>:  log likelihood = <b>", format(round(x$loglik, 2)), 
+            "</b>,  aic = <b>", format(round(x$aic, 2)), "</b>\n</p>", sep = ""),file=file)
+    else HTML("<p>sigma^2 estimated as <b>", format(x$sigma2, digits = digits), 
+        "</b>:  part log likelihood =<b> ", format(round(x$loglik, 2)), 
+        "</b>\n</p>", sep = "")
     invisible(x)
 }
 
@@ -1543,8 +1572,8 @@ HTML("<center>",file=file)
     file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("\nCall:", deparse(x$call, width = 75), "", sep = "\n"),file=file)
-    HTMLli("Coefficients:\n<BR>",file=file)
+    HTMLli(paste("\nCall:<font class='call'>", deparse(x$call, width = 75), "</font>", sep = "\n"),file=file)
+    HTMLli("Coefficients:\n<br>",file=file)
     coef <- round(x$coef, digits = digits)
     if (se && nrow(x$var.coef)) {
         ses <- rep(0, length(coef))
@@ -1555,12 +1584,12 @@ HTML("<center>",file=file)
     HTML.default(coef, file=file)
     cm <- x$call$method
     if (is.null(cm) || cm != "CSS") 
-        HTML(paste("\n<P>sigma^2 estimated as <B>", format(x$sigma2, digits = digits), 
-            "</B>:  log likelihood = <B>", format(round(x$loglik, 2)), 
-            "</B>,  aic = <B>", format(round(x$aic, 2)), "</B>\n</P>", sep = ""),file=file)
-    else HTML(paste("\n<P>sigma^2 estimated as <B>", format(x$sigma2, digits = digits), 
-        "</B>:  part log likelihood =<B> ", format(round(x$loglik, 2)), 
-        "</B>\n</P>", sep = ""),file=file)
+        HTML(paste("\n<p>sigma^2 estimated as <b>", format(x$sigma2, digits = digits), 
+            "</b>:  log likelihood = <b>", format(round(x$loglik, 2)), 
+            "</b>,  aic = <b>", format(round(x$aic, 2)), "</b>\n</p>", sep = ""),file=file)
+    else HTML(paste("\n<p>sigma^2 estimated as <b>", format(x$sigma2, digits = digits), 
+        "</b>:  part log likelihood =<b> ", format(round(x$loglik, 2)), 
+        "</b>\n</p>", sep = ""),file=file)
     invisible(x)
 }
 
@@ -1569,19 +1598,19 @@ HTML("<center>",file=file)
 "HTML.HoltWinters" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML(paste("<P><B>Holt-Winters exponential smoothing", if (x$beta == 0) 
+    HTML(paste("<p><b>Holt-Winters exponential smoothing", if (x$beta == 0) 
         "without"
     else "with", "trend and", if (x$gamma == 0) 
         "without"
     else paste(if (x$beta == 0) 
-        "with ", x$seasonal, sep = ""), "seasonal componenent.\n</B></P>"),file=file)
+        "with ", x$seasonal, sep = ""), "seasonal componenent.\n</b></p>"),file=file)
         
-    HTMLli(paste("\nCall:\n", deparse(x$call), "\n<BR>"),file=file)
-    HTMLli("Smoothing parameters:\n<UL>",file=file)
+    HTMLli(paste("\nCall:\n", deparse(x$call), "\n<br>"),file=file)
+    HTMLli("Smoothing parameters:\n<ul>",file=file)
     HTMLli(paste(" alpha: ", x$alpha, "\n"),file=file)
     HTMLli(paste(" beta: ", x$beta, "\n"),file=file)
-    HTMLli(paste(" gamma: ", x$gamma, "\n<BR>"),file=file)
-    HTML("</UL>",file=file)
+    HTMLli(paste(" gamma: ", x$gamma, "\n<br>"),file=file)
+    HTML("</ul>",file=file)
     HTMLli("Coefficients:\n",file=file)
     HTML(t(t(x$coefficients)),file=file)
 }
@@ -1592,7 +1621,7 @@ HTML("<center>",file=file)
 "HTML.stl" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("Call:\n ",deparse(x$call),"\n<BR>"),file=file)
+    HTMLli(paste("Call:\n ",deparse(x$call),"\n<br>"),file=file)
     HTMLli("\nComponents\n",file=file)
     HTML(x$time.series, file=file,append=TRUE,...)
     invisible(x)
@@ -1617,8 +1646,8 @@ HTML("<center>",file=file)
     cat("\n",file=file,append=append,...)
     y <- c(rev(x$coef[2:(x$m + 1)]), x$coef)
     i <- -x$m:x$m
-    HTML(paste("<P>",attr(x, "name"), "</P>\n"),file=file)
-    HTML(paste( paste("coef[", format(i), "] = ", format(y, digits = digits),sep = ""),collapse="<BR>\n", sep = "\n<BR>"),file=file)
+    HTML(paste("<p>",attr(x, "name"), "</p>\n"),file=file)
+    HTML(paste( paste("coef[", format(i), "] = ", format(y, digits = digits),sep = ""),collapse="<br>\n", sep = "\n<br>"),file=file)
 }
 
 
@@ -1629,8 +1658,8 @@ HTML("<center>",file=file)
 "HTML.pairwise.htest" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("Pairwise comparisons using", x$method, "\n<BR>\n<BR>"),file=file)
-    HTMLli(paste("data: ", x$data.name, "\n<BR>\n<BR>"),file=file)
+    HTMLli(paste("Pairwise comparisons using", x$method, "\n<br>\n<br>"),file=file)
+    HTMLli(paste("data: <font class=dataname>", x$data.name,"</font>", "\n<br>\n<br>"),file=file)
     pp <- format.pval(x$p.value, 2, na.form = "-")
     attributes(pp) <- attributes(x$p.value)
     HTML(pp, file=file)
@@ -1642,13 +1671,13 @@ HTML("<center>",file=file)
 "HTML.power.htest" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste(x$method,"<BR>"), file=file)
+    HTMLli(paste(x$method,"<br>"), file=file)
     note <- x$note
     x[c("method", "note")] <- NULL
     HTML(paste(paste(format.char(names(x), width = 15, flag = "+"), 
-        format(x), sep = " = 	"), sep = "\n<BR>",collapse="\n<BR>"),file=file)
+        format(x), sep = " = 	"), sep = "\n<br>",collapse="\n<br>"),file=file)
     if (!is.null(note)) 
-        HTML(paste("\n<P>", "NOTE:", note, "\n</P>\n"),file=file)
+        HTML(paste("\n<p>", "NOTE:", note, "\n</p>\n"),file=file)
     else HTMLbr(file=file)
 }
 
@@ -1740,20 +1769,20 @@ HTML("<center>",file=file)
 		HTML(as.title("BALANCED TITLED BOOTSTRAP"),file=file)
         else HTML(as.title("TILTED BOOTSTRAP"),file=file)
         if ((R[1] == 0) || is.null(cl$tilt) || eval(cl$tilt)) 
-            HTML("<P>Exponential tilting used\n</P>",file=file)
-        else HTML("<P>Frequency Smoothing used\n</P>",file=file)
+            HTML("<p>Exponential tilting used\n</p>",file=file)
+        else HTML("<p>Frequency Smoothing used\n</p>",file=file)
         i1 <- 1
         if (boot.out$R[1] > 0) 
-            HTML(paste("<P>First", R[1], "replicates untilted,\n</P>"),file=file)
+            HTML(paste("<p>First", R[1], "replicates untilted,\n</p>"),file=file)
         else {
-            HTML(paste("<P>First ", R[2], " replicates tilted to ", 
-                signif(th[1], 4), ",\n</P>", sep = ""),file=file)
+            HTML(paste("<p>First ", R[2], " replicates tilted to ", 
+                signif(th[1], 4), ",\n</p>", sep = ""),file=file)
             i1 <- 2
         }
         if (i1 <= length(th)) {
-            for (j in i1:length(th)) HTML(paste("<P>Next ", R[j + 
+            for (j in i1:length(th)) HTML(paste("<p>Next ", R[j + 
                 1], " replicates tilted to ", signif(th[j], 4), 
-                ifelse(j != length(th), ",\n", ".\n</P>"), sep = ""),file=file)
+                ifelse(j != length(th), ",\n", ".\n</p>"), sep = ""),file=file)
         }
         op <- op[, 1:3]
     }
@@ -1765,21 +1794,21 @@ HTML("<center>",file=file)
         else if (sim == "scramble") {
 		HTML(as.title("PHASE SCRAMBLED BOOTSTRAP FOR TIME SERIES"),file=file)
             if (boot.out$norm) 
-                HTML("<P>Normal margins used.\n</P>",file=file)
-            else HTML("<P>Observed margins used.\n</P>",file=file)
+                HTML("<p>Normal margins used.\n</p>",file=file)
+            else HTML("<p>Observed margins used.\n</p>",file=file)
         }
         else if (sim == "geom") {
             if (is.null(cl$ran.gen)) 
                 HTML(as.title("STATIONARY BOOTSTRAP FOR TIME SERIES"),file=file)
             else  HTML(as.title("POST-BLACKENED STATIONARY BOOTSTRAP FOR TIME SERIES"),file=file)
-		HTML(paste("<P>Average Block Length of", boot.out$l, 
-                "\n</P>"),file=file)
+		HTML(paste("<p>Average Block Length of", boot.out$l, 
+                "\n</p>"),file=file)
         }
         else {
             if (is.null(cl$ran.gen)) 
-		HTML("<P>BLOCK BOOTSTRAP FOR TIME SERIES</P>",file=file)
-            else HTML("<P>POST-BLACKENED BLOCK BOOTSTRAP FOR TIME SERIES</P>",file=file)
-            HTML(paste("<P>Fixed Block Length of", boot.out$l, "\n</P>"),file=file)
+		HTML("<p>BLOCK BOOTSTRAP FOR TIME SERIES</p>",file=file)
+            else HTML("<p>POST-BLACKENED BLOCK BOOTSTRAP FOR TIME SERIES</p>",file=file)
+            HTML(paste("<p>Fixed Block Length of", boot.out$l, "\n</p>"),file=file)
         }
     }
     else {
@@ -1802,18 +1831,18 @@ HTML("<center>",file=file)
             if (!is.null(cl$strata)) 
  	HTML(as.title("STRATIFIED CONDITIONAL BOOTSTRAP"),file=file)
             if (is.null(boot.out$cox)) 
-                HTML("<P>FOR CENSORED DATA\n</P>\n",file=file)
-            else HTML("<P>FOR COX REGRESSION MODEL\n</P>\n",file=file)
+                HTML("<p>FOR CENSORED DATA\n</p>\n",file=file)
+            else HTML("<p>FOR COX REGRESSION MODEL\n</p>\n",file=file)
         }
     }
     HTMLli(paste("\nCall: ",deparse(cl)),file=file)
     
-    HTMLli("Bootstrap Statistics :\n<BR>",file=file)
+    HTMLli("Bootstrap Statistics :\n<br>",file=file)
     if (!is.null(op)) 
         HTML(op, digits = digits,file=file)
     if (length(ind1) > 0) 
-        for (j in ind1) HTML(paste("<P>WARNING: All values of t", 
-            j, "* are NA\n</P>", sep = ""),file=file)
+        for (j in ind1) HTML(paste("<p>WARNING: All values of t", 
+            j, "* are NA\n</p>", sep = ""),file=file)
     invisible(boot.out)
 }
 
@@ -1823,25 +1852,25 @@ HTML("<center>",file=file)
 {
     cat("\n",file=file,append=append,...)
     simp.out <- x
-    HTML("\n<P><B>Linear Programming Results\n</B></P>\n",file=file)
+    HTML("\n<p><b>Linear Programming Results\n</b></p>\n",file=file)
     cl <- simp.out$call
     HTMLli(paste("Call : ",deparse(cl)),file=file)
-	HTML(paste("<P>", if (simp.out$maxi) "Maximization" else "Minimization", " Problem with Objective Function Coefficients\n</P>"),file=file)
+	HTML(paste("<p>", if (simp.out$maxi) "Maximization" else "Minimization", " Problem with Objective Function Coefficients\n</p>"),file=file)
     HTML(simp.out$obj,file=file)
     if (simp.out$solved == 1) {
-        HTML("\n<P>\nOptimal solution has the following values\n</P>",file=file)
+        HTML("\n<p>\nOptimal solution has the following values\n</p>",file=file)
         HTML(simp.out$soln,file=file)
-        HTML(paste("<P>The optimal value of the objective ", " function is ", 
-            simp.out$value, ".\n</P>", sep = ""),file=file)
+        HTML(paste("<p>The optimal value of the objective ", " function is ", 
+            simp.out$value, ".\n</p>", sep = ""),file=file)
     }
     else if (simp.out$solved == 0) {
-        HTML("\n<P>\nIteration limit exceeded without finding solution\n</P>",file=file)
-        HTML("<P>The coefficient values at termination were\n</P>",file=file)
+        HTML("\n<p>\nIteration limit exceeded without finding solution\n</p>",file=file)
+        HTML("<p>The coefficient values at termination were\n</p>",file=file)
         HTML(simp.out$soln,file=file)
-        HTML(paste("<P>The objective function value was ", simp.out$value, 
-            ".\n</P>", sep = ""),file=file)
+        HTML(paste("<p>The objective function value was ", simp.out$value, 
+            ".\n</p>", sep = ""),file=file)
     }
-    else HTML("\n<P>No feasible solution could be found\n</P>",file=file)
+    else HTML("\n<p>No feasible solution could be found\n</p>",file=file)
 }
 
 #----------------------------------------------------------------------------------------------------#
@@ -1863,12 +1892,12 @@ HTML("<center>",file=file)
     level <- 100 * sad.d$quantiles[, 1]
     quans <- format(round(sad.d$quantiles, digs))
     quans[, 1] <- paste( format(level), "%     ", sep = "")
-    HTML("\n<P><B>Saddlepoint Distribution Approximations\n</B></P>\n",file=file)
+    HTML("\n<p><b>Saddlepoint Distribution Approximations\n</b></p>\n",file=file)
     HTMLli(paste("Call : ",paste(deparse(cl),collapse="")),file=file)
-    HTML("\n<P>Quantiles of the Distribution\n</P>",file=file)
+    HTML("\n<p>Quantiles of the Distribution\n</p>",file=file)
     HTML(t(t(quans)),file=file)
-    HTML(paste("\n<P>\nSmoothing spline used ", nrow(sad.d$points), 
-        " points in the range ", rg[1], " to ", rg[2], ".</P>", sep = ""),file=file)
+    HTML(paste("\n<p>\nSmoothing spline used ", nrow(sad.d$points), 
+        " points in the range ", rg[1], " to ", rg[2], ".</p>", sep = ""),file=file)
     if (sad.d$LR) 
         HTMLli("Lugananni-Rice approximations used.",file=file)
        HTMLbr(file=file)
@@ -1937,7 +1966,7 @@ HTML("<center>",file=file)
     }
     n0 <- 4 + n1
     ints1 <- format(round(ints1, digs))
-    ints1[, 1] <- paste("\n<BR>", level, "%  ", sep = "")
+    ints1[, 1] <- paste("\n<br>", level, "%  ", sep = "")
     ints1[, 2 * (1:n1)] <- paste("(", ints1[, 2 * (1:n1)], ",", 
         sep = "")
     ints1[, 2 * (1:n1) + 1] <- paste(ints1[, 2 * (1:n1) + 1], 
@@ -1953,7 +1982,7 @@ HTML("<center>",file=file)
             j <- j + 2
         }
         ints2 <- format(round(ints2, digs))
-        ints2[, 1] <- paste("\n<BR>", level, "%  ", sep = "")
+        ints2[, 1] <- paste("\n<br>", level, "%  ", sep = "")
         ints2[, 2 * (1:n2)] <- paste("(", ints2[, 2 * (1:n2)], 
             ",", sep = "")
         ints2[, 2 * (1:n2) + 1] <- paste(ints2[, 2 * (1:n2) + 
@@ -1961,46 +1990,46 @@ HTML("<center>",file=file)
     }
     R <- ci.out$R
     HTML(as.title("BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS"),file=file)
-    HTML(paste("<P>Based on", R, "bootstrap replicates\n\n</P>"),file=file)
+    HTML(paste("<p>Based on", R, "bootstrap replicates\n\n</p>"),file=file)
     HTMLli(paste("CALL : ",paste(deparse(cl),collapse=" ")),file=file)
-    HTML("\n<P>Intervals : </P>",file=file)
-    HTML(paste("\n<P>Level", intlabs[1:n1],"</P>"),file=file)
+    HTML("\n<p>Intervals : </p>",file=file)
+    HTML(paste("\n<p>Level", intlabs[1:n1],"</p>"),file=file)
     HTML(t(ints1),file=file)
     if (n2 > 0) {
-        HTML(paste("\n<P>\nLevel", intlabs[(n1 + 1):(n1 + n2)],"</P>"),file=file)
+        HTML(paste("\n<p>\nLevel", intlabs[(n1 + 1):(n1 + n2)],"</p>"),file=file)
         HTML(t(ints2),file=file)
     }
     if (!is.null(cl$h)) {
         if (is.null(cl$hinv) && is.null(hinv)) 
-            HTML("\n<P>Calculations and Intervals on Transformed Scale\n</P>",file=file)
-        else HTML("\n<P>Calculations on Transformed Scale;  Intervals on Original Scale\n</P>",file=file)
+            HTML("\n<p>Calculations and Intervals on Transformed Scale\n</p>",file=file)
+        else HTML("\n<p>Calculations on Transformed Scale;  Intervals on Original Scale\n</p>",file=file)
     }
     else if (is.null(cl$hinv) && is.null(hinv)) 
-        HTML("\n<P>Calculations and Intervals on Original Scale\n</P>",file=file)
-    else HTML("\n<P>Calculations on Original Scale but Intervals Transformed\n</P>",file=file)
+        HTML("\n<p>Calculations and Intervals on Original Scale\n</p>",file=file)
+    else HTML("\n<p>Calculations on Original Scale but Intervals Transformed\n</p>",file=file)
     if (!is.null(basrg)) {
         if ((basrg[1] <= 1) || (basrg[2] >= R)) 
-            HTML("\n<P>Warning : Basic Intervals used Extreme Quantiles\n</P>",file=file)
+            HTML("\n<p>Warning : Basic Intervals used Extreme Quantiles\n</p>",file=file)
         if ((basrg[1] <= 10) || (basrg[2] >= R - 9)) 
-            HTML("\n<P>Some basic intervals may be unstable\n</P>",file=file)
+            HTML("\n<p>Some basic intervals may be unstable\n</p>",file=file)
     }
     if (!is.null(strg)) {
         if ((strg[1] <= 1) || (strg[2] >= R)) 
-            HTML("\n<P>Warning : Studentized Intervals used Extreme Quantiles\n</P>",file=file)
+            HTML("\n<p>Warning : Studentized Intervals used Extreme Quantiles\n</p>",file=file)
         if ((strg[1] <= 10) || (strg[2] >= R - 9)) 
-            HTML("\n<P>Some studentized intervals may be unstable\n</P>",file=file)
+            HTML("\n<p>Some studentized intervals may be unstable\n</p>",file=file)
     }
     if (!is.null(perg)) {
         if ((perg[1] <= 1) || (perg[2] >= R)) 
-            HTML("\n<P>Warning : Percentile Intervals used Extreme Quantiles\n</P>",file=file)
+            HTML("\n<p>Warning : Percentile Intervals used Extreme Quantiles\n</p>",file=file)
         if ((perg[1] <= 10) || (perg[2] >= R - 9)) 
-            HTML("\n<P>Some percentile intervals may be unstable\n</P>",file=file)
+            HTML("\n<p>Some percentile intervals may be unstable\n</p>",file=file)
     }
     if (!is.null(bcarg)) {
         if ((bcarg[1] <= 1) || (bcarg[2] >= R)) 
-            HTML("\n<P>Warning : BCa Intervals used Extreme Quantiles\n</P>",file=file)
+            HTML("\n<p>Warning : BCa Intervals used Extreme Quantiles\n</p>",file=file)
         if ((bcarg[1] <= 10) || (bcarg[2] >= R - 9)) 
-            HTML("\n<P>Some BCa intervals may be unstable\n</P>",file=file)
+            HTML("\n<p>Some BCa intervals may be unstable\n</p>",file=file)
     }
     invisible(ci.out)
 }
@@ -2040,8 +2069,8 @@ HTML("<center>",file=file)
 "HTML.factanal" <- function (x, digits = 3, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("\nCall:\n", deparse(x$call), "\n<BR>\n", sep = ""),file=file)
-    HTMLli("Uniquenesses:\n<BR>",file=file)
+    HTMLli(paste("\nCall:\n", deparse(x$call), "\n<br>\n", sep = ""),file=file)
+    HTMLli("Uniquenesses:\n<br>",file=file)
     HTML(round(x$uniquenesses, digits),file=file,append=TRUE,...)
     HTML(x$loadings, digits = digits,file=file,append=TRUE, ...)
     p <- nrow(x$loadings)
@@ -2050,20 +2079,20 @@ HTML("<center>",file=file)
         dof <- x$dof
         stat <- (x$n.obs - 1 - (2 * p + 5)/6 - (2 * factors)/3) * 
             x$criteria["objective"]
-        HTMLli(paste("\n<P>Test of the hypothesis that", factors, if (factors == 
+        HTMLli(paste("\n<p>Test of the hypothesis that", factors, if (factors == 
             1) 
             "factor is"
-        else "factors are", "sufficient.\n</P>"),file=file)
-        HTML(paste("<P>The chi square statistic is <B>", round(stat, 2), " </B> on <B>", 
+        else "factors are", "sufficient.\n</p>"),file=file)
+        HTML(paste("<p>The chi square statistic is <b>", round(stat, 2), " </b> on <b>", 
             dof, if (dof == 1) 
-                " </B>degree"
-            else "</B>degrees", "of freedom.\n<BR>The p-value is <B>", signif(pchisq(stat, 
-                dof, lower.tail = FALSE), 3), "</B>\n</P>"),file=file)
+                " </b>degree"
+            else "</b>degrees", "of freedom.\n<br>The p-value is <b>", signif(pchisq(stat, 
+                dof, lower.tail = FALSE), 3), "</b>\n</p>"),file=file)
     }
     else {
-        HTML(paste("\n<P>The degrees of freedom for the model is <B>", 
-            x$dof, " </B>and the fit was <B>", round(x$criteria["objective"], 
-                4), "</B>\n</P>"),file=file)
+        HTML(paste("\n<p>The degrees of freedom for the model is <b>", 
+            x$dof, " </b>and the fit was <b>", round(x$criteria["objective"], 
+                4), "</b>\n</p>"),file=file)
     }
     invisible(x)
 }
@@ -2083,7 +2112,7 @@ HTML("<center>",file=file)
         mx[abs(Lambda[ind]) < 0.5] <- factors + 1
         Lambda <- Lambda[order(mx, 1:p), ]
     }
-    HTMLli("Loadings:\n<BR>",file=file)
+    HTMLli("Loadings:\n<br>",file=file)
     fx <- format(round(Lambda, digits))
     names(fx) <- NULL
     nc <- nchar(fx[1])
@@ -2114,7 +2143,7 @@ HTML("<center>",file=file)
     if (!is.null(x$dist.method)) 
         HTMLli(paste("Distance : ", x$dist.method, "\n"),file=file)
     HTMLli(paste("Number of objects: ", length(x$height) + 1, "\n"),file=file)
-	HTML("</UL><BR>&nbsp;<BR>",file=file)
+	HTML("</UL><br>&nbsp;<br>",file=file)
 	invisible(x)
 }
 
@@ -2124,12 +2153,12 @@ HTML("<center>",file=file)
 "HTML.prcomp" <- function (x, print.x = FALSE, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Standard deviations:\n</P>",file=file,append=TRUE)
+    HTML("<p>Standard deviations:\n</p>",file=file,append=TRUE)
     HTML(x$sdev, file=file,append=TRUE,...)
-    HTML("\n<P>Rotation:\n</P>")
+    HTML("\n<p>Rotation:\n</p>")
     HTML(x$rotation, file=file,append=TRUE,...)
     if (print.x && length(x$x)) {
-        HTML("\n<P>Rotated variables:\n</P>")
+        HTML("\n<p>Rotated variables:\n</p>")
         HTML(x$x, file=file,append=TRUE,...)
     }
     invisible(x)
@@ -2142,10 +2171,10 @@ HTML("<center>",file=file)
 "HTML.princomp" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("Call: ",deparse(x$call)),file=file)
-    HTML("\n<P>Standard deviations:\n</P>",file=file)
-    HTML(x$sdev, file=file,append=TRUE,...)
-    HTML(paste("\n<P><B>", length(x$scale), " </B>variables and <B>", x$n.obs, " </B>observations.\n</P>"),file=file)
+    HTMLli(paste("Call: <font class=call>",deparse(x$call),"</font>"),file=file)
+    HTML("\n<p>Standard deviations:\n</p>",file=file)
+    HTML(t(as.matrix(x$sdev)), file=file,append=TRUE,...)
+    HTML(paste("\n<p><b>", length(x$scale), " </b>variables and <b>", x$n.obs, " </b>observations.\n</p>"),file=file)
     invisible(x)
 }
 
@@ -2155,7 +2184,7 @@ HTML("<center>",file=file)
 "HTML.summary.prcomp" <- function (x, digits = min(3, getOption("digits") - 3), file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Importance of components:\n</P>",file=file)
+    HTML("<p>Importance of components:\n</p>",file=file)
     HTML(x$importance, digits = digits,file=file)
     invisible(x)
 }
@@ -2168,7 +2197,7 @@ HTML("<center>",file=file)
     cat("\n",file=file,append=append,...)
     vars <- x$sdev^2
     vars <- vars/sum(vars)
-    HTML("<P>Importance of components:\n</P>",file=file)
+    HTML("<p>Importance of components:\n</p>",file=file)
     HTML(rbind("Standard deviation" = x$sdev, "Proportion of Variance" = vars, 
         "Cumulative Proportion" = cumsum(vars)),file=file)
     if (loadings) {
@@ -2188,13 +2217,13 @@ HTML("<center>",file=file)
 "HTML.medpolish" <- function (x, digits = getOption("digits"), file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML(paste("\n<P><B>Median Polish Results (Dataset: \"", x$name, "\")\n</B></P>", 
+    HTML(paste("\n<p><b>Median Polish Results (Dataset: \"", x$name, "\")\n</b></p>", 
         sep = ""),file=file)
-    HTML(paste("\n<P>Overall:", x$overall, "\n</P>\n<P>Row Effects:\n</P>"),file=file)
+    HTML(paste("\n<p>Overall:", x$overall, "\n</p>\n<p>Row Effects:\n</p>"),file=file)
     HTML(x$row, digits = digits, file=file,append=TRUE...)
-    HTML("\n<P>Column Effects:\n</P>",file=file)
+    HTML("\n<p>Column Effects:\n</p>",file=file)
     HTML(x$col, digits = digits, file=file)
-    HTML("\n<P>Residuals:\n</P>",file=file)
+    HTML("\n<p>Residuals:\n</p>",file=file)
     HTML(x$residuals, digits = max(2, digits - 2), file=file)
     HTMLbr(file=file)
     invisible(x)
@@ -2205,8 +2234,8 @@ HTML("<center>",file=file)
 "HTML.tukeyline" <- function (x, digits = max(3, getOption("digits") - 3), file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("Call:\n", deparse(x$call), "\n<BR>\n", sep = ""),file=file)
-    HTML("<P>Coefficients:\n</P>",file=file)
+    HTMLli(paste("Call:\n", deparse(x$call), "\n<br>\n", sep = ""),file=file)
+    HTML("<p>Coefficients:\n</p>",file=file)
     print.default(format(coef(x), digits = digits),file=file)
     HTMLbr(file=file)
     invisible(x)
@@ -2217,10 +2246,10 @@ HTML("<center>",file=file)
 "HTML.tukeysmooth" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML(paste("<P><B>",attr(x, "kind"), " Tukey smoother resulting from ", deparse(attr(x, 
+    HTML(paste("<p><b>",attr(x, "kind"), " Tukey smoother resulting from ", deparse(attr(x, 
         "call")), "\n",   if (twiced <- attr(x, "twiced")) " <-<-twiced<-<- ", 
         if (!is.null(it <- attr(x, "iter"))) paste(" used", it, "iterations\n"),
-        if (!is.null(ch <- attr(x, "changed"))) paste(if (!ch) " NOT ", " changed\n</B></P>")),file=file)
+        if (!is.null(ch <- attr(x, "changed"))) paste(if (!ch) " NOT ", " changed\n</b></p>")),file=file)
     if (length(class(x)) > 1) 
         NextMethod()
     else {
@@ -2271,12 +2300,12 @@ HTML("<center>",file=file)
 "HTML.shingle" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("\n<P>Data:\n</P>",file=file)
+    HTML("\n<p>Data:\n</p>",file=file)
     HTML(as.numeric(x),file=file)
     l <- levels(x)
     n <- nlevels(x)
     if (n < 1) 
-        HTML("\n<P>no intervals\n</P>",file=file)
+        HTML("\n<p>no intervals\n</p>",file=file)
     else {
         int <- data.frame(min = numeric(n), max = numeric(n), 
             count = numeric(n))
@@ -2285,14 +2314,14 @@ HTML("<center>",file=file)
             int$max[i] <- l[[i]][2]
             int$count[i] <- length(x[x >= l[[i]][1] & x <= l[[i]][2]])
         }
-        HTML("\n<P>Intervals:\n</P>",file=file)
+        HTML("\n<p>Intervals:\n</p>",file=file)
         HTML(int,file=file)
         olap <- numeric(n - 1)
         if (n > 2) 
             for (i in 1:(n - 1)) olap[i] <- length(x[x >= l[[i]][1] & 
                 x <= l[[i]][2] & x >= l[[i + 1]][1] & x <= l[[i + 
                 1]][2]])
-        HTML("\n<P>Overlap between adjacent intervals:\n</P>",file=file)
+        HTML("\n<p>Overlap between adjacent intervals:\n</p>",file=file)
         HTML(olap,file=file)
     }
     invisible(x)
@@ -2330,7 +2359,7 @@ HTML("<center>",file=file)
     cat("\n",file=file,append=append,...)
     heading <- attr(x, "heading")
     if (!is.null(heading)) 
-        HTML(paste("<P>",heading,"</P>", sep = " ",collapse="<BR>"),file=file)
+        HTML(paste("<p>",heading,"</p>", sep = " ",collapse="<br>"),file=file)
     attr(x, "heading") <- NULL
     HTML.data.frame(x,file=file)
 }
@@ -2350,9 +2379,9 @@ HTML("<center>",file=file)
     }
     R[1, 3:5] <- ""
     forms <- attr(x, "formulae")
-    HTML("<P><B>LR tests for hierarchical log-linear models</B>\n</P>\n",file=file)
+    HTML("<p><b>LR tests for hierarchical log-linear models</b>\n</p>\n",file=file)
     for (i in seq(along = forms)) 
-    HTML(paste(paste("<P>Model ", i, ":<BR>", sep = ""), paste(deparse(forms[[i]]),collapse=""), "</P>"),file=file)
+    HTML(paste(paste("<p>Model ", i, ":<br>", sep = ""), paste(deparse(forms[[i]]),collapse=""), "</p>"),file=file)
     HTMLbr(file=file)
     HTML(R,file=file)
     invisible(x)
@@ -2364,11 +2393,11 @@ HTML("<center>",file=file)
 "HTML.correspondence" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML(paste("<P>First canonical correlation(s):", format(x$cor, ...), "\n</P>"),file=file)
+    HTML(paste("<p>First canonical correlation(s):", format(x$cor, ...), "\n</p>"),file=file)
     rcn <- names(dimnames(x$Freq))
-    HTML(paste("\n<P>", rcn[1], "scores:\n</P>"),file=file)
+    HTML(paste("\n<p>", rcn[1], "scores:\n</p>"),file=file)
     HTML(x$rscore,file=file)
-    HTML(paste("\n<P>", rcn[2], "scores:\n</P>"),file=file)
+    HTML(paste("\n<p>", rcn[2], "scores:\n</p>"),file=file)
     HTML(x$cscore,file=file)
     invisible(x)
 }
@@ -2439,16 +2468,16 @@ HTML("<center>",file=file)
         names(cl)[2] <- ""
         HTMLli(paste("Call: ",deparse(cl)),file=file)
     }
-    HTML("\n<P>Prior probabilities of groups:\n</P>",file=file)
+    HTML("\n<p>Prior probabilities of groups:\n</p>",file=file)
     HTML(x$prior, file=file,...)
-    HTML("\n<P>Group means:\n</P>",file=file)
+    HTML("\n<p>Group means:\n</p>",file=file)
     HTML(x$means, file=file,...)
-    HTML("\n<P>Coefficients of linear discriminants:\n</P>",file=file)
+    HTML("\n<p>Coefficients of linear discriminants:\n</p>",file=file)
     HTML(x$scaling, file=file,...)
     svd <- x$svd
     names(svd) <- dimnames(x$scaling)[[2]]
     if (length(svd) > 1) {
-        HTML("\n<P>Proportion of trace:\n</P>",file=file)
+        HTML("\n<p>Proportion of trace:\n</p>",file=file)
         HTML(round(svd^2/sum(svd^2), 4), file=file,append=TRUE,...)
     }
     invisible(x)
@@ -2459,13 +2488,13 @@ HTML("<center>",file=file)
 "HTML.loglm" <- function (x,file=.HTML.file, append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTMLli(paste("Call: ",deparse(x$call)),file=file)
+    HTMLli(paste("Call: <font class=call>",deparse(x$call),"</font>"),file=file)
     ts.array <- rbind(c(x$lrt, x$df, if (x$df > 0) 1 - pchisq(x$lrt, 
         x$df) else 1), c(x$pearson, x$df, if (x$df > 0) 1 - pchisq(x$pearson, 
         x$df) else 1))
     dimnames(ts.array) <- list(c("Likelihood Ratio", "Pearson"), 
         c("X^2", "df", "P(> X^2)"))
-    HTML("\n<P>Statistics:\n</P>",file=file)
+    HTML("\n<p>Statistics:\n</p>",file=file)
     HTML(ts.array,file=file)
     invisible(x)
 }
@@ -2477,11 +2506,11 @@ HTML("<center>",file=file)
     cat("\n",file=file,append=append,...)
     if (!is.null(cl <- x$call)) HTMLli(paste("Call: ",deparse(cl)),file=file)
     
-    HTML(paste("\n<P>Multiple correspondence analysis of <B>", nrow(x$rs), 
-        " </B>cases of <B> ", x$p, " </B>factors\n</P>"),file=file)
+    HTML(paste("\n<p>Multiple correspondence analysis of <b>", nrow(x$rs), 
+        " </b>cases of <b> ", x$p, " </b>factors\n</p>"),file=file)
   
     p <- 100 * cumsum(x$d)/(x$p - 1)
-    HTML(paste("\n<P>Correlations ",paste(round(x$d, 3),collapse=" "),"  cumulative % explained ", paste(round(p, 2),collapse=" "),"</P>" ),file=file)
+    HTML(paste("\n<p>Correlations ",paste(round(x$d, 3),collapse=" "),"  cumulative % explained ", paste(round(p, 2),collapse=" "),"</p>" ),file=file)
     
     invisible(x)
 }
@@ -2494,16 +2523,16 @@ HTML("<center>",file=file)
     cat("\n",file=file,append=append,...)
     if (!is.null(cl <- x$call)) HTMLli(paste("Call: ",deparse(cl)),file=file)
     if (length(coef(x))) {
-        HTML("\n<P>Coefficients:\n</P>",file=file)
+        HTML("\n<p>Coefficients:\n</p>",file=file)
         HTML(coef(x), file=file,append=TRUE,...)
     }
     else {
-        HTML("\n<P>No coefficients\n</P>",file=file)
+        HTML("\n<p>No coefficients\n</p>",file=file)
     }
-    HTML("\n<P>Intercepts:\n</P>",file=file)
+    HTML("\n<p>Intercepts:\n</p>",file=file)
     HTML(x$zeta, file=file,append=TRUE,...)
-    HTML(paste("\n<P>Residual Deviance: <B>", format(x$deviance, nsmall = 2), "</B>\n</P>"),file=file)
-    HTML(paste("<P>AIC:<B>", format(x$deviance + 2 * x$edf, nsmall = 2), "</B>\n</P>"),file=file)
+    HTML(paste("\n<p>Residual Deviance: <b>", format(x$deviance, nsmall = 2), "</b>\n</p>"),file=file)
+    HTML(paste("<p>AIC:<b>", format(x$deviance + 2 * x$edf, nsmall = 2), "</b>\n</p>"),file=file)
     invisible(x)
 }
 
@@ -2516,9 +2545,9 @@ HTML("<center>",file=file)
         names(cl)[2] <- ""
         HTMLli(paste("Call: ",deparse(cl)),file=file)
     }
-    HTML("\n<P>Prior probabilities of groups:\n</P>",file=file)
+    HTML("\n<p>Prior probabilities of groups:\n</p>",file=file)
     HTML(x$prior, file=file,...)
-    HTML("\n<P>Group means:\n</P>",file=file)
+    HTML("\n<p>Group means:\n</p>",file=file)
     HTML(x$means, file=file,append=TRUE,...)
     invisible(x)
 }
@@ -2546,15 +2575,15 @@ HTML("<center>",file=file)
         HTMLli(paste("Call: ",paste(deparse(cl),collapse=" ")),file=file)
     }
     if (x$converged) 
-        HTML(paste("<P>Converged in <B>", length(x$conv), "</B> iterations\n</P>"),file=file)
-    else HTML(paste("<P>Ran <B>", length(x$conv), " </B>iterations without convergence\n</P>"),file=file)
+        HTML(paste("<p>Converged in <b>", length(x$conv), "</b> iterations\n</p>"),file=file)
+    else HTML(paste("<p>Ran <b>", length(x$conv), " </b>iterations without convergence\n</p>"),file=file)
     coef <- x$coef
-    HTML("\n<P>Coefficients:\n</P>",file=file)
+    HTML("\n<p>Coefficients:\n</p>",file=file)
     HTML(coef, file=file,append=TRUE,...)
     nobs <- length(x$resid)
     rdf <- nobs - length(coef)
-    HTML(paste("\n<P>Degrees of freedom: <B>", nobs, " </B>total; <B>", rdf, " </B>residual\n</P>"),file=file)
-    HTML(paste("<P>Scale estimate:<B>", paste(format(signif(x$s, 3)),collapse=" "), "</B>\n</P>"),file=file)
+    HTML(paste("\n<p>Degrees of freedom: <b>", nobs, " </b>total; <b>", rdf, " </b>residual\n</p>"),file=file)
+    HTML(paste("<p>Scale estimate:<b>", paste(format(signif(x$s, 3)),collapse=" "), "</b>\n</p>"),file=file)
     invisible(x)
 }
 
@@ -2563,9 +2592,9 @@ HTML("<center>",file=file)
 "HTML.rms.curv" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML(paste("<P><LI>Parameter effects: c^theta x sqrt(FALSE) =<B>", round(x$pe, 
-        4), "</B>\n<BR><LI>", "Intrinsic: c^iota  x sqrt(FALSE) =<B>", round(x$ic, 
-        4), "\n</B></P>"),file=file, append=TRUE,...)
+    HTML(paste("<p><li>Parameter effects: c^theta x sqrt(FALSE) =<b>", round(x$pe, 
+        4), "</b>\n<br><li>", "Intrinsic: c^iota  x sqrt(FALSE) =<b>", round(x$ic, 
+        4), "\n</b></p>"),file=file, append=TRUE,...)
     invisible(x)
 }
 
@@ -2574,12 +2603,12 @@ HTML("<center>",file=file)
 "HTML.summary.loglm" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Formula:\n</P>",file=file)
+    HTML("<p>Formula:\n</p>",file=file)
     HTML(formula(x),file=file)
-    HTML("\n<P>Statistics:\n</P>",file=file)
+    HTML("\n<p>Statistics:\n</p>",file=file)
     HTML(x$tests,file=file)
     if (!is.null(x$oe)) {
-        HTML("\n<P>Observed (Expected):\n</P>",file=file)
+        HTML("\n<p>Observed (Expected):\n</p>",file=file)
         HTML(x$oe, file=file)
     }
     invisible(x)
@@ -2593,10 +2622,10 @@ HTML("<center>",file=file)
 	    cat("\n",file=file,append=append,...)
 	NextMethod(x,file=file)
 	dp <- 2 - floor(log10(x$SE.theta))
-    	HTML(paste("<P><LI>Theta:<B> ", round(x$theta, dp), "</B>\n<LI>Std. Err.:<B> ", round(x$SE.theta,  dp), "</B>\n</P>"),file=file)
+    	HTML(paste("<p><li>Theta:<b> ", round(x$theta, dp), "</b>\n<li>Std. Err.:<b> ", round(x$SE.theta,  dp), "</b>\n</p>"),file=file)
     	if (!is.null(x$th.warn)) 
-    	HTML(paste("<P>Warning while fitting theta:", x$th.warn, "\n</P>"),file=file)
-	HTML(paste("\n<P><LI> 2 x log-likelihood: ", format(round(x$twologlik, 3), nsmall = dp), "\n</P>"),file=file)
+    	HTML(paste("<p>Warning while fitting theta:", x$th.warn, "\n</p>"),file=file)
+	HTML(paste("\n<p><li> 2 x log-likelihood: ", format(round(x$twologlik, 3), nsmall = dp), "\n</p>"),file=file)
 	invisible(x)
 }
 
@@ -2612,18 +2641,18 @@ HTML("<center>",file=file)
     coef <- format(round(x$coef, digits = digits))
     pc <- x$pc
     if (pc > 0) {
-        HTML("\n<P>Coefficients:\n</P>",file=file)
+        HTML("\n<p>Coefficients:\n</p>",file=file)
         HTML(x$coef[seq(len = pc), ], file=file,append=TRUE, ...)
     }
     else {
-        HTML("\n<P>No coefficients\n</P>",file=file)
+        HTML("\n<p>No coefficients\n</p>",file=file)
     }
-    HTML("\n<P>Intercepts:\n</P>",file=file)
+    HTML("\n<p>Intercepts:\n</p>",file=file)
     HTML(coef[(pc + 1):nrow(coef), ], file=file,append=TRUE, ...)
-    HTML(paste("\n<P>Residual Deviance:<B>", format(x$deviance, nsmall = 2), "</B>\n</P>"),file=file)
-    HTML(paste("\n<P>AIC:<B>", format(x$deviance + 2 * x$edf, nsmall = 2), "</B>\n</P>"),file=file)
+    HTML(paste("\n<p>Residual Deviance:<b>", format(x$deviance, nsmall = 2), "</b>\n</p>"),file=file)
+    HTML(paste("\n<p>AIC:<b>", format(x$deviance + 2 * x$edf, nsmall = 2), "</b>\n</p>"),file=file)
     if (!is.null(correl <- x$correlation)) {
-        cat("\n<P>Correlation of Coefficients:\n</P>",file=file)
+        cat("\n<p>Correlation of Coefficients:\n</p>",file=file)
         ll <- lower.tri(correl)
         correl[ll] <- format(round(correl[ll], digits))
         correl[!ll] <- ""
@@ -2642,7 +2671,7 @@ HTML("<center>",file=file)
     df <- x$df
     rdf <- df[2]
     if (rdf > 5) {
-        HTML("<P>Residuals:\n</P>",file=file)
+        HTML("<p>Residuals:\n</p>",file=file)
         if (length(dim(resid)) == 2) {
             rq <- apply(t(resid), 1, quantile)
             dimnames(rq) <- list(c("Min", "1Q", "Median", "3Q", 
@@ -2655,19 +2684,19 @@ HTML("<center>",file=file)
         HTML(rq, file=file)
     }
     else if (rdf > 0) {
-        HTML("<P>Residuals:\n</P>",file=file)
+        HTML("<p>Residuals:\n</p>",file=file)
         HTML(resid,file=file)
     }
     if (nsingular <- df[3] - df[1]) 
-        HTML(paste("\n<P>Coefficients: (", nsingular, " not defined because of singularities)\n</P>",sep = ""),file=file)
-    else HTML("\n<P>Coefficients:\n</P>",file=file)
+        HTML(paste("\n<p>Coefficients: (", nsingular, " not defined because of singularities)\n</p>",sep = ""),file=file)
+    else HTML("\n<p>Coefficients:\n</p>",file=file)
     HTML(format(round(x$coef, digits = digits)), file=file)
-    HTML(paste("\n<P>Residual standard error:<B>", format(signif(x$sigma, 
-        digits)), " </B>on <B> ", rdf, " </B>degrees of freedom\n</P>"),file=file)
+    HTML(paste("\n<p>Residual standard error:<b>", format(signif(x$sigma, 
+        digits)), " </b>on <b> ", rdf, " </b>degrees of freedom\n</p>"),file=file)
     if (!is.null(correl <- x$correlation)) {
         p <- dim(correl)[2]
         if (p > 1) {
-            HTML("\n<P>Correlation of Coefficients:\n</P>",file=file)
+            HTML("\n<p>Correlation of Coefficients:\n</p>",file=file)
             ll <- lower.tri(correl)
             correl[ll] <- format(round(correl[ll], digits))
             correl[!ll] <- ""
@@ -2689,10 +2718,10 @@ HTML("<center>",file=file)
     if (!is.null(cl <- x$call)) {
         HTMLli(paste("Call: ",paste(deparse(cl),collapse="")),file=file)
     }
-    HTML("\n<P>Coefficients:\n</P>",file=file)
+    HTML("\n<p>Coefficients:\n</p>",file=file)
     HTML(coef(x), file=file)
-    HTML(paste("\n<P>Residual Deviance: <B>", format(x$deviance), "</B>\n</P>"),file=file)
-    HTML(paste("<P>AIC:<B>", format(x$AIC), "</B>\n</P>"),file=file)
+    HTML(paste("\n<p>Residual Deviance: <b>", format(x$deviance), "</b>\n</p>"),file=file)
+    HTML(paste("<p>AIC:<b>", format(x$AIC), "</b>\n</p>"),file=file)
     invisible(x)
 }
 
@@ -2704,11 +2733,11 @@ HTML("<center>",file=file)
     cat("\n",file=file,append=append,...)
     if (!inherits(x, "nnet")) 
         stop("Not legitimate a neural net fit")
-    HTML(paste("<P><B>a ", x$n[1], "-", x$n[2], "-", x$n[3], " network with ", length(x$wts), " weights.</B></P>", sep = ""),file=file)
+    HTML(paste("<p><b>a ", x$n[1], "-", x$n[2], "-", x$n[3], " network with ", length(x$wts), " weights.</b></p>", sep = ""),file=file)
     
     if (length(x$coefnames)) 
-        HTML(paste("<P>inputs:", x$coefnames, "\noutput(s):", deparse(formula(x)[[2]]), "\n</P>"),file=file)
-    HTML("<P>options were -</P>",file=file)
+        HTML(paste("<p>inputs:", x$coefnames, "\noutput(s):", deparse(formula(x)[[2]]), "\n</p>"),file=file)
+    HTML("<p>options were -</p>",file=file)
     tconn <- diff(x$nconn)
     if (tconn[length(tconn)] > x$n[2] + 1) 
         HTMLli(" skip-layer connections ",file=file)
@@ -2733,26 +2762,26 @@ HTML("<center>",file=file)
     if (!is.null(cl <- x$call)) {
         HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),file=file)
     }
-    HTML("\n<P>Coefficients:\n</P>",file=file)
+    HTML("\n<p>Coefficients:\n</p>",file=file)
     if (x$is.binomial) {
         HTML(cbind(Values = x$coefficients, "Std. Err." = x$standard.errors, 
             "Value/SE" = x$Wald.ratios), file=file)
     }
     else {
         HTML(x$coefficients, file=file)
-        HTML("\n<P>Std. Errors:\n</P>",file=file)
+        HTML("\n<p>Std. Errors:\n</p>",file=file)
         HTML(x$standard.errors, file=file)
         if (!is.null(x$Wald.ratios)) {
-            HTML("\n<O>Value/SE (Wald statistics):\n</P>",file=file)
+            HTML("\n<O>Value/SE (Wald statistics):\n</p>",file=file)
             HTML(x$coefficients/x$standard.errors, file=file)
         }
     }
-    HTML(paste("\n<P>Residual Deviance:<B>", format(x$deviance), "</B>\n</P>"),file=file)
-    HTML(paste("\n<P>AIC:<B>", format(x$AIC), "</B>\n</P>"),file=file)
+    HTML(paste("\n<p>Residual Deviance:<b>", format(x$deviance), "</b>\n</p>"),file=file)
+    HTML(paste("\n<p>AIC:<b>", format(x$AIC), "</b>\n</p>"),file=file)
     if (!is.null(correl <- x$correlation)) {
         p <- dim(correl)[2]
         if (p > 1) {
-            HTML("\n</P>Correlation of Coefficients:\n</P>",file=file)
+            HTML("\n</p>Correlation of Coefficients:\n</p>",file=file)
             ll <- lower.tri(correl)
             correl[ll] <- format(round(correl[ll], digits))
             correl[!ll] <- ""
@@ -2767,9 +2796,9 @@ HTML("<center>",file=file)
 "HTML.summary.nnet" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
      cat("\n",file=file,append=append,...)
-     HTML(paste("<P><B>a ", x$n[1], "-", x$n[2], "-", x$n[3], " network with ", length(x$wts), " weights.</B></P>", sep = ""),file=file)
+     HTML(paste("<p><b>a ", x$n[1], "-", x$n[2], "-", x$n[3], " network with ", length(x$wts), " weights.</b></p>", sep = ""),file=file)
         
-        HTML("<P>options were -</P>",file=file)
+        HTML("<p>options were -</p>",file=file)
         tconn <- diff(x$nconn)
         if (tconn[length(tconn)] > x$n[2] + 1) 
             HTMLli(" skip-layer connections ",file=file)
@@ -2794,17 +2823,17 @@ HTML("<center>",file=file)
 "HTML.agnes" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Merge:\n</P>",file=file)
+    HTML("<p>Merge:\n</p>",file=file)
     HTML(x$merge, file=file,append=TRUE,...)
-    HTML("<P>Order of objects:\n</P>",file=file)
+    HTML("<p>Order of objects:\n</p>",file=file)
     HTML(if (length(x$order.lab) != 0) 
         x$order.lab
     else x$order, file=file,append=TRUE, ...)
-    HTML("<P>Height:\n</P>",file=file)
+    HTML("<p>Height:\n</p>",file=file)
     HTML(x$height, file=file,append=TRUE,...)
-    HTML("<P>Agglomerative coefficient:\n</P>",file=file)
+    HTML("<p>Agglomerative coefficient:\n</p>",file=file)
     HTML(x$ac, file=file,append=TRUE,...)
-    HTML("\n<P>Available components:\n</P>",file=file)
+    HTML("\n<p>Available components:\n</p>",file=file)
     HTML(names(x), file=file,append=TRUE,...)
     invisible(x)
 }
@@ -2815,15 +2844,15 @@ HTML("<center>",file=file)
 "HTML.clara" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Best sample:\n</P>",file=file)
+    HTML("<p>Best sample:\n</p>",file=file)
     HTML(x$sample, file=file, append=TRUE,...)
-    HTML("<P>Medoids:\n</P>",file=file)
+    HTML("<p>Medoids:\n</p>",file=file)
     HTML(x$medoids, file=file,append=TRUE,...)
-    HTML("<P>Clustering vector:\n</P>",file=file)
+    HTML("<p>Clustering vector:\n</p>",file=file)
     HTML(x$clustering, file=file,append=TRUE,...)
-    HTML("<P>Objective function:\n</P>",file=file)
+    HTML("<p>Objective function:\n</p>",file=file)
     HTML(x$objective, file=file,append=TRUE,...)
-    HTML("\n<P>Available components:\n</P>",file=file)
+    HTML("\n<p>Available components:\n</p>",file=file)
     HTML(names(x),file=file, append=TRUE,...)
     invisible(x)
 }
@@ -2833,15 +2862,15 @@ HTML("<center>",file=file)
 "HTML.diana" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Merge:\n</P>",file=file)
+    HTML("<p>Merge:\n</p>",file=file)
     HTML(x$merge, file=file,append=TRUE,...)
-    HTML("<P>Order of objects:\n</P>",file=file)
+    HTML("<p>Order of objects:\n</p>",file=file)
     HTML(if (length(x$order.lab) != 0)  x$order.lab    else x$order, file= file, append=TRUE,...)
-    HTML("<P>Height:\n</P>",file=file)
+    HTML("<p>Height:\n</p>",file=file)
     HTML(x$height, file=file,append=TRUE,...)
-    HTML("<P>Divisive coefficient:\n</P>",file=file)
+    HTML("<p>Divisive coefficient:\n</p>",file=file)
     HTML(x$dc,file=file, append=TRUE,...)
-    HTML("\n<P>Available components:\n</P>",file=file)
+    HTML("\n<p>Available components:\n</p>",file=file)
     HTML(names(x),file=file,append=TRUE, ...)
     invisible(x)
 }
@@ -2851,12 +2880,12 @@ HTML("<center>",file=file)
 "HTML.dissimilarity" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Dissimilarities :\n</P>",file=file)
+    HTML("<p>Dissimilarities :\n</p>",file=file)
     HTML(as.vector(x),file=file,append=TRUE, ...)
     if (!is.null(attr(x, "na.message"))) 
-        HTML(paste("<P>Warning : ", attr(x, "NA.message"), "\n</P>"),file=file)
-    HTML(paste("<P>Metric : ", attr(x, "Metric"), "\n</P>"),file=file)
-    HTML(paste("<P>Number of objects : ", attr(x, "Size"), "\n</P>"),file=file)
+        HTML(paste("<p>Warning : ", attr(x, "NA.message"), "\n</p>"),file=file)
+    HTML(paste("<p>Metric : ", attr(x, "Metric"), "\n</p>"),file=file)
+    HTML(paste("<p>Number of objects : ", attr(x, "Size"), "\n</p>"),file=file)
     invisible(x)
 }
 
@@ -2867,14 +2896,14 @@ HTML("<center>",file=file)
 
     cat("\n",file=file,append=append,...)
     d <- length(x$loc)
-    HTML(paste("<P>`ellipsoid' in <B> ", d, " </B>dimensions:<BR> center = (<B>", paste(format(x$loc, 
-        digits = digits),collapse=" "), "</B>); squared ave.radius d^2 = <B>", format(x$d2, 
-        digits = digits), " </B>\n<BR> and shape matrix =\n</P>"),file=file)
+    HTML(paste("<p>`ellipsoid' in <b> ", d, " </b>dimensions:<br> center = (<b>", paste(format(x$loc, 
+        digits = digits),collapse=" "), "</b>); squared ave.radius d^2 = <b>", format(x$d2, 
+        digits = digits), " </b>\n<br> and shape matrix =\n</p>"),file=file)
     HTML(x$cov, file=file, append=TRUE,...)
-    HTML(paste("<P>&nbsp;  hence,", if (d == 2) 
+    HTML(paste("<p>&nbsp;  hence,", if (d == 2) 
         " area "
-    else " volume ", " = <B>", format(volume(x), digits = digits), 
-        "\n</B></P>"),file=file)
+    else " volume ", " = <b>", format(volume(x), digits = digits), 
+        "\n</b></p>"),file=file)
     invisible(x)
 }
 
@@ -2885,13 +2914,13 @@ HTML("<center>",file=file)
 {
     cat("\n",file=file,append=append,...)
     HTML(x$objective, file=file,append=TRUE,...)
-    HTML("<P>Membership coefficients:\n</P>", file=file)
+    HTML("<p>Membership coefficients:\n</p>", file=file)
     HTML(x$membership, file=file,append=TRUE, ...)
-    HTML("<P>Coefficients:\n</P>", file=file)
+    HTML("<p>Coefficients:\n</p>", file=file)
     HTML(x$coeff, file=file, append=TRUE,...)
-    HTML("<P>Closest hard clustering:\n</P>", file=file)
+    HTML("<p>Closest hard clustering:\n</p>", file=file)
     HTML(x$clustering, file=file,append=TRUE, ...)
-    HTML("\n<P>Available components:\n</P>", file=file)
+    HTML("\n<p>Available components:\n</p>", file=file)
     HTML(names(x), file=file, append=TRUE,...)
     invisible(x)
 }
@@ -2902,15 +2931,15 @@ HTML("<center>",file=file)
 "HTML.mona" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Revised data:\n</P>",file=file)
+    HTML("<p>Revised data:\n</p>",file=file)
     HTML(x$data,file=file,  append=TRUE,...)
-    HTML("<P>Order of objects:\n</P>",file=file)
+    HTML("<p>Order of objects:\n</p>",file=file)
     HTML(if (length(x$order.lab) != 0)  x$order.lab else x$order,file=file, append=TRUE,...)
-    HTML("<P>Variable used:\n</P>",file=file)
+    HTML("<p>Variable used:\n</p>",file=file)
     HTML(x$variable, file=file, append=TRUE,...)
-    HTML("<P>Separation step:\n</P>",file=file)
+    HTML("<p>Separation step:\n</p>",file=file)
     HTML(x$step,file=file, append=TRUE,...)
-    HTML("\n<P>Available components:\n</P>",file=file)
+    HTML("\n<p>Available components:\n</p>",file=file)
     HTML(names(x),file=file,append=TRUE, ...)
     invisible(x)
 }
@@ -2920,13 +2949,13 @@ HTML("<center>",file=file)
 "HTML.pam" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Medoids:\n</P>",file=file)
+    HTML("<p>Medoids:\n</p>",file=file)
     HTML(x$medoids,file=file, append=TRUE,...)
-    HTML("<P>Clustering vector:\n</P>",file=file)
+    HTML("<p>Clustering vector:\n</p>",file=file)
     HTML(x$clustering,file=file, append=TRUE,...)
-    HTML("<P>Objective function:\n</P>",file=file)
+    HTML("<p>Objective function:\n</p>",file=file)
     HTML(x$objective,file=file, append=TRUE,...)
-    HTML("\n<P>Available components:\n</P>",file=file)
+    HTML("\n<p>Available components:\n</p>",file=file)
     HTML(names(x),file=file, append=TRUE,...)
     invisible(x)
 }
@@ -2936,19 +2965,19 @@ HTML("<center>",file=file)
 "HTML.summary.agnes" <- function(x,file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Merge:\n</P>",file=file)
+    HTML("<p>Merge:\n</p>",file=file)
     HTML(x$merge, file=file, append=TRUE,...)
-    HTML("<P>Order of objects:\n</P>",file=file)
+    HTML("<p>Order of objects:\n</p>",file=file)
     HTML(if (length(x$order.lab) != 0) 
         x$order.lab
     else x$order, file=file, append=TRUE,...)
-    HTML("<P>Height:\n</P>",file=file)
+    HTML("<p>Height:\n</p>",file=file)
     HTML(x$height, file=file,append=TRUE, ...)
-    HTML("<P>Agglomerative coefficient:\n</P>",file=file)
+    HTML("<p>Agglomerative coefficient:\n</p>",file=file)
     HTML(x$ac, file=file, append=TRUE,...)
-    HTML("<P>\n</P>",file=file)
+    HTML("<p>\n</p>",file=file)
     HTML(x$diss, file=file, append=TRUE,...)
-    HTML("<P>\nAvailable components:\n</P>",file=file)
+    HTML("<p>\nAvailable components:\n</p>",file=file)
     HTML(names(x), file=file,append=TRUE, ...)
     invisible(x)
 }
@@ -2958,27 +2987,27 @@ HTML("<center>",file=file)
 "HTML.summary.clara" <- function(x,file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Best sample:\n</P>",file=file)
+    HTML("<p>Best sample:\n</p>",file=file)
     HTML(x$sample, file=file, append=TRUE,...)
-    HTML("<P>Medoids:\n</P>",file=file)
+    HTML("<p>Medoids:\n</p>",file=file)
     HTML(x$medoids, file=file, append=TRUE,...)
-    HTML("<P>Clustering vector:\n</P>",file=file)
+    HTML("<p>Clustering vector:\n</p>",file=file)
     HTML(x$clustering, file=file,append=TRUE, ...)
-    HTML("<P>Objective function:\n</P>",file=file)
+    HTML("<p>Objective function:\n</p>",file=file)
     HTML(x$objective, file=file,append=TRUE, ...)
-    HTML("<P>\nNumerical information per cluster:\n</P>",file=file)
+    HTML("<p>\nNumerical information per cluster:\n</p>",file=file)
     HTML(x$clusinfo, file=file, append=TRUE,...)
     if (length(x$silinfo) != 0) {
-        HTML("<P>\nSilhouette plot information for best sample:\n</P>",file=file)
+        HTML("<p>\nSilhouette plot information for best sample:\n</p>",file=file)
         HTML(x$silinfo[[1]], file=file,append=TRUE, ...)
-        HTML("<P>Average silhouette width per cluster:\n</P>",file=file)
+        HTML("<p>Average silhouette width per cluster:\n</p>",file=file)
         HTML(x$silinfo[[2]], file=file,append=TRUE, ...)
-        HTML("<P>Average silhouette width of best sample:\n</P>",file=file)
+        HTML("<p>Average silhouette width of best sample:\n</p>",file=file)
         HTML(x$silinfo[[3]], file=file,append=TRUE, ...)
     }
-    HTML("<P>\n</P>",file=file)
+    HTML("<p>\n</p>",file=file)
     HTML(x$diss, file=file, append=TRUE,...)
-    HTML("<P>\nAvailable components:\n</P>",file=file)
+    HTML("<p>\nAvailable components:\n</p>",file=file)
     HTML(names(x), file=file,append=TRUE, ...)
     invisible(x)
 }
@@ -2988,19 +3017,19 @@ HTML("<center>",file=file)
 "HTML.summary.diana" <- function(x,file=.HTML.file,append=TRUE,...) 
 {
     cat("\n",file=file,append=append,...)
-    HTML("<P>Merge:\n</P>",file=file)
+    HTML("<p>Merge:\n</p>",file=file)
     HTML(x$merge, file=file, append=TRUE,...)
-    HTML("<P>Order of objects:\n</P>",file=file)
+    HTML("<p>Order of objects:\n</p>",file=file)
     HTML(if (length(x$order.lab) != 0) 
         x$order.lab
     else x$order, file=file, append=TRUE,...)
-    HTML("<P>Height:\n</P>",file=file)
+    HTML("<p>Height:\n</p>",file=file)
     HTML(x$height, file=file,append=TRUE, ...)
-    HTML("<P>Divisive coefficient:\n</P>",file=file)
+    HTML("<p>Divisive coefficient:\n</p>",file=file)
     HTML(x$dc, file=file, append=TRUE,...)
-    HTML("<P>\n</P>",file=file)
+    HTML("<p>\n</p>",file=file)
     HTML(x$diss, file=file,append=TRUE, ...)
-    HTML("<P>\nAvailable components:\n</P>",file=file)
+    HTML("<p>\nAvailable components:\n</p>",file=file)
     HTML(names(x), file=file,append=TRUE, ...)
     invisible(x)
 }
@@ -3011,23 +3040,23 @@ HTML("<center>",file=file)
 {
     cat("\n",file=file,append=append,...)
     HTML(x$objective, file=file, append=TRUE,...)
-    HTML("<P>Membership coefficients:\n</P>",file=file)
+    HTML("<p>Membership coefficients:\n</p>",file=file)
     HTML(x$membership, file=file, append=TRUE, ...)
-    HTML("<P>Coefficients:\n</P>",file=file)
+    HTML("<p>Coefficients:\n</p>",file=file)
     HTML(x$coeff, file=file, append=TRUE, ...)
-    HTML("<P>Closest hard clustering:\n</P>",file=file)
+    HTML("<p>Closest hard clustering:\n</p>",file=file)
     HTML(x$clustering, file=file, append=TRUE, ...)
     if (length(x$silinfo) != 0) {
-        HTML("<P>\nSilhouette plot information:\n</P>",file=file)
+        HTML("<p>\nSilhouette plot information:\n</p>",file=file)
         HTML(x$silinfo[[1]], file=file, append=TRUE, ...)
-        HTML("<P>Average silhouette width per cluster:\n</P>",file=file)
+        HTML("<p>Average silhouette width per cluster:\n</p>",file=file)
         HTML(x$silinfo[[2]], file=file, append=TRUE, ...)
-        HTML("<P>Average silhouette width of total data set:\n</P>",file=file)
+        HTML("<p>Average silhouette width of total data set:\n</p>",file=file)
         HTML(x$silinfo[[3]], file=file, append=TRUE, ...)
     }
-    HTML("<P>\n</P>",file=file)
+    HTML("<p>\n</p>",file=file)
     HTML(x$diss, file=file, append=TRUE, ...)
-    HTML("<P>\nAvailable components:\n</P>",file=file)
+    HTML("<p>\nAvailable components:\n</p>",file=file)
     HTML(names(x), file=file, append=TRUE, ...)
     invisible(x)
 }
@@ -3046,32 +3075,32 @@ HTML("<center>",file=file)
 "HTML.summary.pam" <- function(x,file=.HTML.file, append=TRUE,...) 
 {
     cat("\n", file=file,append=append,...)
-    HTML("<P>Medoids:\n</P>",file=file)
+    HTML("<p>Medoids:\n</p>",file=file)
     HTML(x$medoids, file=file, append=TRUE, ...)
-    HTML("<P>Clustering vector:\n</P>",file=file)
+    HTML("<p>Clustering vector:\n</p>",file=file)
     HTML(x$clustering, file=file, append=TRUE, ...)
-    HTML("<P>Objective function:\n</P>",file=file)
+    HTML("<p>Objective function:\n</p>",file=file)
     HTML(x$objective, file=file, append=TRUE, ...)
-    HTML("<P>\nNumerical information per cluster:\n</P>",file=file)
+    HTML("<p>\nNumerical information per cluster:\n</p>",file=file)
     HTML(x$clusinfo, file=file, append=TRUE, ...)
-    HTML("<P>\nIsolated clusters:\n</P>",file=file)
-    HTML("<P>L-clusters: ")
+    HTML("<p>\nIsolated clusters:\n</p>",file=file)
+    HTML("<p>L-clusters: ")
     HTML(names(x$isolation[x$isolation == "L"]), 
         ...)
-    HTML("<P>L*-clusters: ")
+    HTML("<p>L*-clusters: ")
     HTML(names(x$isolation[x$isolation == "L*"]), 
         ...)
     if (length(x$silinfo) != 0) {
-        HTML("<P>\nSilhouette plot information:\n</P>",file=file)
+        HTML("<p>\nSilhouette plot information:\n</p>",file=file)
         HTML(x$silinfo[[1]], file=file, append=TRUE, ...)
-        HTML("<P>Average silhouette width per cluster:\n</P>",file=file)
+        HTML("<p>Average silhouette width per cluster:\n</p>",file=file)
         HTML(x$silinfo[[2]], file=file, append=TRUE, ...)
-        HTML("<P>Average silhouette width of total data set:\n</P>",file=file)
+        HTML("<p>Average silhouette width of total data set:\n</p>",file=file)
         HTML(x$silinfo[[3]], file=file, append=TRUE, ...)
     }
-    HTML("<P>\n</P>",file=file)
+    HTML("<p>\n</p>",file=file)
     HTML(x$diss, file=file, append=TRUE, ...)
-    HTML("<P>\nAvailable components:\n</P>",file=file)
+    HTML("<p>\nAvailable components:\n</p>",file=file)
     HTML(names(x), file=file, append=TRUE, ...)
     invisible(x)
 }
@@ -3084,14 +3113,14 @@ HTML("<center>",file=file)
 {
     cat("\n", file=file, append=append,...)
     HTML(x$family,file=file)
-    HTML("<P>Formula:\n</P>",file=file)
+    HTML("<p>Formula:\n</p>",file=file)
     HTML(x$formula,file=file)
     if (x$dim == 0) 
-        HTML(paste("<P>Total model degrees of freedom <B>", x$nsdf, " </B>\n</P>"),file=file)
-    else HTML(paste("\n<P>Estimated degrees of freedom:<B>", paste(x$edf,collapse=" , "), "</B>  total = <B>", 
-        paste(sum(x$edf) + x$nsdf,collapse=" , "), "</B>\n</P>"),file=file)
+        HTML(paste("<p>Total model degrees of freedom <b>", x$nsdf, " </b>\n</p>"),file=file)
+    else HTML(paste("\n<p>Estimated degrees of freedom:<b>", paste(x$edf,collapse=" , "), "</b>  total = <b>", 
+        paste(sum(x$edf) + x$nsdf,collapse=" , "), "</b>\n</p>"),file=file)
     gcv <- x$df.null * x$sig2/(x$df.null - sum(x$edf) - x$nsdf)
-    HTML("\n<P>GCV score:</P> ",file=file)
+    HTML("\n<p>GCV score:</p> ",file=file)
     HTML(gcv,file=file)
     invisible(x)
 }
@@ -3102,10 +3131,10 @@ HTML("<center>",file=file)
 {
     cat("\n", file=file, append=append,...)
     HTML(x$family,file=file)
-    HTML("<P>Formula:\n</P>",file=file)
+    HTML("<p>Formula:\n</p>",file=file)
     HTML(x$formula,file=file)
     if (length(x$p.coeff) > 0) {
-        HTML("\n<P>Parametric coefficients:\n</P>",file=file)
+        HTML("\n<p>Parametric coefficients:\n</p>",file=file)
         width <- max(nchar(names(x$p.coeff)))
 
         HTML("\n<p align=center><table cellspacing=0 border=1><td><table cellspacing=0> <tr class= firstline >        <th></th><th>Estimate</th><th>std.err.</th><th>t ratio</th><th>Pr(>|t[)</th></tr>\n",file=file)
@@ -3118,24 +3147,24 @@ HTML("<center>",file=file)
     }
 	HTMLbr( file=file)
     if (x$m > 0) {
-        HTML("<P>Approximate significance of smooth terms:\n</P>",file=file)
+        HTML("<p>Approximate significance of smooth terms:\n</p>",file=file)
         width <- max(nchar(names(x$chi.sq)))
 
         HTML("\n<p align=center><table cellspacing=0 border=1><td><table cellspacing=0> <tr class= firstline > <th></th><th>edf</th><th>chi.sq</th><th>p-value</th></tr>\n",file=file)
         for (i in 1:x$m)
         
-        HTML(paste("<TR><TD CLASS=firstcolumn>",formatC(names(x$chi.sq)[i], width = width),
-        "</TD><TD CLASS=CellInside>", formatC(x$edf[i], width = 10, digits = 4), "</TD><TD CLASS=CellInside>",
-            formatC(x$chi.sq[i], width = 10, digits = 5),"</TD><TD CLASS=CellInside>",
-            format.pval(x$s.pv[i]), "</TD></TR>\n", sep = ""),file=file)
+        HTML(paste("<tr><td class=firstcolumn>",formatC(names(x$chi.sq)[i], width = width),
+        "</td><td class=CellInside>", formatC(x$edf[i], width = 10, digits = 4), "</td><td class=CellInside>",
+            formatC(x$chi.sq[i], width = 10, digits = 5),"</td><td class=CellInside>",
+            format.pval(x$s.pv[i]), "</td></tr>\n", sep = ""),file=file)
             
            HTML("\n</table></td></table></center>",file=file) 
             
     }
-    HTML(paste("\n<P>Adjusted r-sq. = <B>", formatC(x$r.sq, digits = 3, width = 5), 
-        " </B>   GCV score = <B>", formatC(x$gcv, digits = 5), "</B> \n<BR>Scale estimate = <B>", 
+    HTML(paste("\n<p>Adjusted r-sq. = <b>", formatC(x$r.sq, digits = 3, width = 5), 
+        " </b>   GCV score = <b>", formatC(x$gcv, digits = 5), "</b> \n<br>Scale estimate = <b>", 
         formatC(x$scale, digits = 5, width = 8, flag = "-"), 
-        "    </B>     n = <B>", x$n, "</B>\n</P>", sep = ""),file=file)
+        "    </b>     n = <b>", x$n, "</b>\n</p>", sep = ""),file=file)
         invisible(x)
 }
 
@@ -3181,12 +3210,12 @@ HTML("<center>",file=file)
         yval, term)
     omit <- x$na.action
     if (length(omit)) 
-        HTML(paste("<P>n=<B>", n[1], "</B> (", naprint(omit), ")\n</P>\n", sep = ""),file=file)
-    else HTML(paste("<P>n=<B>", n[1], "</B>\n</P>\n"),file=file)
+        HTML(paste("<p>n=<b>", n[1], "</b> (", naprint(omit), ")\n</p>\n", sep = ""),file=file)
+    else HTML(paste("<p>n=<b>", n[1], "</b>\n</p>\n"),file=file)
     if (x$method == "class") 
-        HTML("<P>node), split, n, loss, yval, (yprob)\n</P>",file=file)
-    else HTML("<P>node), split, n, deviance, yval\n</P>",file=file)
-    HTML("<P>      * denotes terminal node\n\n</P>",file=file)
+        HTML("<p>node), split, n, loss, yval, (yprob)\n</p>",file=file)
+    else HTML("<p>node), split, n, deviance, yval\n</p>",file=file)
+    HTML("<p>      * denotes terminal node\n\n</p>",file=file)
     HTML(paste("<XMP>", paste(z, sep = "\n",collapse="\n"),"</XMP>"),file=file)
     invisible(x)
 }
@@ -3199,12 +3228,12 @@ HTML("<center>",file=file)
 {
     cat("\n", file=file, append=append,...)
     if (!is.null(cl <- x$call)) HTMLli(paste("Call: ",paste(deparse(cl),collapse=" ")),file=file)
-    HTML(paste("\n<P>Number of Observations:<B>", x$n, "</B>\n</P>"),file=file)
-    HTML(paste("<P>Equivalent Number of Parameters:<B>", format(round(x$enp, 
-        2)), "</B>\n</P>"),file=file)
-    HTML(paste("<P>Residual", if (x$pars$family == "gaussian") 
-        " Standard Error: <B>"
-    else " Scale Estimate:<B> ", format(signif(x$s, digits)), "</B>\n</P>"),file=file)
+    HTML(paste("\n<p>Number of Observations:<b>", x$n, "</b>\n</p>"),file=file)
+    HTML(paste("<p>Equivalent Number of Parameters:<b>", format(round(x$enp, 
+        2)), "</b>\n</p>"),file=file)
+    HTML(paste("<p>Residual", if (x$pars$family == "gaussian") 
+        " Standard Error: <b>"
+    else " Scale Estimate:<b> ", format(signif(x$s, digits)), "</b>\n</p>"),file=file)
     invisible(x)
 }
 
@@ -3216,7 +3245,7 @@ HTML("<center>",file=file)
     if (!is.null(cl <- x$call)) HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),file=file)
     mu <- x$mu
     ml <- x$ml
-    HTML("\n<P>Goodness of fit:\n</P>",file=file)
+    HTML("\n<p>Goodness of fit:\n</p>",file=file)
     gof <- x$gofn
     names(gof) <- paste(1:ml, "terms")
     HTML(format(gof[mu:ml], ...), file=file)
@@ -3236,15 +3265,15 @@ HTML("<center>",file=file)
         cv <- FALSE
     else if (is.name(cv)) 
         cv <- eval(cv)
-    HTML(paste("\n<P>Smoothing Parameter  spar=<B>", format(x$spar, digits = digits), 
-        "</B> lambda=<B>", format(x$lambda, digits = digits),"</B>", if (ip["ispar"] != 
-            1) paste("(", ip["iter"], " iterations)", sep = ""), "\n</P>"),file=file)
-    HTML(paste("<P>Equivalent Degrees of Freedom (Df):<B>", format(x$df, digits = digits), 
-        "</B>\n</P>"),file=file)
-    HTML(paste("<P>Penalized Criterion:<B>", format(x$pen.crit, digits = digits), 
-        "</B>\n</P>"),file=file)
-    HTML(paste ("<P>",if (cv) "PRESS:"
-    else "GCV:", "<B>",format(x$cv.crit, digits = digits), "</B>\n</P>"),file=file)
+    HTML(paste("\n<p>Smoothing Parameter  spar=<b>", format(x$spar, digits = digits), 
+        "</b> lambda=<b>", format(x$lambda, digits = digits),"</b>", if (ip["ispar"] != 
+            1) paste("(", ip["iter"], " iterations)", sep = ""), "\n</p>"),file=file)
+    HTML(paste("<p>Equivalent Degrees of Freedom (Df):<b>", format(x$df, digits = digits), 
+        "</b>\n</p>"),file=file)
+    HTML(paste("<p>Penalized Criterion:<b>", format(x$pen.crit, digits = digits), 
+        "</b>\n</p>"),file=file)
+    HTML(paste ("<p>",if (cv) "PRESS:"
+    else "GCV:", "<b>",format(x$cv.crit, digits = digits), "</b>\n</p>"),file=file)
     invisible(x)
 }
 
@@ -3254,15 +3283,15 @@ HTML("<center>",file=file)
 {
     cat("\n", file=file, append=append,...)
    if (!is.null(cl <- x$call)) HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),file=file)
-	HTML(paste("\n<P>Number of Observations:<B>", x$n, "</B>\n</P>"),file=file)
-    	HTML(paste("<P>Equivalent Number of Parameters:<B>", format(round(x$enp, 2)), "</B>\n</P>"),file=file)
+	HTML(paste("\n<p>Number of Observations:<b>", x$n, "</b>\n</p>"),file=file)
+    	HTML(paste("<p>Equivalent Number of Parameters:<b>", format(round(x$enp, 2)), "</b>\n</p>"),file=file)
     if (x$pars$family == "gaussian") 
-        HTML("<P>Residual Standard Error:</P>",file=file)
-    else HTML("<P>Residual Scale Estimate:</P>",file=file) 
+        HTML("<p>Residual Standard Error:</p>",file=file)
+    else HTML("<p>Residual Scale Estimate:</p>",file=file) 
         HTML(format(signif(x$s, digits)),file=file) 
-    HTML("<P>Trace of smoother matrix:</P>",file=file)
+    HTML("<p>Trace of smoother matrix:</p>",file=file)
     HTML(format(round(x$trace.hat,2)), file=file)
-    HTML("\n<P>Control settings:\n</P><UL>",file=file)
+    HTML("\n<p>Control settings:\n</p><UL>",file=file)
     HTMLli(paste("normalize: ", x$pars$normalize, "\n"),file=file)
     HTMLli(paste("  span     : ", format(x$pars$span), "\n"),file=file)
     HTMLli(paste("  degree   : ", x$pars$degree, "\n"),file=file)
@@ -3270,7 +3299,7 @@ HTML("<center>",file=file)
     if (x$pars$family != "gaussian") 
         HTMLli(paste("       iterations =", x$pars$iterations),file=file)
     	HTML("</UL>",file=file)
-    HTML(paste("\n<P>  surface  : ", x$pars$surface, if (x$pars$surface == "interpolate")  paste("  cell =", format(x$pars$cell)),"</P>"),file=file)
+    HTML(paste("\n<p>  surface  : ", x$pars$surface, if (x$pars$surface == "interpolate")  paste("  cell =", format(x$pars$cell)),"</p>"),file=file)
     invisible(x)
 }
 
@@ -3282,12 +3311,12 @@ HTML("<center>",file=file)
     cat("\n", file=file, append=append,...)
     HTML.ppr(x,file=file, ...)
     mu <- x$mu
-    HTML("\n<P>Projection direction vectors:\n</P>",file=file)
+    HTML("\n<p>Projection direction vectors:\n</p>",file=file)
     HTML(format(x$alpha, ...),file=file)
-    HTML("\n<P>Coefficients of ridge terms:\n</P>",file=file)
+    HTML("\n<p>Coefficients of ridge terms:\n</p>",file=file)
     HTML(format(x$beta, ...), file=file)
     if (any(x$edf > 0)) {
-        HTML("\n<P>Equivalent df for ridge terms:\n</P>")
+        HTML("\n<p>Equivalent df for ridge terms:\n</p>")
         edf <- x$edf
         names(edf) <- paste("term", 1:mu)
         HTML(round(edf, 2),file=file, append=TRUE,...)
@@ -3307,7 +3336,7 @@ HTML("<center>",file=file)
     cat("\n", file=file, append=append,...)
     value <- c(rep(NA, splineOrder(x)), coef(x))
     names(value) <- format(splineKnots(x), digits = 5)
-    HTML(paste("<P> bSpline representation of spline", if (!is.null(form <- attr(x, "formula"))) paste (" for", paste(deparse(as.vector(form)),collapse=" "))  ,"</P>"),file=file)
+    HTML(paste("<p> bSpline representation of spline", if (!is.null(form <- attr(x, "formula"))) paste (" for", paste(deparse(as.vector(form)),collapse=" "))  ,"</p>"),file=file)
     HTML(value, file=file,append=TRUE,...)
     invisible(x)
 }
@@ -3324,7 +3353,7 @@ HTML("<center>",file=file)
         dimnames(coeff) <- list(format(splineKnots(x)), c("constant", 
             "linear", "quadratic", "cubic", paste(4:29, "th", 
                 sep = ""))[1:(dim(coeff)[2])])
-    HTML(    paste(    "<P>Polynomial representation of spline ",    if (!is.null(form <- attr(x, "formula")))     	paste(" for ", paste(deparse(as.vector(form)),collapse=" ")  )    ,"</P>")    ,file=file    ) 
+    HTML(    paste(    "<p>Polynomial representation of spline ",    if (!is.null(form <- attr(x, "formula")))     	paste(" for ", paste(deparse(as.vector(form)),collapse=" ")  )    ,"</p>")    ,file=file    ) 
     HTML(coeff, file=file,append=TRUE,...)
     invisible(x)
 }
@@ -3334,8 +3363,8 @@ HTML("<center>",file=file)
 "HTML.ppolySpline" <- function (x,file=.HTML.file, append=TRUE,...) 
 {
     cat("\n", file=file, append=append,...)
-    HTML("<P>periodic </P>",file=file)
-    HTML(paste("\n<P>Period:<B>", format(x[["period"]]), "</B>\n</P>"),file=file)
+    HTML("<p>periodic </p>",file=file)
+    HTML(paste("\n<p>Period:<b>", format(x[["period"]]), "</b>\n</p>"),file=file)
     NextMethod("HTML",file=file)
     invisible(x)
 }
@@ -3351,10 +3380,10 @@ HTML("<center>",file=file)
     cat("\n", file=file, append=append,...)
 	if (!is.null(cl <- x$call)) HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),file=file)    
 	
-	HTML("<P>Coefficients:\n</P>",file=file)
+	HTML("<p>Coefficients:\n</p>",file=file)
     HTML.default(format(coef(x), digits = digits), file=file)
-    HTML(paste("\n<P>Scale estimates ", paste(format(x$scale, digits = digits),collapse=" "),
-        "\n\n</P>"),file=file)
+    HTML(paste("\n<p>Scale estimates ", paste(format(x$scale, digits = digits),collapse=" "),
+        "\n\n</p>"),file=file)
        invisible(x)
 }
 
@@ -3366,7 +3395,7 @@ HTML("<center>",file=file)
 "HTML.nls" <- function (x, file=.HTML.file,append=TRUE,...) 
 {
     cat("\n", file=file, append=append,...)
-    HTML("<P><B>Nonlinear regression model\n</B></P>",file=file)
+    HTML("<p><b>Nonlinear regression model\n</b></p>",file=file)
     HTMLli(paste("Model: ", paste(deparse(formula(x)),collapse=" "), "\n"),file=file)
     HTMLli(paste("Data: ", as.character(x$data), "\n"),file=file)
     HTML(x$m$getAllPars(),file=file)
@@ -3381,19 +3410,19 @@ HTML("<center>",file=file)
     4, signif.stars = getOption("show.signif.stars"), file=.HTML.file,append=TRUE,...) 
 {
     cat("\n", file=file, append=append,...)
-    HTML(paste("<P>Formula:",paste(deparse(x$formula), collapse = " "),"</P>"),file=file)
+    HTML(paste("<p>Formula:",paste(deparse(x$formula), collapse = " "),"</p>"),file=file)
     df <- x$df
     rdf <- df[2]
-    HTML("\n<P>Parameters:\n</P>",file=file)
+    HTML("\n<p>Parameters:\n</p>",file=file)
     HTML.coefmat(x$parameters, digits = digits, signif.stars = signif.stars, 
         file=file,append=TRUE,...)
-    HTML(paste("\n<P>Residual standard error:<B> ", format(signif(x$sigma, 
-        digits)), " </B>on <B>", rdf, " </B>degrees of freedom\n</P>"),file=file)
+    HTML(paste("\n<p>Residual standard error:<b> ", format(signif(x$sigma, 
+        digits)), " </b>on <b>", rdf, " </b>degrees of freedom\n</p>"),file=file)
     correl <- x$correlation
     if (!is.null(correl)) {
         p <- dim(correl)[2]
         if (p > 1) {
-            HTML("\n<P>Correlation of Parameter Estimates:\n</P>",file=file)
+            HTML("\n<p>Correlation of Parameter Estimates:\n</p>",file=file)
             if (symbolic.cor) 
                 HTML(symnum(correl)[-1, -p],file=file)
             else {
@@ -3415,7 +3444,7 @@ HTML("<center>",file=file)
 {
     cat("\n", file=file, append=append,...)
     numform <- function(x) paste(formatC(x, dig = digits), collapse = ", ")
-    HTML(paste("<P><B>Empirical CDF</B></P> \n<LI>Call: ", paste(deparse(attr(x, "call")),collapse=" ")), file=file)
+    HTML(paste("<p><b>Empirical CDF</b></p> \n<li>Call:<font class='call'> ", paste(deparse(attr(x, "call")),collapse=" "),"</font>"), file=file)
     n <- length(xx <- eval(expression(x), env = environment(x)))
     i1 <- 1:min(3, n)
     i2 <- if (n >= 4) 
@@ -3423,7 +3452,7 @@ HTML("<center>",file=file)
     else integer(0)
     HTML(paste(" x[1:", n, "] = ", numform(xx[i1]), if (n > 3) 
         ", ", if (n > 5) 
-        " ..., ", numform(xx[i2]), "\n<BR>", sep = ""),file=file)
+        " ..., ", numform(xx[i2]), "\n<br>", sep = ""),file=file)
     invisible(x)
 }
 
@@ -3438,17 +3467,17 @@ HTML("<center>",file=file)
     i2 <- function(n) if (n >= 4) 
         max(4, n - 1):n
     else integer(0)
-    HTML(paste("<P><B>Step function</B></P>\n<LI>Call: ",paste(deparse(attr(x, "call")) ,collapse=" ")),file=file)
+    HTML(paste("<p><b>Step function</b></p>\n<li>Call<font class='call'>: ",paste(deparse(attr(x, "call")) ,collapse=" "),"</font>"),file=file)
     env <- environment(x)
     n <- length(xx <- eval(expression(x), env = env))
     HTML(paste(" x[1:", n, "] = ", numform(xx[i1(n)]), if (n > 3) 
         ", ", if (n > 5) 
-        " ..., ", numform(xx[i2(n)]), "\n<BR>", sep = ""),file=file)
+        " ..., ", numform(xx[i2(n)]), "\n<br>", sep = ""),file=file)
     y <- eval(expression(c(yleft, y)), env = env)
     HTML(paste(n + 1, " step heights = ", numform(y[i1(n + 1)]), if (n + 
         1 > 3) 
         ", ", if (n + 1 > 5) 
-        " ..., ", numform(y[i2(n + 1)]), "\n<BR>", sep = ""),file=file)
+        " ..., ", numform(y[i2(n + 1)]), "\n<br>", sep = ""),file=file)
     invisible(x)
 }
 
@@ -3480,21 +3509,47 @@ HTML(x$table, file=file,append=append,...)
 {
     cat("\n", file=file, append=append,...)
 	if (!is.null(cl <- x$call)) HTMLli(paste("Call:",paste(deparse(cl),collapse=" ")),file=file)        
-    HTML(paste("<P>Null model  log likelihood=<B>", format(x$loglik), "</B>\n</P>"),file=file)
+    HTML(paste("<p>Null model  log likelihood=<b>", format(x$loglik), "</b>\n</p>"),file=file)
     omit <- x$na.action
-    if (length(omit)) HTML(paste("<P>  n=<B>", x$n, " </B>(", naprint(omit), ")\n</P>", sep = ""),file=file)
-    else HTML(paste("<P>  n=<B>", x$n, "</B>\n</P>"),file=file)
+    if (length(omit)) HTML(paste("<p>  n=<b>", x$n, " </b>(", naprint(omit), ")\n</p>", sep = ""),file=file)
+    else HTML(paste("<p>  n=<b>", x$n, "</b>\n</p>"),file=file)
+}
+
+#----------------------------------------------------------------------------------------------------#
+### XTABLE
+#----------------------------------------------------------------------------------------------------#
+
+"HTML.xtable" <- function(x,file=.HTML.file,append=TRUE,...){
+    cat("\n", file=file, append=append,...)
+    cat(capture.output(print.xtable(x,type="html")),file=file,append=TRUE,sep="\n")
 }
 
 #----------------------------------------------------------------------------------------------------#
 ### UTILITARY FUNCTIONS
 #----------------------------------------------------------------------------------------------------#
 
+#----------------------------------------------------------------------------------------------------#
+
+"HTML.title"<-
+function(x, HR = 2,CSSclass=NULL,file = .HTML.file,append=TRUE, ...)
+{
+	cat(paste("\n <h", HR, if(!is.null(CSSclass)) paste(" class=",CSSclass,sep="") ," > ", x, "</h", HR, ">", sep = 
+		""), file = file, append=append, sep = "")
+}
+
+#----------------------------------------------------------------------------------------------------#
+
+"HTMLstem" <- function (x, file=.HTML.file,append=TRUE,...)  HTML(paste("<pre>",paste(capture.output(stem(x)),collapse="<br>"),"</pre>"), file=file,append=append,...)
+
+
+
+#----------------------------------------------------------------------------------------------------#
+
 "HTMLbr"<- function(x=1,file = .HTML.file,append=TRUE) { cat(paste("\n",rep("<br>&nbsp;",x),"\n",sep=""), append=append, file = file)}
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLhr"<- function(file = .HTML.file, Width = "100%", Size = "1",append=TRUE){ cat(paste("<hr width=", Width, " size=", Size, ">", sep = ""), file = file, append=append, sep = "")}
+"HTMLhr"<- function(file = .HTML.file, Width = "100%", Size = "1",CSSclass=NULL,append=TRUE){ cat(paste("<hr ", ifelse(!is.null(CSSclass),paste("class=",CSSclass,sep=""),""), " width=", Width, " size=", Size, ">", sep = ""), file = file, append=append, sep = "")}
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -3504,8 +3559,13 @@ HTML(x$table, file=file,append=append,...)
 
 "HTMLplot" <- function (Caption = "", file = .HTML.file, GraphDirectory = ".", 
     GraphFileName = "", GraphSaveAs = "png", GraphBorder = 1, 
-    Align = "center", Width=400,append=TRUE,...) 
+    Align = "center", Width=500,HeightHTML=NULL,append=TRUE,...) 
 {
+    
+    if (exists("HTMLenv",where=".GlobalEnv",mode="environment"))
+    {
+    	GraphDirectory=get(".HTML.outdir",envir=get("HTMLenv",envir=.GlobalEnv))
+    }
     cat("\n", file=file, append=append,...)
     if (GraphFileName == "") {
         nowd <- date()
@@ -3523,10 +3583,10 @@ HTML(x$table, file=file,append=append,...)
        else stop("GraphSaveAs must be either jpg, png or gif")
     
     cat(paste("<p align=", Align, "><img src='", GraphFileName, 
-        "' border=", GraphBorder, ">", sep = "", collapse = ""), 
+        "' border=", GraphBorder, if (!is.null(Width)) paste(" width=",Width,sep="") else "",if (!is.null(HeightHTML)) paste(" height=",HeightHTML,sep="") else "",">", sep = "", collapse = ""), 
         file = file, append=TRUE, sep = "")
     if (Caption != "") {
-        cat(paste("<br><i class=caption>", Caption, "</i>"), file = file, append=TRUE, sep = "")
+        cat(paste("<br><font class=caption>", Caption, "</font>"), file = file, append=TRUE, sep = "")
     }
     cat("</p>", file = file, append=TRUE, sep = "\n")
     if (substitute(file)==".HTML.file") try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
@@ -3535,10 +3595,10 @@ HTML(x$table, file=file,append=append,...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLInsertGraph" <- function(GraphFileName="",Caption="",GraphBorder=1,Align="center",Width=400,file=.HTML.file,append=TRUE,...)
+"HTMLInsertGraph" <- function(GraphFileName="",Caption="",GraphBorder=1,Align="center",Width=500,HeightHTML=NULL,file=.HTML.file,append=TRUE,...)
 {
     cat("\n", file=file, append=append,...)
-    cat(paste("<p align=", Align, "><img src='", GraphFileName, "' border=", GraphBorder, ">", sep = "", collapse = ""),         file = file, append=TRUE, sep = "")
+    cat(paste("<p align=", Align, "><img src='", GraphFileName, "' border=", GraphBorder, if (!is.null(Width)) paste(" width=",Width,sep="") else "",if (!is.null(HeightHTML)) paste(" height=",HeightHTML,sep="") else "",">", sep = "", collapse = ""),         file = file, append=TRUE, sep = "")
     if (Caption != "") cat(paste("<br><i class=caption>", Caption, "</i>"), file = file, append=TRUE, sep = "")
     invisible(return(TRUE))
 }
@@ -3546,11 +3606,119 @@ HTML(x$table, file=file,append=append,...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLCSS" <- function(file=.HTML.file,append=TRUE,CSSfile="R2HTML.CSS")
+"HTMLCSS" <- function(file=.HTML.file,append=TRUE,CSSfile="R2HTML.css")
 {
+  
   cat(paste("\n<link rel=stylesheet type=text/css href=",CSSfile,">",sep=""),file=file,append=append)
-
+  
 }
+
+
+#----------------------------------------------------------------------------------------------------#
+"HTMLChangeCSS" <- function(newCSS="R2HTML",from=NULL){
+	target=getwd()
+	if (exists("HTMLenv",where=".GlobalEnv")) target=file.path(get(".HTML.outdir",envir=get("HTMLenv",envir=.GlobalEnv)))
+	if (is.null(from)){
+		if (!exists(".R2HTMLpath")) stop("The package R2HTML is not properly loaded")
+		from=file.path(.R2HTMLpath,"output")
+	}
+	fromfile=file.path(from,paste(newCSS,"css",sep="."))
+	if (!file.exists(fromfile)) stop(paste("Source CSS file",fromfile,"not found"))
+	file.copy(fromfile,file.path(target,"R2HTML.css"),overwrite=TRUE)
+	
+}
+
+
+"HTMLCommand" <- function(x,file=.HTML.file,Num="",menu=FALSE,target="index<-main.html",append=TRUE,...)
+	{
+	cat("\n",file=file,append=append,...)
+	if (menu==TRUE)
+	cat(paste("<br><li><a class=command href='./",target,"#Num",Num,"' target=main> ",paste(x,collapse=""),"</a>",sep=""),file=file,append=TRUE,sep="")
+	else {
+	if (Num!="") cat(paste("<a name=Num",Num,">&nbsp;</a>",sep=""),file=file,append=TRUE,sep="")
+	cat(paste("<p><xmp class=command>> ",x,"</xmp></p>",sep=""),file=file,append=TRUE,sep="")
+	}
+	}
+
+#----------------------------------------------------------------------------------------------------#
+
+"HTMLcode" <- function(x,...){
+	tmpfic=tempfile()
+	HTML(x,file=tmpfic,...)
+	cat("\n",file=tmpfic,append=TRUE)
+	tmptxt=readLines(tmpfic)
+	unlink(tmpfic)
+	return(paste(tmptxt,collapse="\n"))
+}
+#----------------------------------------------------------------------------------------------------#
+
+"HTMLReplaceNA"<-
+function(Vec, Replace = " ")
+{
+	Vec <- as.character(Vec)
+	
+	for(i in 1:length(Vec)) 
+	{
+		try(if((Vec[i] == "NA") | (Vec[i] == "NaN") | is.na(Vec[i])){ Vec[i] <- Replace})
+	}	
+	Vec
+}
+
+
+
+#----------------------------------------------------------------------------------------------------#
+"HTML.cormat" <- function(x, file = .HTML.file,  digits=2,append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="cormat",useCSS=TRUE,...)
+{
+	cat("\n", file=file,append=append)
+	x<-as.matrix(x)
+	if (is.numeric(x)) x<-round(x,digits=digits)
+	if (is.null(dimnames(x))) x <- as.data.frame(x)
+	txt <- paste("<p align=",align,">")
+	txtcaption <- ifelse(is.null(caption),"",paste("<caption align=",captionalign," class=",classcaption,">",caption,"</caption>",sep=""))
+	cormat=x
+	abscormat=abs(cormat)
+	backcolors=matrix(grey(1-as.matrix(abscormat)),ncol=ncol(cormat))
+	css = 10*round(abs(x),1)
+	css=matrix(paste("cor",css,sep=""),ncol=ncol(x))
+	diag(css)="cordiag"
+	diag(backcolors)="#FFFFFF"
+	forecolors=matrix("#000000",ncol=ncol(cormat),nrow=nrow(cormat))
+	forecolors[abscormat>0.5]="#FFFFFF"
+	forecolors[abscormat>0.8]="#F6FF6E"
+	diag(forecolors)="#FFFFFF"
+	forebold=matrix(FALSE,ncol=ncol(cormat),nrow=nrow(cormat))
+	forebold[abscormat>0.9]=TRUE
+	txt<- paste(txt,"<table cellspacing=0 cellpading=0 border=0 >",txtcaption,"<td valign=middle class=corbody><table cellspacing=0 border=0>")
+	txt <- paste(txt,paste("\n<tr><td align=right class=corvarname>",dimnames(x)[[2]],"</td><td width=2>&nbsp;</td></tr>",collapse="\n"))
+	txt <- paste(txt,"</table></td><td valign=top class=corsep>&nbsp;</td><td valign=top>")
+	txt <- paste(txt, "<table cellspacing=0 cellpadding=0 border=1 ><td><table class=",classtable," cellspacing=0>", sep = "")
+	for(i in 1:dim(x)[1]) {
+		VecDebut <- c(rep(paste("\n\t<td align=right", sep = ""), dim(x)[2]))
+		if (useCSS) VecAttrib=c(paste(" class= ",css[i,],">")) else  VecAttrib=c(paste("  bgcolor=",backcolors[i,],"><font color=",forecolors[i,],">",ifelse(forebold[i,],"<b>","")))
+		VecMilieu <- HTMLReplaceNA(as.matrix(x[i,  ]))
+		VecFin <-  rep("</td>", dim(x)[2] )
+		txt <- paste(txt, "\n<tr>",paste(VecDebut,VecAttrib, VecMilieu, VecFin, sep = "", collapse = ""),"</tr>")
+		}
+	txt <- paste(txt, "</table></td></table></td></table>")
+	cat(txt, "\n", file = file, sep = "", append=TRUE,...)
+	invisible(return(x))
+	
+	}
+		
+#----------------------------------------------------------------------------------------------------#
+
+"as.title"<-
+function(x)
+{
+	if (!is.character(x)) {
+		x <- try(as.character(x))
+		if (!is.character(x)) stop("Input argument must be of character mode")
+	}
+	class(x) <- "title"
+	return(x)
+}
+
+
 #----------------------------------------------------------------------------------------------------#
 ###   R2HTML CORE
 #----------------------------------------------------------------------------------------------------#
@@ -3558,23 +3726,22 @@ HTML(x$table, file=file,append=append,...)
 
 
 
-"HTMLStart" <- function(outdir=tempdir(),filename="index",extension="html",echo=FALSE, HTMLframe=TRUE, withprompt="HTML> ",CSSFile="R2HTML.CSS",BackGroundColor="FFFFFF",BackGroundImg="",Title="R output")
+"HTMLStart" <- function(outdir=tempdir(),filename="index",extension="html",echo=FALSE, autobrowse=FALSE, HTMLframe=TRUE, withprompt="HTML> ",CSSFile="R2HTML.css",BackGroundColor="FFFFFF",BackGroundImg="",Title="R output")
 {
+	if (outdir!=tempdir())
+	{
+	# Copy of CSS and logo, if outdir != tempdir
+		file.copy(file.path(tempdir(),'R2HTML.css'), file.path(outdir,'R2HTML.css'))
+		file.copy(file.path(tempdir(),'R2HTMLlogo.gif'), file.path(outdir,'R2HTMLlogo.gif'))
+	}
 	# Creation of an environment to save some parameters
-	file.copy(file.path(R.home(),'library','R2HTML','output','R2HTML.css'), file.path(outdir,'R2HTML.css'))
-	file.copy(file.path(R.home(),'library','R2HTML','output','R2HTMLlogo.gif'), file.path(outdir,'R2HTMLlogo.gif'))
-
 	assign("HTMLenv",new.env(parent=.GlobalEnv),envir=.GlobalEnv)
-
 	assign("oldprompt",getOption("prompt"),envir=get("HTMLenv",envir=.GlobalEnv))
 	assign("HTMLframe",HTMLframe,envir=get("HTMLenv",envir=.GlobalEnv))
 	assign(".HTML.outdir",outdir,envir=get("HTMLenv",envir=.GlobalEnv))
-
+	assign("HTMLtorefresh",file.path(outdir,paste(filename,extension,sep=".")),envir=get("HTMLenv",envir=.GlobalEnv))
 	options(prompt=withprompt)
-
 	# Utilitary functions replacement 
-	
-
 	 fix<-function (x, ...) 	{
 	    subx <- substitute(x)
 	    if (is.name(subx)) 
@@ -3597,7 +3764,6 @@ HTML(x$table, file=file,append=append,...)
 	}
 
 	assign("fix",fix,env=.GlobalEnv)
-
 	assign(".HTML.fix",FALSE,envir=get("HTMLenv",envir=.GlobalEnv))
 	assign(".HTML.graph",FALSE,env=get("HTMLenv",envir=.GlobalEnv))	
 	
@@ -3625,10 +3791,10 @@ HTML(x$table, file=file,append=append,...)
 						AbsficName<-file.path(outdir,ficName)
 						
 						FunName<-get(".HTML.fixed",envir=get("HTMLenv",envir=.GlobalEnv))
-						if (echo) HTMLCommand(paste("fix(",FunName,")",sep=""),file,NumCom) else cat(paste("<A NAME=Num",NumCom,">&nbsp</A>",sep=""),file=file,sep="",append=TRUE)
+						if (echo) HTMLCommand(paste("fix(",FunName,")",sep=""),file,NumCom) else cat(paste("<A NAME=Num",NumCom,">&nbsp</a>",sep=""),file=file,sep="",append=TRUE)
 						if (HTMLframe) HTMLCommand(paste("fix(",FunName,")",sep=""),HTMLMenuFile,NumCom,menu=TRUE,target=target)					
 						dput(get(FunName),file=AbsficName)
-						HTML(paste("<P> Function <a href=", ficName, " target=_blank>", FunName, "</a> fixed. </P>",sep=""),file=file)
+						HTML(paste("<p> Function <a href=", ficName, " target=_blank>", FunName, "</a> fixed. </p>",sep=""),file=file)
 						
 						assign(".HTML.fix",FALSE,envir=get("HTMLenv",envir=.GlobalEnv))
 
@@ -3645,22 +3811,18 @@ HTML(x$table, file=file,append=append,...)
 					}
 				else
 					{
-			
-			
 					if (length(expr)>1) {if ((expr[[1]]=="=")||(expr[[1]]=="<-")) ToPrint<-FALSE}
 			
 
 			# Print the commands and/or it's number 
 			
-				if (echo) HTMLCommand(deparse(expr),file,NumCom) else cat(paste("<a name=Num",NumCom,">&nbsp</A>",sep=""),file=file,sep="",append=TRUE)
+				if (echo) HTMLCommand(deparse(expr),file,NumCom) else cat(paste("<a name=Num",NumCom,">&nbsp</a>",sep=""),file=file,sep="",append=TRUE)
 				if (HTMLframe) HTMLCommand(deparse(expr),HTMLMenuFile,NumCom,menu=TRUE,target=target)
-
 				if (ToPrint) HTML(value,file=file)
 					}
-				
-			
 			}
 		}
+		if (autobrowse) browseURL(url=get("HTMLtorefresh",envir=get("HTMLenv",envir=.GlobalEnv)))
 		invisible(return(TRUE))
 		}	
 	}
@@ -3672,7 +3834,7 @@ HTML(x$table, file=file,append=append,...)
 }
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLInitFile"<-function(outdir = ".",filename="index",extension="html",HTMLframe=FALSE, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output",CSSFile="R2HTML.CSS")
+"HTMLInitFile"<-function(outdir = ".",filename="index",extension="html",HTMLframe=FALSE, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output",CSSFile="R2HTML.css")
 {
 if (HTMLframe==FALSE){
 	file<-file.path(outdir,paste(filename,".",extension,sep=""))
@@ -3726,8 +3888,288 @@ else	{
 .First.lib <- function(lib,pkg)
 {
 	ps.options(bg="white")
-	#par(bg="white")
+	file.copy(file.path(lib,pkg,'output','R2HTML.css'), file.path(tempdir(),'R2HTML.css'))
+	file.copy(file.path(lib,pkg,'output','R2HTMLlogo.gif'), file.path(tempdir(),'R2HTMLlogo.gif'))
+	assign(".R2HTMLpath",file.path(lib,pkg),pos=.GlobalEnv)
 }
 
+
+
+#----------------------------------------------------------------------------------------------------#
+
+"RweaveHTML" <- function()
+{
+    list(setup = RweaveHTMLSetup,
+         runcode = RweaveHTMLRuncode,
+         writedoc = RweaveHTMLWritedoc,
+         finish = RweaveHTMLFinish,
+         checkopts = RweaveHTMLOptions)
+}
+
+"RweaveHTMLSetup" <-
+    function(file, syntax,
+             output=NULL, quiet=FALSE, debug=FALSE, echo=TRUE,
+             eval=TRUE, split=FALSE, cssfile="R2HTML.css",havecss=FALSE,width=500,height=500,border=1,png=TRUE)
+{
+    # This driver requires R2HTML package to work...
+    if(!require(R2HTML)) stop("R2HTML package is required.")	
+    if(is.null(output)){
+        prefix.string <- basename(sub(syntax$extension, "", file))
+        output <- paste(prefix.string, "html", sep=".")
+    }
+    else{
+        prefix.string <- basename(sub("\\.html$", "", output))
+    }
+    if(!quiet) cat("Writing to file ", output, "\n",
+                   "Processing code chunks ...\n", sep="")
+    output <- file(output, open="w+")
+    options <- list(prefix=TRUE, prefix.string=prefix.string,
+                    engine="R", print=FALSE, eval=eval,
+                    fig=FALSE, png=png,width=width, height=height, term=TRUE,
+                    echo=echo, results="Robj", split=split,
+                    strip.white=TRUE, include=TRUE,align="center",caption=NULL,bg="white",pointsize=12)
+    list(output=output, debug=debug, quiet=quiet, syntax = syntax,
+         options=options, chunkout=list(),cssfile=cssfile,havecss=havecss)
+}
+
+"RweaveHTMLRuncode" <- function(object, chunk, options)
+{
+    if(!(options$engine %in% c("R", "S"))) return(object)
+    if(!object$quiet){
+        cat(formatC(options$chunknr, width=2), ":")
+        if(options$echo) cat(" echo")
+        if(options$eval){
+            if(options$print) cat(" print")
+            if(options$term) cat(" term")
+            cat("", options$results)
+            if(options$fig){
+                if(options$png) cat(" png")
+            }
+        }
+        if(!is.null(options$label))
+            cat(" (label=", options$label, ")", sep="")
+        cat("\n")
+    }
+
+    
+    chunkprefix <- tools:::RweaveChunkPrefix(options)
+
+    if(options$split){
+        chunkout <- object$chunkout[[chunkprefix]]
+        if(is.null(chunkout)){
+            chunkout <- file(paste(chunkprefix, "html", sep="."), "w")
+            if(!is.null(options$label))
+                object$chunkout[[chunkprefix]] <- chunkout
+        }
+    }
+    else
+        chunkout <- object$output
+
+    assign(".HTML.file",chunkout,pos=.GlobalEnv, immediate=TRUE)
+    tools:::SweaveHooks(options, run=TRUE)
+    
+    chunkexps <- try(parse(text=chunk), silent=TRUE)
+    tools:::RweaveTryStop(chunkexps, options)
+    openSinput <- FALSE
+    openSchunk <- FALSE
+    
+    if(length(chunkexps)==0)
+        return(object)
+
+    for(nce in 1:length(chunkexps))
+    {
+        ce <- chunkexps[[nce]]
+        #dce <- deparse(ce, width.cutoff=0.75*getOption("width"))
+        if(object$debug)
+            cat("\nRnw> ", paste(ce, collapse="\n+  "),"\n")
+        if(options$echo){
+            if(!openSinput){
+                if(!openSchunk){
+                    cat("<!-- begin{Schunk} !-->\n",
+                        file=chunkout, append=TRUE)
+                    openSchunk <- TRUE
+                }
+                cat("<!-- begin{Sinput} !-->",
+                    file=chunkout, append=TRUE)
+                openSinput <- TRUE
+            }
+            cat("\n", paste(HTMLCommand(deparse(ce)),
+                      collapse=paste("\n", getOption("continue"), sep="")),
+                file=chunkout, append=TRUE, sep="")
+        }
+
+        # tmpcon <- textConnection("output", "w")
+        # avoid the limitations (and overhead) of output text connections
+         tmpcon <- file()
+         sink(file=tmpcon)
+        err <- NULL
+        if(options$eval) err <- tools:::RweaveEvalWithOpt(ce, options)
+         cat("\n") # make sure final line is complete
+         sink()
+         output <- readLines(tmpcon)
+         close(tmpcon)
+        # delete empty output
+        if(length(output)==1 & output[1]=="") output <- NULL
+
+        tools:::RweaveTryStop(err, options) #### !!!  err$value peut etre exporte via HTML(err.value)
+        
+        if(object$debug)
+            cat(paste(output, collapse="\n"))
+
+        if(length(output)>0 & (options$results!="hide")){
+            if(!openSchunk){
+                cat("<!-- begin{Schunk} !--> \n",
+                    file=chunkout, append=TRUE)
+                openSchunk <- TRUE
+            }
+            if(openSinput){
+                cat("\n<!-- end{Sinput} !-->\n", file=chunkout, append=TRUE)
+                openSinput <- FALSE
+            }
+            if (options$results=="Robj") HTML(err$value, file=chunkout, append=TRUE)
+            if (options$results=="html") cat(err$value, file=chunkout, append=TRUE)
+            remove(output)
+
+        }
+    }
+    if(openSinput){
+        cat("\n<!--\end{Sinput}!-->\n", file=chunkout, append=TRUE)
+    }
+    if(openSchunk){
+        cat("\n<!--\end{Schunk}!-->\n", file=chunkout, append=TRUE)
+    }
+
+    if(is.null(options$label) & options$split)
+        close(chunkout)
+
+    if(options$fig && options$eval){
+        if(options$png){
+            png(file=paste(chunkprefix, "png", sep="."),width=options$width,height=options$height,bg=options$bg,pointsize=options$pointsize)
+
+            err <- try({tools:::SweaveHooks(options, run=TRUE);
+                        eval(chunkexps, envir=.GlobalEnv)})
+            dev.off()
+            if(inherits(err, "try-error")) stop(err)
+        }
+        if(options$include)
+            cat("<p align='",options$align,"'><img height=",options$HTMLheight, " width=",options$HTMLwidth," src='", chunkprefix, ".png'",if (!is.null(options$border)) paste("border=",options$border,sep=""),">",if(!is.null(options$caption)) paste("<br><font class='caption='>",options$caption,"</font>",sep=""),"</p>", sep="",
+                file=object$output, append=TRUE)
+    }
+    return(object)
+}
+
+"RweaveHTMLWritedoc" <- function(object, chunk)
+{
+   if(any(grep("text/css", chunk)))
+        object$havecss <- TRUE
+
+    if(!object$havecss){
+        if(any(grep("<body>", chunk, ignore.case = TRUE))) chunk <- gsub("<body>",paste("\n<link rel=stylesheet type=text/css href=",object$cssfile,"><body>",sep="") ,chunk,ignore.case=TRUE)
+        else {
+        	if(any(grep("</head>", chunk, ignore.case = TRUE))) chunk <- gsub("</head>",paste("\n<link rel=stylesheet type=text/css href=",object$cssfile,"></head>",sep="") ,chunk,ignore.case=TRUE)
+        	else chunk <- gsub("<html>",paste("<html>","\n<link rel=stylesheet type=text/css href=",object$cssfile,">",sep="") ,chunk,ignore.case=TRUE)
+        }
+        object$havecss <- TRUE
+    }
+    while(any(pos <- grep(object$syntax$docexpr, chunk)))
+    {
+        cmdloc <- regexpr(object$syntax$docexpr, chunk[pos[1]])
+        cmd <- substr(chunk[pos[1]], cmdloc,
+                      cmdloc+attr(cmdloc, "match.length")-1)
+        cmd <- sub(object$syntax$docexpr, "\\1", cmd)
+        if(object$options$eval)
+            val <- as.character(eval(parse(text=cmd), envir=.GlobalEnv))
+        else
+            val <- paste("<font class='Rcmd'>", cmd, "</font>", sep="")
+
+        chunk[pos[1]] <- sub(object$syntax$docexpr, val, chunk[pos[1]])
+    }
+    while(any(pos <- grep(object$syntax$docopt, chunk)))
+    {
+        opts <- sub(paste(".*", object$syntax$docopt, ".*", sep=""),
+                    "\\1", chunk[pos[1]])
+        object$options <- SweaveParseOptions(opts, object$options, RweaveHTMLOptions)
+        chunk[pos[1]] <- sub(object$syntax$docopt, "", chunk[pos[1]])
+    }
+    cat(chunk, sep="\n", file=object$output, append=TRUE)
+    return(object)
+}
+
+"RweaveHTMLFinish" <- function(object, error=FALSE)
+{
+    if(!object$quiet && !error)
+        cat(paste("file ",summary(object$output)$description),"is completed", "\n")
+    close(object$output)
+    if(length(object$chunkout)>0){
+        for(con in object$chunkout) close(con)
+    }
+}
+
+"RweaveHTMLOptions" <- function(options)
+{
+    ## convert a character string to logical
+    c2l <- function(x){
+        if(is.null(x)) return(FALSE)
+        else return(as.logical(toupper(as.character(x))))
+    }
+    NUMOPTS <- c("width", "height")
+    NOLOGOPTS <- c(NUMOPTS, "results", "prefix.string",
+                   "engine", "label","align","caption","border","height","width","HTMLheight","HTMLwidth","bg","pointsize")
+    for(opt in names(options)){
+        if(! (opt %in% NOLOGOPTS)){
+            oldval <- options[[opt]]
+            if(!is.logical(options[[opt]])){
+                options[[opt]] <- c2l(options[[opt]])
+            }
+            if(is.na(options[[opt]]))
+                stop(paste("invalid value for", opt, ":", oldval))
+        }
+        else if(opt %in% NUMOPTS){
+            options[[opt]] <- as.numeric(options[[opt]])
+        }
+    }
+    options$results <- match.arg(options$results,c("Robj","html", "hide"))
+    options
+}
+
+
+
+#----------------------------------------------------------------------------------------------------#
+
+".First.lib" <- function(lib,pkg)
+{
+	cat("\nLoading R2HTML package...\n")
+	#ps.options(bg="white")
+	file.copy(file.path(lib,pkg,'output','R2HTML.css'), file.path(tempdir(),'R2HTML.css'))
+	file.copy(file.path(lib,pkg,'output','R2HTMLlogo.gif'), file.path(tempdir(),'R2HTMLlogo.gif'))
+	assign(".R2HTMLpath",file.path(lib,pkg),pos=.GlobalEnv)
+	
+}
+
+
+if (require(utils)){
+	SweaveSyntaxHTML <- utils:::SweaveSyntaxNoweb 
+	SweaveSyntaxHTML$docexpr="<[/]?Sexpr([^>]*)>"
+	SweaveSyntaxHTML$syntaxname = "<[/]?SweaveSyntax([^>]*)>"
+	SweaveSyntaxHTML$trans$docexpr="<[/]?Sexpr\\1>"
+	SweaveSyntaxHTML$trans$syntaxname <- "<!--SweaveSyntax{SweaveSyntaxHTML}!-->"
+	
+	
+	} else 	{
+	if (require(tools)) {
+		SweaveSyntaxHTML <- tools:::SweaveSyntaxNoweb
+		SweaveSyntaxHTML$docexpr="<[/]?Sexpr([^>]*)>"
+		SweaveSyntaxHTML$syntaxname = "<[/]?SweaveSyntax([^>]*)>"
+		SweaveSyntaxHTML$trans$docexpr="<[/]?Sexpr\\1>"
+		SweaveSyntaxHTML$trans$syntaxname <- "<!--SweaveSyntax{SweaveSyntaxHTML}!-->"
+		
+#		RweaveChunkPrefix <- tools:::RweaveChunkPrefix 
+#		SweaveHooks <- tools:::SweaveHooks
+#		RweaveTryStop <- tools:::RweaveTryStop
+#		RweaveEvalWithOpt <- tools::RweaveEvalWithOpt
+		} else cat("\ntools or utils package not found... you wont be able to use Sweave HTML driver")
+}
+
+	
 
 #----------------------------------------------------------------------------------------------------#

@@ -8,7 +8,7 @@
  }
 
 \usage{
-HTMLStart(outdir = tempdir(), filename = "index", extension = "html", echo = FALSE, HTMLframe = TRUE, withprompt ="HTML> ", CSSFile = "R2HTML.CSS", BackGroundColor ="FFFFFF", BackGroundImg = "", Title = "R output")
+HTMLStart(outdir = tempdir(), filename = "index", extension = "html", echo = FALSE, autobrowse = FALSE, HTMLframe = TRUE, withprompt = "HTML> ", CSSFile = "R2HTML.css", BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output") 
 HTMLStop()
 }
 
@@ -18,6 +18,7 @@ HTMLStop()
   \item{filename}{ name of the target HTML main file }
   \item{extension}{ extension of the target HTML file (htm, html,...) }
   \item{echo}{ should the parsed commands be written in the output? [boolean] }
+  \item{autobrowse} {should the browser be invoked each time a command is issued? [boolean] }
   \item{HTMLframe}{ should the output have a HTML frame structure? [boolean]}
   \item{withprompt}{ prompt to display while using HTMLStart/HTMLStop}
   \item{CSSFile}{ path and name of a CSS file to use }
@@ -52,22 +53,26 @@ The user may need to know the following points which describe how R2HTML does wo
 \examples{
 
 # Perform's one's own direct report
+
 dir.create(file.path(tempdir(),"R2HTML"))
-HTMLStart(file.path(tempdir(),"R2HTML"),HTMLframe=FALSE, Title="My report")
+HTMLStart(file.path(tempdir(),"R2HTML"),HTMLframe=FALSE, Title="My report",autobrowse=FALSE)
 as.title("This is my first title")
 x <- 1
 y<- 2
 x+y
 HTMLStop()
 
+
 ## Use for interactive teaching course
-dir.create(file.path(tempdir(),"R2HTML"))
-HTMLStart(file.path(tempdir(),"R2HTML"),echo=TRUE)
-as.title("Manipulation vectors")
-1:10
-sum(1:10)
-c(1:10,rep(3,4))
-HTMLStop()
+if (interactive()){
+	dir.create(file.path(tempdir(),"R2HTML"))
+	HTMLStart(file.path(tempdir(),"R2HTML"),echo=TRUE)
+	as.title("Manipulation vectors")
+	1:10
+	sum(1:10)
+	c(1:10,rep(3,4))
+	HTMLStop()
+}
 }
 
 \keyword{ print }

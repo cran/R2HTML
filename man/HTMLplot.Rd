@@ -6,18 +6,23 @@
   Exports the active graphic to a JPEG or GIF file and add it to a target HTML output, by writing the <IMG> tag.
 }
 \usage{
-HTMLplot(Caption = "", file = .HTML.file, GraphDirectory =".", GraphFileName = "", GraphSaveAs = "png",GraphBorder = 1, Align = "center", Width = 400, append = TRUE, ...)
+"HTMLplot" <- function (Caption = "", file = .HTML.file, GraphDirectory = ".", 
+    GraphFileName = "", GraphSaveAs = "png", GraphBorder = 1, 
+    Align = "center", width=500,height=NULL,WidthHTML=500,HeightHTML=NULL,append=TRUE,...) 
 }
 
 \arguments{
+  \item{Caption}{text to be placed below the graphic, as a caption}
   \item{file}{ the target HTML file }
   \item{GraphDirectory}{ path where file should be stored }
   \item{GraphFileName}{ name of the file to produce (could be missing) }
   \item{GraphSaveAs}{ an existing exportation device, such as jpg or gif }
   \item{GraphBorder}{ HTML border option for the <IMG> tag }
   \item{Align}{ HTML align option for the <IMG> tag}
-  \item{Caption}{text to be placed below the graphic, as a caption}
-  \item{Width}{width of the image to create}
+  \item{width}{width of the image to create (passed to the driver)}
+  \item{height}{height of the image to create (passed to the driver) (NULL: not specified)}
+  \item{WidthHTML}{ Width of the image in HTML}
+  \item{HeightHTML}{ Height of the image in HTML (NULL for not specified)}
   \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
   \item{\dots}{ ... }
 }
@@ -31,7 +36,6 @@ Note that this function is coded to work automatically when using automatic expo
 
 \author{ Eric Lecoutre }
 \note{ For a discussion about .HTML.outdir and HTLMenv, refer to \code{\link{HTMLStart}} }
-
 
 \seealso{ \code{\link{HTMLStart}}, \code{\link{HTMLInsertGraph}}}
 

@@ -1,11 +1,14 @@
 body {  
-	background: #FFFFFF;  
+	background: #ffffff;  
 	color: #000000; 
+	margin: 0%; 
 	}  
 
 
-H1 { font-family: Arial, Helvetica, sans-serif; font-size: 20pt; font-style: normal; font-weight: normal; color: #FFFFFF; background: #004080; text-align: center; margin: 10pt 2.5%}
-H2 { font-family: Arial, Helvetica, sans-serif; font-size: 18pt; font-style: normal; font-weight: normal; color: #FFFFFF; background: #000000}
+H1 { background: #ECE6C4; padding: 3px; border-bottom: 1px solid #CCCC99}
+
+H2 { background: #fffacd; color:#0ac92b; padding: 3px; border-bottom: 1px solid #eee8aa; font-family: Comic,Comics,Arial}
+
 H2.index { font-family: Arial, Helvetica, sans-serif; font-size: 18pt; font-style: normal; font-weight: normal; color: #FFFFFF; background: #000000; margin: 10pt 5%}
 H3 { font-family: Arial, Helvetica, sans-serif; font-size: 14pt; font-style: normal; font-weight: bold; color: #004080  }
 H4 { font-family: T, Helvetica, sans-serif; font-size: 10pt; font-style: normal; font-weight: bold; color: #000000; line-height: 16pt}
@@ -16,21 +19,22 @@ A { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt ;text-de
 
 
 .caption{font-style:italic}
-.title2{ font-family: Arial, Helvetica, sans-serif; font-size: 14pt; font-style: normal; font-weight: bold; color: #004080  }
-
-
-P { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt ;font-weight:normal}
 .command {font-family=verdana, arial; color=red	}
-.function{font-family=verdana, arial; color=blue}
+.function{font-family=courier; color=blue; font-size: 10pt }
 .partitle{font-family=verdana, arial; font-weight:bold}
 
 
+
+
+P { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt ;font-weight:normal}
+
+
 XMP{font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt }
-.function{font-family=courier; color=blue; font-size: 10pt }
+
 
 
 TR{font-family: Arial, Helvetica,Times, Helvetica, sans-serif; font-size: 10pt; font-style: normal  ; padding:0 0}
-TR.firstline{color: #FFFFFF; background: #000000;text-align=center;font-weight: bold}
+TR.firstline{background: #eee8aa;text-align=center;font-weight: bold}
 
 TR.ListBackTitle{color: #FFFFFF; background: #000000;text-align=left;font-weight: bold}
 
@@ -38,8 +42,8 @@ TR.ListBackTitle{color: #FFFFFF; background: #000000;text-align=left;font-weight
 
 TD{background=#FFFFFF; padding:0 0}
 TD.ListBackMain{background: #E0E0E0; padding:0 0}
-TD.firstcolumn{padding:5 10;background:#C0C0C0;text-align=right}
-TD.cellinside{padding:5 10;background:#FFFFFF;text-align=right}
+TD.firstcolumn{padding:5 10;background:#fffacd;text-align=right}
+TD.cellinside{padding:5 10;background:#ffffe0;text-align=right}
 
 
 

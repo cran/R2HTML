@@ -8,7 +8,7 @@
 }
 
 \usage{
-HTMLInitFile(outdir = ".", filename = "index", extension = "html",HTMLframe = FALSE, BackGroundColor = "FFFFFF",BackGroundImg = "", Title = "R output", CSSFile = "R2HTML.CSS")
+HTMLInitFile(outdir = ".", filename = "index", extension = "html", HTMLframe = FALSE, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output", CSSFile = "R2HTML.css")
 }
 HTMLEndFile(file = .HTML.file)
 

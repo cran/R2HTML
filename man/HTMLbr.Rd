@@ -10,7 +10,7 @@
 \usage{
 HTMLbr(x=1,file = .HTML.file,append=TRUE)
 HTMLli(txt="",file = .HTML.file,append=TRUE)
-HTMLhr(file = .HTML.file, Size="1", Width = "100%",append=TRUE)
+HTMLhr(file = .HTML.file, Width = "100\%", Size = "1",CSSclass=NULL,append=TRUE)
 }
 
 \arguments{
@@ -20,6 +20,7 @@ HTMLhr(file = .HTML.file, Size="1", Width = "100%",append=TRUE)
   \item{Width}{ value of the width HR optional argument, in pixel or percent}  
   \item{Size}{ value of the size HR optional argument}  
   \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
+  \item{CSSclass}{ CSS class to use for personalised reports }
 }
 
 \value{
