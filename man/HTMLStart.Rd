@@ -8,7 +8,7 @@
  }
 
 \usage{
-HTMLStart(outdir = paste(R.home(), "/library/R2HTML/output/", sep = ""), filename = "index", extension = "html", echo = F, HTMLframe = T, withprompt = "HTML> ", CSSFile = "R2HTML.CSS", BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output")
+HTMLStart(outdir = tempdir(), filename = "index", extension = "html", echo = FALSE, HTMLframe = TRUE, withprompt ="HTML> ", CSSFile = "R2HTML.CSS", BackGroundColor ="FFFFFF", BackGroundImg = "", Title = "R output")
 HTMLStop()
 }
 
@@ -33,7 +33,7 @@ The user may need to know the following points which describe how R2HTML does wo
 
 - A new environment called HTMLenv is build, where internal variables such as physical path are stored. This environment is not visible by the user. It is destroyed when calling \code{HTMLStop}.
 
-- Inside the HTMLenv environment, a special variable may be of interest: \code{.HTML.File}, which contains the path to the default HTML target file. User should modify this variable, at his own risks.
+- Inside the HTMLenv environment, a special variable may be of interest: \code{.HTML.file}, which contains the path to the default HTML target file. User should modify this variable, at his own risks.
 
 - For internal uses, functions \code{fix} and \code{plot.new} are temporary replaced, by assigning them in your primary environment. Those copies are deleted when calling \code{HTMLStop}. If you close your session before calling \code{HTMLStop}, you will have to erase those function manually. If not, you may encounter troubles when editing a function or making a graph, as R2HTML functions refer to the environment HTMLenv...
 

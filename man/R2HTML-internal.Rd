@@ -5,16 +5,18 @@
 \description{   Internal R2HTML functions}
 \usage{
 HTMLReplaceNA(Vec, Replace = " ")
-HTMLCommand(x,File=.HTML.File,Num="",menu=F,target="index_main.html")
+HTMLCommand(x, file = .HTML.file, Num = "", menu = FALSE, target= "index<-main.html", append = TRUE, ...)
 }
 \arguments{
   \item{Vec}{ string }
   \item{Replace}{ string to use for missing values }
   \item{x}{ a string corresponding to a R command}
-  \item{File}{ the target HTML file }
+  \item{file}{ the target HTML file }
   \item{Num}{ number of the command}
   \item{menu}{}
   \item{target}{}
+  \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
+  \item{\dots}{...}
 }
 \details{
      These are not to be called by the user.

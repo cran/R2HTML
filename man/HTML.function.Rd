@@ -1,17 +1,18 @@
-\name{HTML.fun}
-\alias{HTML.fun}
+\name{HTML.function}
+\alias{HTML.function}
 
 \title{ Writes the code of a function to a target HTML file }
 \description{
   Writes the code of a function to a target HTML file 
 }
 \usage{
-HTML.fun(x, File = .HTML.File, ...)
+HTML.function(x, file = .HTML.file, append=TRUE,...)
 }
 
 \arguments{
   \item{x}{ Name of a function }
-  \item{File}{ target HTLM output}
+  \item{file}{ target HTLM output}
+  \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
   \item{\dots}{ ...}
 }
 \details{
@@ -23,7 +24,7 @@ HTML.fun(x, File = .HTML.File, ...)
 \references{ }
 \author{ Eric Lecoutre }
 
-\note{ For a discussion about .HTML.File default value for File argument, refer to \code{\link{HTMLStart}} }
+\note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }
 
 \seealso{  \code{\link{HTML}}}
 
@@ -37,7 +38,7 @@ myfun <- function(x){
 	cat("\n Euclidian norm")
 	return(sqrt(sum(x^2)))
  }
-HTML.fun(myfun,File=myfile)
+HTML.function(myfun,file=myfile)
 cat("\n Test output written in: ",myfile)
 
 }

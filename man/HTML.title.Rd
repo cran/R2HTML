@@ -7,7 +7,7 @@
   A title is a string with the class "title". The function \code{as.title} gives this class to an object, so that title method of HTML could apply to it.
 }
 \usage{
-HTML.title(x, HR = 2, class = "bigtitle", File = .HTML.File, ...)
+HTML.title(x, HR = 2, class = "bigtitle", file = .HTML.file,append=TRUE, ...)
 as.title(x)
 }
 
@@ -15,7 +15,8 @@ as.title(x)
   \item{x}{ string }
   \item{HR}{ rank attribute of the HTML <H?> tag }
   \item{class}{ CSS class to use for personalised reports }
-  \item{File}{ the target HTML file }
+  \item{file}{ the target HTML file }
+  \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
   \item{\dots}{ ... }
 }
 \details{
@@ -26,7 +27,7 @@ as.title(x)
 \references{  }
 \author{ Eric Lecoutre }
 
-\note{ For a discussion about .HTML.File default value for File argument, refer to \code{\link{HTMLStart}} }
+\note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }
 
 \seealso{  \code{\link{HTML}} }
 
@@ -38,9 +39,9 @@ myfile <- paste(tempfile(),".html",sep="")
 
 tit1 <- as.title("This is method 1")
 
-HTML(tit1, File=myfile)
+HTML(tit1, file=myfile)
 
-HTML.title("This is method 2",File=myfile, HR=3)
+HTML.title("This is method 2",file=myfile, HR=3)
 cat("\n Test output written in: ",myfile)
 
 

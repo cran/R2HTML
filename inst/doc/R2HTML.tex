@@ -1,0 +1,361 @@
+\documentclass[a4paper]{article}
+
+\usepackage{Rnews}
+\newcommand{\HTML}{{\tt R2HTML}}
+
+
+%\VignetteIndexEntry{Writing HTML output}
+%\VignetteDepends{R2HTML}
+%\VignetteKeyword{HTML}
+
+\setlength{\parindent}{0in}
+\setlength{\parskip}{.1in}
+
+\newcommand{\aside}[1]{\begin{list}{}
+                                   {\setlength{\leftmargin}{1in}
+                                    \setlength{\rightmargin}{1in}
+                                    \setlength{\itemindent}{0in}}
+                       \item {\sc Aside:} {\it #1}
+                       \end{list}}
+
+\title{R2HTML Library: Formatting HTML Output on the Fly or by Using a Template Scheme}
+\author{Eric Lecoutre}
+
+% setwd("g:/R2HTML/inst/doc/")
+% Sweave("R2HTML.Snw")
+
+\usepackage{G:/Statistique/R/share/texmf/Sweave}
+\begin{document}
+
+\volume{3}
+\volnumber{3}
+\date{December 2003}
+
+\maketitle
+
+Statistics are not only theory and methodology, but also computing and communication. Applied statistician knows they have to pay attention to the last step of an analysis: the report. A very elegant way to handle the final report with \R{} is to use the wonderfull Sweave system \cite{Leish:sweave} in tools package: not only it allows professional quality reports by using \LaTeX{} but also it stores used code within the document, which is very usefull when coming back to the analysis some times after. Nevertheless, this solution is not applicable to every case, as the user may not know \LaTeX{}  or may need an other format to communicate with his client. In effect, in many cases, the client is waiting for a report he may edit to add some details. RTF format is ideal for this communication, asi it could be open on many systems and allows some formatting enhancements (bold, tables, ...). Nevertheless, it's not easy to produce and dont allow to embed graphs. An other universal format which can desserve our communication  goal is HTML: it is light, readable on any plattform, editable, and allows graphs. Moreover, it could easily be exported to other formats.
+
+This documents describes the \HTML{} package which provide some support for writing formatted HTML output. Alhtough having some knowledge about HTML is preferable to personalize outputs, the user may use this package to obtain results without this knowledge. We will build different web pages, the reader could found them at the following address: \href{http://www.stat.ucl.ac.be/ISpersonnel/lecoutre/R2HTML/}{http://www.stat.ucl.ac.be/ISpersonnel/lecoutre/R2HTML/}.
+
+
+\section*{Introduction to HTML and \HTML{} package}
+
+In accordance with the W3 Consortium, HTML is the lingua franca for publishing hypertext on the World Wide Web.  It is a non-proprietary format based upon SGML, and can be created and processed by a wide range of tools, from simple plain text editors - you type it in from scratch - to sophisticated WYSIWYG authoring tools. HTML uses tags such as \verb+<b>+ and \verb+</b>+ to structure text into headings, paragraphs, lists, hypertext links etc. Opening tags localize the beginning of the application of format (\verb+<b>+: begin bold), format which ends with the corresponding closing tag (\verb+</b>+ for bold text).
+
+Thus, in order to write basic HTML documents, the only required knowledge is the list of existing tags and their functionality. Then, here is the structure of a (rather basic) HTML document:
+
+\begin{smallverbatim}
+<html>
+<h1>My first HTML page </h1>
+<p>This is some basic text with a 
+   <b>bold</b> word.</p>
+<p>It uses h1, and p tags which allows to create
+   a title and to define a paragraph</p>
+</html>
+\end{smallverbatim}
+
+Now, we have a very easy way to obtain our first webpage from R: simply use \verb+cat+ function to write text to a external file. In the following example, see how we call severall times \verb+cat+ function with \verb+append+ argument set to \verb+TRUE+ to add information to the page.
+
+\begin{Schunk}
+\begin{Sinput}
+> htmlfile = file.path(tempdir(), 
++     "page1.html")
+> cat("<html><h1>My first HTML page from R</h1>", 
++     file = htmlfile)
+> cat("\n<br>Hello Web World!", 
++     append = TRUE, file = htmlfile)
+> cat("\n</html>", append = TRUE, 
++     file = htmlfile)
+\end{Sinput}
+\end{Schunk}
+
+There now, we have all that we want to advance to the next step. The library \HTML{} is simply a list of wrapper fonctions that calls \verb+cat+ in such a way to write HTML codes. The main functions are:
+
+\begin{itemize}
+\item {\bf \verb+HTML()+} Main generic function for which subfunctions are defined for all classic classes (matrix, lm, summary, ...).
+\item {\bf \verb+HTMLbr()+} Insert a \verb+<br>+ HTML tag, a break return code to start a new line.
+\item {\bf \verb+HTMLhr()+} Insert a \verb+<hr>+ HTML tag, a horizontal rule to separate pieces of text.
+\item {\bf \verb+HTMLInsertGraph()+} Insert a \verb+<img>+ HTML tag to add an existing graph to the report. The graph should have been created before in a suitable web format such as GIF, JPEG or PNG.
+\end{itemize}
+
+Basically, the \HTML{} library contains a generic \verb+HTML()+ function which behaves like internal \verb+cat()+. Common arguments are \verb+append+ and \verb+file+, which default value is set by the hidden variable  \verb+.HTML.file+. Thus, it is convenient to begin to set the value of this variable, such as we can omit the file argument thereafter:
+
+\begin{Schunk}
+\begin{Sinput}
+> .HTML.file = file.path(tempdir(), 
++     "page2.html")
+> HTML(as.title("Title of my report"), 
++     append = FALSE)
+> HTMLhr()
+> HTML("3 dimensions identity matrix")
+> HTML(diag(3))
+\end{Sinput}
+\end{Schunk}
+
+\section*{Generating a HTML output on the fly}
+
+The first way to use \HTML{} library is to generate an automatic HTML output during an interactive session. This is specially convenient for courses, as students can keep a log of the commands they asked for and their output, with graphs incorporated. To manage a dynamic session, two commands are present:
+
+\begin{itemize}
+\item {\bf \verb+HTMLStart()+} 
+\item {\bf \verb+HTMLStop()+} 
+\end{itemize}
+
+Here is a sketch of the way those commands work behind. When calling \verb+HTMLStart()+, severall actions are performed:
+\begin{itemize}
+\item Three HTML files are written in the temporary directory of the session. The main (index.html) refers to the two others, by incorporating them within HTML frames. It allows to have at the left part of the screen the commands, and at the right one the corresponding outputs.
+\item A new environment, called \verb+HTMLenv+ is created, where some internal variables are stored. Those variables allows to store path to the output files, and to know which action has been done with the latest command.
+\item A new \verb+fix+ function is assigned to global environment, masking the internal one. When calling "new" \verb+fix+, a boolean is set to \verb+TRUE+ in the \verb+HTMLenv+ environment, to know that the last action was to edit a function.
+\item \verb+addTaskCallback+ is called, adding a task to each submitted command. This task, handled by the function \verb+ToHTML+ (not user visible) is the main part of the thing, as it exports the last manipulated object. In this function, one tests if the boolean indicates that a function has been edited, and exports this one if this is the case. When doing so, a new file is created, so that at the end one can keep all the versions of the function at the different steps of work.
+\item Finally, as a side effect, the prompt is changed to \verb+HTML>+ in order to know that output are currently redirected.
+\end{itemize}
+
+From now on, every command is treated two times: once it is evaluated, the results goes on through \verb+ToHTML+ function which writes it to the HTML output. 
+
+As there is no convenient way to know when a graph has been performed (or modified) and as it's not wanted to export every graph, the user has to explicitely ask for the insertion of the current active graph to the output, by calling \verb+HTMLplot()+ function.
+
+When desired, a call to the function \verb+HTMLStop()+ stops the process and remove all temporary created variables.
+
+This examples only work in a interactive session with the RGUI. Simply copy the portion of code and paste it.
+
+\begin{Schunk}
+\begin{Sinput}
+> HTMLStart(filename = "dynamic", 
++     echo = TRUE)
+\end{Sinput}
+\begin{Soutput}
+ *** Output redirected to directory:  C:\DOCUME~1\lecoutre\LOCALS~1\Temp\Rtmp28524
+ *** Use HTMLStop() to end redirection.[1] TRUE
+\end{Soutput}
+\begin{Sinput}
+HTML> sqrt(pi)
+\end{Sinput}
+\begin{Soutput}
+[1] 1.772454
+\end{Soutput}
+\begin{Sinput}
+HTML> x = rnorm(10)
+HTML> x^2
+\end{Sinput}
+\begin{Soutput}
+ [1] 2.91248574 0.21033662
+ [3] 0.16120327 1.56429808
+ [5] 0.02863139 3.47605227
+ [7] 1.36348399 0.30152315
+ [9] 0.73402896 0.77886722
+\end{Soutput}
+\begin{Sinput}
+HTML> myfunction = function(x) return(summary(x))
+HTML> cat("\n### try to fix the function: fix(myfunction)")
+\end{Sinput}
+\begin{Soutput}
+### try to fix the function: fix(myfunction)
+\end{Soutput}
+\begin{Sinput}
+HTML> myfunction(x)
+\end{Sinput}
+\begin{Soutput}
+   Min. 1st Qu.  Median    Mean 
+-1.7070 -0.3017  0.6291  0.3878 
+3rd Qu.    Max. 
+ 1.0960  1.8640 
+\end{Soutput}
+\begin{Sinput}
+HTML> plot(x)
+HTML> HTMLplot()
+\end{Sinput}
+\begin{Soutput}
+[1] TRUE
+\end{Soutput}
+\begin{Sinput}
+HTML> HTMLStop()
+\end{Sinput}
+\begin{Soutput}
+[1] "C:\\DOCUME~1\\lecoutre\\LOCALS~1\\Temp\\Rtmp28524/dynamic_main.html"
+\end{Soutput}
+\end{Schunk}
+
+\section*{Creating personalised reports}
+
+\subsection*{Let's begin with a simple analysis} 
+
+For the user who knows some basics on HTML, the package \HTML{} offers all necessary stuff to developp fast routines to create one own reports. Nevertheless, without knowing HTML codes, we can still easily create reports. What we propose here is a so-called template approach. Let's imagine we have to perform a daily analysis which output consists in some summary tables and graphs. 
+
+First, we gather all the stuff necessary to write the report in a list object. An easy way is to create a user function \verb+MyAnalysis+ which output this list. Moreover, we assign a user-defined class for this object.
+
+
+\begin{Schunk}
+\begin{Sinput}
+> MyAnalysis = function(data) {
++     table1 = summary(data[, 
++         1])
++     table2 = mean(data[, 2])
++     dataforgraph1 = data[, 
++         1]
++     output = list(tables = list(t1 = table1, 
++         t2 = table2), graphs = list(d1 = dataforgraph1))
++     class(output) = "MyAnalysisClass"
++     return(output)
++ }
+\end{Sinput}
+\end{Schunk}
+
+Then, we provide a new \verb+HTML+ function, based on the structure of our output object and corresponding to it's class:
+
+
+\begin{Schunk}
+\begin{Sinput}
+> HTML.MyAnalysisClass = function(x, 
++     file = "report.html", append = TRUE, 
++     directory = getwd(), ...) {
++     file = file.path(directory, 
++         file)
++     cat("\n", file = file, 
++         append = append)
++     HTML.title("Table 1: summary for first variable", 
++         file = file)
++     HTML(x$tables$t1, file = file)
++     HTML.title("Second variable", 
++         file = file)
++     HTML(paste("Mean for second variable is: ", 
++         round(x$tables$t2, 
++             3), sep = ""), 
++         file = file)
++     HTMLhr(file = file)
++     png(file.path(directory, 
++         "graph1.png"))
++     hist(x$graphs$d1, main = "Histogram for 1st variable")
++     dev.off()
++     HTMLInsertGraph("graph1.png", 
++         Caption = "Graph 1 - Histogram", 
++         file = file)
++     cat(paste("Report written: ", 
++         file, sep = ""))
++ }
+\end{Sinput}
+\end{Schunk}
+
+If we want to write create the report, we simply have to do the following:
+
+\begin{Schunk}
+\begin{Sinput}
+> data = matrix(rnorm(100), ncol = 2)
+> out = MyAnalysis(data)
+> setwd(tempdir())
+> HTML(out, file = "page3.html")
+\end{Sinput}
+\begin{Soutput}
+Report written: C:/DOCUME~1/lecoutre/LOCALS~1/Temp/Rtmp28524/page3.html
+\end{Soutput}
+\end{Schunk}
+
+The interest if that we store all the analysis raw material with on object, and that we dissociate the process that creates the report. If we keep all our objects, it's easy to modify the \verb+HTML.MyAnalysisClass+ function and to generate again all reports.
+
+\subsection*{Template scheme to complete the report}
+
+What we write before is not a real HTML file, as it even doesn't contain standard headers \verb+<html><head>...</head><body>...+ and so on. We see two differents ways to handle this, each one having it's advantages/disadvantages. For this personalisation, it's mandatory to have some knowledge of HTML.
+
+At first, we could have a pure R approach, by adding to our report two functions, such as:
+
+
+\begin{Schunk}
+\begin{Sinput}
+> MyReportBegin = function(file = "report.html", 
++     title = "My Report Title") {
++     cat(paste("<html><head><title>", 
++         title, "</title></head>", 
++         "<body bgcolor=#D0D0D0>", 
++         "<img=logo.gif>", sep = ""), 
++         file = file, append = FALSE)
++ }
+> MyReportEnd = function(file = "report.html") {
++     cat("<hr size=1></body></html>", 
++         file = file, append = TRUE)
++ }
+> MyReport = function(x, file = "report.html") {
++     MyReportBegin(file)
++     HTML(x, file = file)
++     MyReportEnd(file)
++ }
+\end{Sinput}
+\end{Schunk}
+
+
+Then, instead of calling \verb+HTML+ function directly, we consider it at an internal function and we rather call \verb+MyReport+.
+
+\begin{Schunk}
+\begin{Sinput}
+> out = MyAnalysis(data)
+> MyReport(out, file = "page4.html")
+\end{Sinput}
+\begin{Soutput}
+Report written: C:/DOCUME~1/lecoutre/LOCALS~1/Temp/Rtmp28524/page4.html
+\end{Soutput}
+\end{Schunk}
+
+The advantage is that we can even personalize the head and the footer of our report depending on R variables such as the name of the data or whatever we want. 
+
+If we dont need to go that further and only need hard coded contents, we can build the report based on two existing files \verb+header.html+ and \verb+footer.html+, which could be modified to suit our needs. To work properly, the following piece of code supposes that those two files exist in the working directory:
+
+\begin{Schunk}
+\begin{Sinput}
+> MyReport = function(x, file = "report.html", 
++     headerfile = "header.html", 
++     bottomfile = "footer.html") {
++     header = readLines(headerfile)
++     cat(paste(header, collapse = "\n"), 
++         file = file, append = FALSE)
++     HTML(x, file = file, append = TRUE)
++     bottom = readLines(bottomfile)
++     cat(paste(bottom, collapse = "\n"), 
++         file = file, append = TRUE)
++ }
+\end{Sinput}
+\end{Schunk}
+
+
+\subsection*{Going a step further with CSS}
+
+{\it Cascading Style Sheets} (CSS) compensates for some laks of HTML language. CSS add to each standard HTML element it's own style, which is defined in an external file. Thus, when the house-style book of the report has to change, it is enough to modify the definition of classes in an only spot to change the look of all reports - past or to come - that rely on the defined classes.
+
+The use of cascading style sheets allow:
+\begin{itemize}
+\item a homogeneous look for all generated reports
+\item to change the look of a bunch of reports at one time
+\item to have lighter reports, as formatting instructions are separated
+\item a faster download and viewing of reports
+\end{itemize}
+
+All details about CSS specification could be found on the World Wide Web consortium: \href{http://www.w3.org/Style/CSS/}{http://www.w3.org/Style/CSS/}.
+
+All the functions of the package \HTML{} rely on CSS and a sample CSS file, \verb+R2HTML.CSS+, which is used by \verb+HTMLStart+ is provided. In order to work properly, the CSS file has to be present in the same directory than the report and we simply have to add the following line to it {\tt <link rel=stylesheet type=text/css href=R2HTML.css>}. The function \verb+HTMLCSS()+ performs this job. This is a good idea to systematically begin a report with this, as CSS files are very powerfull. Thus, and finally, our reporting function becomes:
+
+\begin{Schunk}
+\begin{Sinput}
+> MyReport = function(x, file = "report.html", 
++     CSSfile = "R2HTML") {
++     MyReportBegin(file)
++     HTMLCSS(file = file, CSSfile = CSSfile)
++     HTML(x, file = file)
++     MyReportEnd(file)
++ }
+\end{Sinput}
+\end{Schunk}
+
+\section*{Summary}
+
+The \HTML{} package provides functions to export all base \R{} objects to HTML. We describe here a simple mechanism to use this functions to write HTML reports for statistical analysis performed with \R{}. The mechanism is flexible and allow customizations in many ways, mainly by using a template approach (separating the body of the report from the wrapper - header and footer) and by using an external CSS file.
+
+\section*{Availability}
+
+The \HTML{} package is available from \verb+CRAN+ (e.g., {\tt http://cran.us.r-project.org}).
+
+\bibliographystyle{plain}
+\bibliography{R2HTML}
+
+\address{Eric Lecoutre\\
+Institut de statistique, UCL, Belgium\\
+\email{lecoutre@stat.ucl.ac.be}}
+
+\end{document}
+

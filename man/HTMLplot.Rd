@@ -6,21 +6,23 @@
   Exports the active graphic to a JPEG or GIF file and add it to a target HTML output, by writing the <IMG> tag.
 }
 \usage{
-HTMLplot(Caption="",File = .HTML.File, GraphDirectory = get(".HTML.outdir", env = get("HTMLenv", envir = .GlobalEnv)), GraphFileName = "", GraphSaveAs = "jpg", GraphBorder = 1, Align = "center", ...)
+HTMLplot(Caption = "", file = .HTML.file, GraphDirectory =".", GraphFileName = "", GraphSaveAs = "png",GraphBorder = 1, Align = "center", Width = 400, append = TRUE, ...)
 }
 
 \arguments{
-  \item{File}{ the target HTML file }
+  \item{file}{ the target HTML file }
   \item{GraphDirectory}{ path where file should be stored }
   \item{GraphFileName}{ name of the file to produce (could be missing) }
   \item{GraphSaveAs}{ an existing exportation device, such as jpg or gif }
   \item{GraphBorder}{ HTML border option for the <IMG> tag }
   \item{Align}{ HTML align option for the <IMG> tag}
   \item{Caption}{text to be placed below the graphic, as a caption}
+  \item{Width}{width of the image to create}
+  \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
   \item{\dots}{ ... }
 }
 \details{
-Note that this function is coded to work automatically when using automatic exportation with \code{\link{HTMLStart}}. When using manualy, user should pay attention to the GraphDirectory option, so that graph files are in the same directory as HTML output files. 
+Note that this function is coded to work automatically when using automatic exportation with \code{\link{HTMLStart}}. When using manualy, user should pay attention to the GraphDirectory option, so that graph files are in the same directory as HTML output files. When using to write reports in a non interactive way, first generate the graphic using a device and then use \code{\link{HTMLInsertGraph}}.
 }
 \value{
 	no value returned.  
@@ -31,7 +33,7 @@ Note that this function is coded to work automatically when using automatic expo
 \note{ For a discussion about .HTML.outdir and HTLMenv, refer to \code{\link{HTMLStart}} }
 
 
-\seealso{ \code{\link{HTMLStart}}}
+\seealso{ \code{\link{HTMLStart}}, \code{\link{HTMLInsertGraph}}}
 
 \examples{
 
@@ -40,7 +42,7 @@ Note that this function is coded to work automatically when using automatic expo
 
 myfile <- paste(tempfile(),".html",sep="")
 plot(sin, -pi, 2*pi,main="Sinus")
-# HTMLplot(File=myfile,GraphDirectory="/",Caption="Look at this curve!")
+# HTMLplot(file=myfile,GraphDirectory="/",Caption="Look at this curve!")
 }
 
 \keyword{ print }

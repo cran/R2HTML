@@ -8,17 +8,18 @@
   Write <br>, <li> and <hr> tags, which are often used, to an output file.
 }
 \usage{
-HTMLbr(x=1,File = .HTML.File)
-HTMLli(txt="",File = .HTML.File)
-HTMLhr(File = .HTML.File, Width = "100%", Size = "1")
+HTMLbr(x=1,file = .HTML.file,append=TRUE)
+HTMLli(txt="",file = .HTML.file,append=TRUE)
+HTMLhr(file = .HTML.file, Size="1", Width = "100%",append=TRUE)
 }
 
 \arguments{
   \item{x}{ number of <br> to put }
   \item{txt}{ text to appear after the <li> tag }
-  \item{File}{ HTML target output file}
+  \item{file}{ HTML target output file}
   \item{Width}{ value of the width HR optional argument, in pixel or percent}  
   \item{Size}{ value of the size HR optional argument}  
+  \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
 }
 
 \value{
@@ -28,7 +29,7 @@ HTMLhr(File = .HTML.File, Width = "100%", Size = "1")
 \references{}
 \author{ Eric Lecoutre}
 
-\note{ For a discussion about .HTML.File default value for File argument, refer to \code{\link{HTMLStart}} }
+\note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }
 
  
 
@@ -40,7 +41,7 @@ HTMLhr(File = .HTML.File, Width = "100%", Size = "1")
 ## Change the path/name of the file to redirect to your test file
 
 myfile <- paste(tempfile(),".html",sep="")
-HTMLhr(File=myfile)
+HTMLhr(file=myfile)
 cat("\n Test output written in: ",myfile)
 
 }

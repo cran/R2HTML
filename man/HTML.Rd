@@ -16,8 +16,10 @@
 \alias{HTML.bootci}
 \alias{HTML.bSpline}
 \alias{HTML.by}
+\alias{HTML.character}
 \alias{HTML.clara}
 \alias{HTML.coefmat}
+\alias{HTML.complex}
 \alias{HTML.connection}
 \alias{HTML.correspondence}
 \alias{HTML.cox.zph}
@@ -62,6 +64,7 @@
 \alias{HTML.lm.null}
 \alias{HTML.loadings}
 \alias{HTML.loess}
+\alias{HTML.logical}
 \alias{HTML.logLik}
 \alias{HTML.loglm}
 \alias{HTML.lqs}
@@ -74,8 +77,10 @@
 \alias{HTML.nls}
 \alias{HTML.nnet}
 \alias{HTML.noquote}
+\alias{HTML.numeric}
 \alias{HTML.octmode}
 \alias{HTML.ordered}
+\alias{HTML.pairlist}
 \alias{HTML.pairwise.htest}
 \alias{HTML.pam}
 \alias{HTML.polr}
@@ -158,7 +163,7 @@ HTML(x, ...)
   \item{\dots}{ ...}
 }
 \details{
- Note that all HTML methods have a \code{File} argument, which has to be used.
+ \code{HTML} function acts like \code{cat}, with a \code{file} argument, which has to be used and a \code{append} argument, which defalt is set to TRUE. A convenient default value for \code{file} argument is set to hidden variable \code{.HTML.file}, so that one may begin to set this variable and omit the argument thereafter.
 }
 \value{
 	no value returned.  
@@ -166,7 +171,7 @@ HTML(x, ...)
 \references{ }
 \author{ Eric Lecoutre }
 
-\note{ For a discussion about .HTML.File default value for File argument, refer to \code{\link{HTMLStart}} }
+\note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }
 
 \seealso{  \code{\link{HTMLStart}}}
 
@@ -174,9 +179,9 @@ HTML(x, ...)
 
 dir.create(file.path(tempdir(),"R2HTML"))
 target <- HTMLInitFile(file.path(tempdir(),"R2HTML"),filename="sample", BackGroundColor="#BBBBEE")
-HTML("<br>Don't forget to use the CSS file in order to benefit from fixed size police",File=target)
+HTML("<br>Don't forget to use the CSS file in order to benefit from fixed size police",file=target)
 tmp <- as.data.frame(matrix(rnorm(100),ncol=10))
-HTML(tmp,File=target)
+HTML(tmp,file=target)
 HTMLEndFile()
 
 

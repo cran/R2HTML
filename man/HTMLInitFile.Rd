@@ -8,9 +8,9 @@
 }
 
 \usage{
-HTMLInitFile(outdir = paste(R.home(), "/library/R2HTML/output/", sep = ""), filename = "index", extension = "html", HTMLframe = F, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output", CSSFile = "R2HTML.CSS")
+HTMLInitFile(outdir = ".", filename = "index", extension = "html",HTMLframe = FALSE, BackGroundColor = "FFFFFF",BackGroundImg = "", Title = "R output", CSSFile = "R2HTML.CSS")
 }
-HTMLEndFile(File = .HTML.File)
+HTMLEndFile(file = .HTML.file)
 
 
 \arguments{
@@ -32,7 +32,7 @@ HTMLEndFile(File = .HTML.File)
 \references{ }
 \author{ Eric Lecoutre }
 
-\note{ For a discussion about .HTML.File default value for File argument, refer to \code{\link{HTMLStart}} }
+\note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }
 
 \seealso{  \code{\link{HTML}}}
 
@@ -46,10 +46,10 @@ HTMLEndFile(File = .HTML.File)
 
 	
 	# Use target to write a dataframe
-	HTML(as.title("Here is the data frame"),File=target)
-	HTML("<br>Don't forget to use the CSS file in order to benefit from fixed size police",File=target)
+	HTML(as.title("Here is the data frame"),file=target)
+	HTML("<br>Don't forget to use the CSS file in order to benefit from fixed size police",file=target)
 	tmp <- as.data.frame(matrix(rnorm(100),ncol=10))
-	HTML(tmp,File=target)
+	HTML(tmp,file=target)
 	HTMLEndFile()
  
 }
