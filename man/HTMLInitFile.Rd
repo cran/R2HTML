@@ -9,8 +9,9 @@
 
 \usage{
 HTMLInitFile(outdir = ".", filename = "index", extension = "html", HTMLframe = FALSE, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output", CSSFile = "R2HTML.css")
-}
 HTMLEndFile(file = .HTML.file)
+}
+
 
 
 \arguments{
@@ -22,6 +23,7 @@ HTMLEndFile(file = .HTML.file)
   \item{BackGroundImg}{ option background for HTML tag <body>}
   \item{Title}{ string to pass to HTML <title> tag  }
   \item{CSSFile}{ path and name of a CSS file to use }
+  \item{file}{target HTML file to end}
 }
 \details{
 }
@@ -37,21 +39,15 @@ HTMLEndFile(file = .HTML.file)
 \seealso{  \code{\link{HTML}}}
 
 \examples{
-
-# Store in target the name of a output file
-
+	# Store in target the name of a output file
 	dir.create(file.path(tempdir(),"R2HTML"))
-
 	target <- HTMLInitFile(file.path(tempdir(),"R2HTML"),"index", BackGroundColor="#BBBBEE")
-
-	
 	# Use target to write a dataframe
 	HTML(as.title("Here is the data frame"),file=target)
 	HTML("<br>Don't forget to use the CSS file in order to benefit from fixed size police",file=target)
 	tmp <- as.data.frame(matrix(rnorm(100),ncol=10))
 	HTML(tmp,file=target)
 	HTMLEndFile()
- 
 }
 \keyword{ print }
 \keyword{ IO }

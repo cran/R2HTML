@@ -40,6 +40,7 @@ This HTML file has been preparsed by R Sweave tool to create some graphs on the 
 	<a href="toothbig.png">
 
 <<echo=FALSE,fig=TRUE,align=left,border=1,width=200,height=200,pointsize=6,HTMLwidth=200, HTMLheight=200,results=hide>>=
+data(ToothGrowth)
 boxplot(len ~ dose, data = ToothGrowth, boxwex = 0.25, at = 1:3 - 0.2,subset= supp == "VC", col="yellow",             main="", xlab="Vitamin C dose mg",ylab="tooth length", ylim=c(0,35),cex=0.4)
 @
 	Clik to enlarge</a>

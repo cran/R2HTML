@@ -2,7 +2,7 @@
 #     R2HTML - Library of exportation to HTML for R
 #     Copyright (C) 2002-2004 - Eric Lecoutre 
 
-#     R2HTML version 1.3	
+#     R2HTML version 1.4	
 
 #     This program is free software; you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -61,7 +61,12 @@ function(x, file = .HTML.file,append=TRUE,...)
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.numeric"<- function(x, file = .HTML.file,append=TRUE, ...){
-	cat(paste("<p class='numeric'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	if(!is.null(names(x))) {
+		HTML(as.table(x),file=file,append=append,...) 
+		}
+	else {
+		cat(paste("<p class='numeric'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+		}
 	}
 #----------------------------------------------------------------------------------------------------#
 
@@ -442,7 +447,7 @@ function(x, file = .HTML.file,append=TRUE,...)
     okP <- if (has.Pvalue) 
         ok[, -nc]
     else ok
-    x0 <- xm[okP] == 0 != (as.numeric(Cf[okP]) == 0)
+    x0 <- (xm[okP] == 0) != (as.numeric(Cf[okP]) == 0)
     if (length(not.both.0 <- which(x0 & !is.na(x0)))) {
         Cf[okP][not.both.0] <- format(xm[okP][not.both.0], digits = max(1, 
             digits - 1))
@@ -477,7 +482,7 @@ function(x, file = .HTML.file,append=TRUE,...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.table"<- function(x, file = .HTML.file,append=TRUE,digits=NULL,...)
+"HTML.table"<- function(x, file = .HTML.file,append=TRUE,digits=4,...)
 {
 	cat("\n",file=file,append=append)
 	if (!is.null(digits)) x <- round(x,digits)
@@ -612,120 +617,122 @@ function(x, file = .HTML.file,append=TRUE,...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.data.frame" <- function(x, file = .HTML.file, Border = 1, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  digits=2,append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",...)
+
+"HTML.data.frame" <- function(x, file = .HTML.file, Border = 1, innerBorder = 0, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  digits=2,append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",...)
 {
-	cat("\n", file=file,append=append,...)
-	if (!is.null(digits)){
-		nam=names(x)
-		x <- as.data.frame(lapply(x,FUN=function(vec) if (is.numeric(vec)) round(vec,digits) else vec))
-		names(x)=nam
-	}
-	txt <- paste("<p align=",align,">")
-	txtcaption <- ifelse(is.null(caption),"",paste("<caption align=",captionalign," class=",classcaption,">",caption,"</caption>",sep=""))
+   cat("\n", file=file,append=append,...)
+   if (!is.null(digits)){
+      nam=names(x)
+      rnam <- rownames( x )
+      x <- as.data.frame(lapply(x,FUN=function(vec) if (is.numeric(vec)) round(vec,digits) else vec))
+      names(x) <- nam
+      rownames( x ) <- rnam
+   }
+   txt <- paste("<p align=",align,">")
+   txtcaption <- ifelse(is.null(caption),"",paste("<caption align=",captionalign," class=",classcaption,">",caption,"</caption>",sep=""))
 
-	if (!is.null(Border)) txt <- paste(txt, "<table cellspacing=0 border=",Border,">",txtcaption,"<td>","<table class=",classtable,">", sep = "")
-	else txt <- paste(txt, "<table class=",classtable," cellspacing=0>", txtcaption, sep = "")
+   if (!is.null(Border)) txt <- paste(txt, "<table cellspacing=0 border=",Border,">",txtcaption,"<tr><td>","<table border=", innerBorder, " class=",classtable,">", sep = "")
+   else txt <- paste(txt, "<table border=", innerBorder, " class=",classtable," cellspacing=0>", txtcaption, sep = "")
 
 
-	if(is.null(dimnames(x)[[2]]) == FALSE) {
-		VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-				"<th>", sep = ""), 
-			rep(paste("<th>", sep = ""), dim(
-			x)[2] - 1))
-		VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "", 
-			as.character(dimnames(x)[[2]]))
-		VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</th>", rep(
-			"</th>", dim(x)[2] - 1), "</th>")
-		txt <- paste(txt,"<tr class=",classfirstline,">", paste(VecDebut, VecMilieu, VecFin, sep = "", 
-			collapse = ""),"</tr>")
-	}
-	for(i in 1:dim(x)[1]) {
-		if(i == 1) {
-			VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-				  "<tr><td class=", classfirstcolumn, ">", sep = ""), 
-				paste("<td class=", classcellinside, ">", sep = ""), 
-				rep(paste("<td class=", classcellinside, ">", sep = 
-				""), dim(x)[2] - 1))
-			VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) 
-				  dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
-				x[i,  ])))
-			VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>", 
-				rep("</td>", dim(x)[2] - 1), "</td></tr>")
-		}
-		else {
-			VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-				  "<tr><td class=", classfirstcolumn, ">", sep = ""), 
-				paste(rep(paste("<td class=", classcellinside, ">", sep
-				 = ""), dim(x)[2])))
-			VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) 
-				  dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
-				x[i,  ])))
-			VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>", 
-				rep("</TD>", dim(x)[2] - 1), "</td></tr>")
-		}
-		txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "", 
-			collapse = ""))
-	}
-	txt <- paste(txt, "</table>",if (!is.null(Border)) "</td></table>","</p><br>")
-	cat(txt, "\n", file = file, sep = "", append=TRUE,...)
+   if(is.null(dimnames(x)[[2]]) == FALSE) {
+      VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+            "<th>", sep = ""),
+         rep(paste("<th>", sep = ""), dim(
+         x)[2] - 1))
+      VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "",
+         as.character(dimnames(x)[[2]]))
+      VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</th>", rep(
+         "</th>", dim(x)[2] - 1), "</th>")
+      txt <- paste(txt,"<tr class=",classfirstline,">", paste(VecDebut, VecMilieu, VecFin, sep = "",
+         collapse = ""),"</tr>\n")
+   }
+   for(i in 1:dim(x)[1]) {
+      if(i == 1) {
+         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+              "<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste("<td class=", classcellinside, ">", sep = ""),
+            rep(paste("<td class=", classcellinside, ">", sep =
+            ""), dim(x)[2] - 1))
+         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
+              dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
+            x[i,  ])))
+         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
+            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+      }
+      else {
+         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+              "<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste(rep(paste("<td class=", classcellinside, ">", sep
+             = ""), dim(x)[2])))
+         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
+              dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
+            x[i,  ])))
+         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
+            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+      }
+      txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "",
+         collapse = ""))
+   }
+   txt <- paste(txt, "</table>\n",if (!is.null(Border)) "</td></table>\n","<br>")
+   cat(txt, "\n", file = file, sep = "", append=TRUE)
 }
-	
+
 #----------------------------------------------------------------------------------------------------#
 
-"HTML.matrix" <- function(x, file = .HTML.file, Border = 1, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  digits=2,append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",...)
+"HTML.matrix" <- function(x, file = .HTML.file, Border = 1, innerBorder = 0, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  digits=2,append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",...)
 {
-	cat("\n", file=file,append=append,...)
-	if (is.numeric(x) & !is.null(digits)) x<-round(x,digits=digits)
-	txt <- paste("<p align=",align,">")
-	txtcaption <- ifelse(is.null(caption),"",paste("<caption align=",captionalign," class=",classcaption,">",caption,"</caption>",sep=""))
+   cat("\n", file=file,append=append,...)
+   if (is.numeric(x) & !is.null(digits)) x<-round(x,digits=digits)
+   txt <- paste("<p align=",align,">")
+   txtcaption <- ifelse(is.null(caption),"",paste("<caption align=",captionalign," class=",classcaption,">",caption,"</caption>",sep=""))
 
-	if (!is.null(Border)) txt <- paste(txt, "<table cellspacing=0 border=",Border,">",txtcaption,"<td>","<table class=",classtable,">", sep = "")
-	else txt <- paste(txt, "<table class=",classtable," cellspacing=0>", txtcaption, sep = "")
+   if (!is.null(Border)) txt <- paste(txt, "<table cellspacing=0 border=",Border,">",txtcaption,"<tr><td>","<table border=", innerBorder,  " class=",classtable,">", sep = "")
+   else txt <- paste(txt, "<table border=", innerBorder, " class=", classtable," cellspacing=0>", txtcaption, sep = "")
 
 
-	if(is.null(dimnames(x)[[2]]) == FALSE) {
-		VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-				"<th>", sep = ""), 
-			rep(paste("<th>", sep = ""), dim(
-			x)[2] - 1))
-		VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "", 
-			as.character(dimnames(x)[[2]]))
-		VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</th>", rep(
-			"</th>", dim(x)[2] - 1), "</th>")
-		txt <- paste(txt,"<tr class=",classfirstline,">", paste(VecDebut, VecMilieu, VecFin, sep = "", 
-			collapse = ""),"</tr>")
-	}
-	for(i in 1:dim(x)[1]) {
-		if(i == 1) {
-			VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-				  "<tr><td class=", classfirstcolumn, ">", sep = ""), 
-				paste("<td class=", classcellinside, ">", sep = ""), 
-				rep(paste("<td class=", classcellinside, ">", sep = 
-				""), dim(x)[2] - 1))
-			VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) 
-				  dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
-				x[i,  ])))
-			VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>", 
-				rep("</td>", dim(x)[2] - 1), "</td></tr>")
-		}
-		else {
-			VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-				  "<tr><td class=", classfirstcolumn, ">", sep = ""), 
-				paste(rep(paste("<td class=", classcellinside, ">", sep
-				 = ""), dim(x)[2])))
-			VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) 
-				  dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
-				x[i,  ])))
-			VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>", 
-				rep("</TD>", dim(x)[2] - 1), "</td></tr>")
-		}
-		txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "", 
-			collapse = ""))
-	}
-	txt <- paste(txt, "</table>",if (!is.null(Border)) "</td></table>","</p><br>")
-	cat(txt, "\n", file = file, sep = "", append=TRUE,...)}
-	
-	
+   if(is.null(dimnames(x)[[2]]) == FALSE) {
+      VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+            "<th>", sep = ""),
+         rep(paste("<th>", sep = ""), dim(
+         x)[2] - 1))
+      VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "",
+         as.character(dimnames(x)[[2]]))
+      VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</th>", rep(
+         "</th>", dim(x)[2] - 1), "</th>")
+      txt <- paste(txt,"<tr class=",classfirstline,">", paste(VecDebut, VecMilieu, VecFin, sep = "",
+         collapse = ""),"</tr>\n")
+   }
+   for(i in 1:dim(x)[1]) {
+      if(i == 1) {
+         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+              "<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste("<td class=", classcellinside, ">", sep = ""),
+            rep(paste("<td class=", classcellinside, ">", sep =
+            ""), dim(x)[2] - 1))
+         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
+              dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
+            x[i,  ])))
+         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
+            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+      }
+      else {
+         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
+              "<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste(rep(paste("<td class=", classcellinside, ">", sep
+             = ""), dim(x)[2])))
+         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
+              dimnames(x)[[1]][i], HTMLReplaceNA(as.matrix(
+            x[i,  ])))
+         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
+            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+      }
+      txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "",
+         collapse = ""))
+   }
+   txt <- paste(txt, "</table>",if (!is.null(Border)) "</td></table>\n","<br>")
+   cat(txt, "\n", file = file, sep = "", append=TRUE)}
+
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.structure"<-
@@ -3557,10 +3564,14 @@ function(x, HR = 2,CSSclass=NULL,file = .HTML.file,append=TRUE, ...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLplot" <- function (Caption = "", file = .HTML.file, GraphDirectory = ".", 
-    GraphFileName = "", GraphSaveAs = "png", GraphBorder = 1, 
-    Align = "center", Width=500,HeightHTML=NULL,append=TRUE,...) 
+
+"HTMLplot" <- function (Caption = "", file = .HTML.file,append=TRUE, GraphDirectory = ".",
+    GraphFileName = "", GraphSaveAs = "png", GraphBorder = 1, Align = "center",
+    Width=500,Height=500,WidthHTML=NULL,HeightHTML=NULL,
+    GraphPointSize=12,GraphBackGround="white",GraphRes=72,plotFunction=NULL,...) 
 {
+## New version with code submitted by James Wettenhall <wettenhall@wehi.edu.au>
+## Change  plotFunction by plotExpression...
     
     if (exists("HTMLenv",where=".GlobalEnv",mode="environment"))
     {
@@ -3577,13 +3588,48 @@ function(x, HR = 2,CSSclass=NULL,file = .HTML.file,append=TRUE, ...)
     
      GraphFileName <- paste(GraphFileName, ".", GraphSaveAs, sep = "")
      AbsGraphFileName <- file.path(GraphDirectory, GraphFileName)
-       if (GraphSaveAs=="png") dev.print(png, file = AbsGraphFileName, width = Width)
-       else if (GraphSaveAs=="jpg") dev.print(jpeg, file = AbsGraphFileName, width = Width)
-       else if (GraphSaveAs=="gif") dev.print(gif, file = AbsGraphFileName, width = Width)
-       else stop("GraphSaveAs must be either jpg, png or gif")
+     
+    if (GraphSaveAs=="png") 
+      {
+        if (is.null(plotFunction))
+          dev.print(png, file = AbsGraphFileName, width=Width,height=Height,pointsize=GraphPointSize,bg=GraphBackGround)
+        else
+        {
+          if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")  
+            bitmap(file = AbsGraphFileName,bg=GraphBackGround,res=GraphRes)
+          else
+            png(filename = AbsGraphFileName, width=Width,height=Height,pointsize=GraphPointSize,bg=GraphBackGround)
+          plotFunction()      
+          dev.off()
+        }
+      }
+      else if (GraphSaveAs %in% c("jpg","jpeg"))
+      {
+        if (is.null(plotFunction))
+          dev.print(jpeg, file = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG)
+        else
+        {
+          if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")  
+            bitmap(filename = AbsGraphFileName,bg=GraphBackGround,res=GraphRes,type="jpeg")
+          else
+            jpeg(filename = AbsGraphFileName, width=Width,height=Height,pointsize=GraphPointSize,bg=GraphBackGround)
+          plotFunction()      
+          dev.off()
+        }
+      }
+      else if (GraphSaveAs=="gif") 
+      {
+        if (is.null(plotFunction))
+          dev.print(gif, file = AbsGraphFileName, width=Width,height=Height,pointsize=GraphPointSize,bg=GraphBackGround)
+        else
+        {
+          stop("When passing a plot function to HTMLplot, device must be jpg or png.")      
+        }
+      }
+    else stop("GraphSaveAs must be either jpg, png or gif")
     
     cat(paste("<p align=", Align, "><img src='", GraphFileName, 
-        "' border=", GraphBorder, if (!is.null(Width)) paste(" width=",Width,sep="") else "",if (!is.null(HeightHTML)) paste(" height=",HeightHTML,sep="") else "",">", sep = "", collapse = ""), 
+        "' border=", GraphBorder, if (!is.null(Width)) paste(" width=",Width,sep="") else "",if (!is.null(HeightHTML)) paste(" height=",HeightHTML,sep=""), if(!is.null(WidthHTML)) paste(" width="),">", sep = "", collapse = ""), 
         file = file, append=TRUE, sep = "")
     if (Caption != "") {
         cat(paste("<br><font class=caption>", Caption, "</font>"), file = file, append=TRUE, sep = "")
@@ -3595,10 +3641,10 @@ function(x, HR = 2,CSSclass=NULL,file = .HTML.file,append=TRUE, ...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLInsertGraph" <- function(GraphFileName="",Caption="",GraphBorder=1,Align="center",Width=500,HeightHTML=NULL,file=.HTML.file,append=TRUE,...)
+"HTMLInsertGraph" <- function(GraphFileName="",Caption="",GraphBorder=1,Align="center",WidthHTML=500,HeightHTML=NULL,file=.HTML.file,append=TRUE,...)
 {
     cat("\n", file=file, append=append,...)
-    cat(paste("<p align=", Align, "><img src='", GraphFileName, "' border=", GraphBorder, if (!is.null(Width)) paste(" width=",Width,sep="") else "",if (!is.null(HeightHTML)) paste(" height=",HeightHTML,sep="") else "",">", sep = "", collapse = ""),         file = file, append=TRUE, sep = "")
+    cat(paste("<p align=", Align, "><img src='", GraphFileName, "' border=", GraphBorder, if (!is.null(WidthHTML)) paste(" width=",WidthHTML,sep="") else "",if (!is.null(HeightHTML)) paste(" height=",HeightHTML,sep="") else "",">", sep = "", collapse = ""),         file = file, append=TRUE, sep = "")
     if (Caption != "") cat(paste("<br><i class=caption>", Caption, "</i>"), file = file, append=TRUE, sep = "")
     invisible(return(TRUE))
 }
@@ -3679,7 +3725,7 @@ function(Vec, Replace = " ")
 	abscormat=abs(cormat)
 	backcolors=matrix(grey(1-as.matrix(abscormat)),ncol=ncol(cormat))
 	css = 10*round(abs(x),1)
-	css=matrix(paste("cor",css,sep=""),ncol=ncol(x))
+	css=matrix(paste("cor",unlist(css),sep=""),ncol=ncol(x))
 	diag(css)="cordiag"
 	diag(backcolors)="#FFFFFF"
 	forecolors=matrix("#000000",ncol=ncol(cormat),nrow=nrow(cormat))
@@ -3952,7 +3998,7 @@ else	{
     }
 
     
-    chunkprefix <- tools:::RweaveChunkPrefix(options)
+    chunkprefix <- utils:::RweaveChunkPrefix(options)
 
     if(options$split){
         chunkout <- object$chunkout[[chunkprefix]]
@@ -3966,10 +4012,10 @@ else	{
         chunkout <- object$output
 
     assign(".HTML.file",chunkout,pos=.GlobalEnv, immediate=TRUE)
-    tools:::SweaveHooks(options, run=TRUE)
+    utils:::SweaveHooks(options, run=TRUE)
     
     chunkexps <- try(parse(text=chunk), silent=TRUE)
-    tools:::RweaveTryStop(chunkexps, options)
+    utils:::RweaveTryStop(chunkexps, options)
     openSinput <- FALSE
     openSchunk <- FALSE
     
@@ -4003,7 +4049,7 @@ else	{
          tmpcon <- file()
          sink(file=tmpcon)
         err <- NULL
-        if(options$eval) err <- tools:::RweaveEvalWithOpt(ce, options)
+        if(options$eval) err <- utils:::RweaveEvalWithOpt(ce, options)
          cat("\n") # make sure final line is complete
          sink()
          output <- readLines(tmpcon)
@@ -4011,7 +4057,7 @@ else	{
         # delete empty output
         if(length(output)==1 & output[1]=="") output <- NULL
 
-        tools:::RweaveTryStop(err, options) #### !!!  err$value peut etre exporte via HTML(err.value)
+        utils:::RweaveTryStop(err, options) #### !!!  err$value peut etre exporte via HTML(err.value)
         
         if(object$debug)
             cat(paste(output, collapse="\n"))
@@ -4046,7 +4092,7 @@ else	{
         if(options$png){
             png(file=paste(chunkprefix, "png", sep="."),width=options$width,height=options$height,bg=options$bg,pointsize=options$pointsize)
 
-            err <- try({tools:::SweaveHooks(options, run=TRUE);
+            err <- try({utils:::SweaveHooks(options, run=TRUE);
                         eval(chunkexps, envir=.GlobalEnv)})
             dev.off()
             if(inherits(err, "try-error")) stop(err)
@@ -4138,37 +4184,23 @@ else	{
 
 ".First.lib" <- function(lib,pkg)
 {
-	cat("\nLoading R2HTML package...\n")
+	#cat("\nLoading R2HTML package...\n")
 	#ps.options(bg="white")
 	file.copy(file.path(lib,pkg,'output','R2HTML.css'), file.path(tempdir(),'R2HTML.css'))
 	file.copy(file.path(lib,pkg,'output','R2HTMLlogo.gif'), file.path(tempdir(),'R2HTMLlogo.gif'))
 	assign(".R2HTMLpath",file.path(lib,pkg),pos=.GlobalEnv)
+
+
+
 	
 }
 
 
-if (require(utils)){
-	SweaveSyntaxHTML <- utils:::SweaveSyntaxNoweb 
-	SweaveSyntaxHTML$docexpr="<[/]?Sexpr([^>]*)>"
-	SweaveSyntaxHTML$syntaxname = "<[/]?SweaveSyntax([^>]*)>"
-	SweaveSyntaxHTML$trans$docexpr="<[/]?Sexpr\\1>"
-	SweaveSyntaxHTML$trans$syntaxname <- "<!--SweaveSyntax{SweaveSyntaxHTML}!-->"
-	
-	
-	} else 	{
-	if (require(tools)) {
-		SweaveSyntaxHTML <- tools:::SweaveSyntaxNoweb
-		SweaveSyntaxHTML$docexpr="<[/]?Sexpr([^>]*)>"
-		SweaveSyntaxHTML$syntaxname = "<[/]?SweaveSyntax([^>]*)>"
-		SweaveSyntaxHTML$trans$docexpr="<[/]?Sexpr\\1>"
-		SweaveSyntaxHTML$trans$syntaxname <- "<!--SweaveSyntax{SweaveSyntaxHTML}!-->"
-		
-#		RweaveChunkPrefix <- tools:::RweaveChunkPrefix 
-#		SweaveHooks <- tools:::SweaveHooks
-#		RweaveTryStop <- tools:::RweaveTryStop
-#		RweaveEvalWithOpt <- tools::RweaveEvalWithOpt
-		} else cat("\ntools or utils package not found... you wont be able to use Sweave HTML driver")
-}
+SweaveSyntaxHTML <- SweaveSyntaxNoweb 
+SweaveSyntaxHTML$docexpr <- "<[/]?Sexpr([^>]*)>"
+SweaveSyntaxHTML$syntaxname <- "<[/]?SweaveSyntax([^>]*)>"
+SweaveSyntaxHTML$trans$docexpr <- "<[/]?Sexpr\\1>"
+SweaveSyntaxHTML$trans$syntaxname <- "<!--SweaveSyntax{SweaveSyntaxHTML}!-->"
 
 	
 
