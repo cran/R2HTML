@@ -12,11 +12,3 @@
  cat("file:", .HTML.file, "is created")
  browseURL(paste("file://",.HTML.file,sep=""))
 
- 
- cat("Some text and then a math mode:",file=.HTML.file,append=TRUE)
- HTML(as.latex("[[a,b],[c,d]]((n),(k))") ,file=.HTML.file)
- cat(". Nice isn't it?",file=.HTML.file,append=TRUE)
- HTML(as.latex("\int_{-\infty}^{1}f(x)dx",inline=FALSE,count=TRUE) ,file=.HTML.file)   
- HTML(as.title("Labelled equations"),HR=3)
- HTML(as.latex("x+b/(2a)=+-sqrt((b^2)/(4a^2)-c/a)",inline=FALSE,label="Label of this equation"))      
-

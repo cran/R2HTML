@@ -56,7 +56,7 @@ HTMLgrid_references(file=)
 }
 \details{
   Those exportation methods require severall external files, including the runtime version of ActiveWidgets grid.
-  To include the necessary references, you can use \code{HTML_references}.
+  To include the necessary references, you can use \code{HTMLgrid_references}.
   Be careful: if you intend to put multiple grids on a same output, the references has to be present only once in the output.
     \\
    If you set the \code{file} argument to \code{NULL}, a new temp file will be created.

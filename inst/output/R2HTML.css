@@ -86,13 +86,9 @@ A {
   font-weight: bold;
 }
 
-.command {
-	font-family=verdana, arial;
-	color=red
-}
 
 .partitle {
-	font-family=verdana, arial;
+	font-family:verdana, arial;
 	font-weight: bold
 }
 
@@ -102,10 +98,16 @@ XMP {
 }
 
 .function {
-	font-family=courier;
-	color=blue;
+	font-family:courier;
+	color:blue;
 	font-size: 10pt
 }
+
+.command {
+	font-family:verdana, arial;
+	color:red
+}
+
 
 TR {
 	font-family: Arial, Helvetica, Times, Helvetica, sans-serif;
@@ -117,17 +119,17 @@ TR {
 TR.firstline {
 	color: #FFFFFF;
 	background: #000000;
-	text-align=center;
+	text-align:center;
 	font-weight: bold
 }
 TR.ListBackTitle {
 	color: #FFFFFF;
 	background: #000000;
-	text-align=left;
+	text-align:left;
 	font-weight: bold
 }
 TD {
-	background=#FFFFFF;
+	background:#FFFFFF;
 	padding: 0 0
 }
 TD.ListBackMain {
@@ -137,17 +139,17 @@ TD.ListBackMain {
 TD.firstcolumn {
 	padding: 5 10;
 	background: #C0C0C0;
-	text-align=right
+	text-align:right
 }
 TD.cellinside {
 	padding: 5 10;
 	background: #FFFFFF;
-	text-align=right
+	text-align:right
 }
 /* CORRELATION MATRIX TRAFFIC HIGHLIGHT*/
 TD.corvarname {
-	background-color="#FFFFFF";
-	color=black;
+	background-color:"#FFFFFF";
+	color:black;
 	height: 1.1cm;
 	text-align: right;
 	font-weight: bold
@@ -156,83 +158,88 @@ TD.corsep {
 	width: 0.5cm
 }
 TD.cordiag {
-	background-color=#fffff;
-	color=white
+	background-color:#fffff;
+	color:white
 }
 TD.cor0 {
-	background-color="#FFFFFF";
-	color=black;
+	background-color:"#FFFFFF";
+	color:black;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor1 {
-	background-color="#E6E6E6";
-	color=black;
+	background-color:"#E6E6E6";
+	color:black;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor2 {
-	background-color="#CCCCCC";
-	color=black;
+	background-color:"#CCCCCC";
+	color:black;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor3 {
-	background-color="#B3B3B3";
-	color=black;
+	background-color:"#B3B3B3";
+	color:black;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor4 {
-	background-color="#999999";
-	color=black;
+	background-color:"#999999";
+	color:black;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor5 {
-	background-color="#808080";
-	color=white;
+	background-color:"#808080";
+	color:white;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor6 {
-	background-color="#666666";
-	color=white;
+	background-color:"#666666";
+	color:white;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor7 {
-	background-color="#4D4D4D";
-	color=white;
+	background-color:"#4D4D4D";
+	color:white;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor8 {
-	background-color="#333333";
-	color=white;
+	background-color:"#333333";
+	color:white;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor9 {
-	background-color="#1A1A1A";
-	color=yellow;
+	background-color:"#1A1A1A";
+	color:yellow;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
 }
 TD.cor10 {
-	background-color="#000000";
-	color=yellow;
+	background-color:"#000000";
+	color:yellow;
 	width: 1.1cm;
 	height: 1.1cm;
 	text-align: center
+}
+TD.cellinsideLeft {
+	padding: 5 5;
+	background: #FFFFFF;
+	text-align:left
 }

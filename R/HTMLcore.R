@@ -2,7 +2,7 @@
 #     R2HTML - Library of exportation to HTML for R
 #     Copyright (C) 2002-2004 - Eric Lecoutre 
 
-#     R2HTML version 1.5	
+#     R2HTML Package
 
 #     This program is free software; you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -341,13 +341,13 @@ function(x, file = .HTML.file,append=TRUE,...)
 {
 
 	HTML("\n",file=file,append=append)
-	HTMLli(paste("Call:<font class='call'> ",deparse(x$call),"</font>","\n", sep = "", collapse = ""),file=file,append=TRUE,...) 
+	HTMLli(paste("Call:<font class='call'> ",deparse(x$call),"</font>","\n", sep = "", collapse = ""),file=file,append=TRUE) 
 
 	resid <- x$residuals
 	df <- x$df
 	rdf <- df[2]
 
-	HTMLli(paste(if (!is.null(x$w) && diff(range(x$w))) "Weighted "," Residuals<br>\n"),file=file,append=TRUE,...)
+	HTMLli(paste(if (!is.null(x$w) && diff(range(x$w))) "Weighted "," Residuals<br>\n"),file=file,append=TRUE)
 	if (rdf > 5) {
 	    nam <- c("Min", "1Q", "Median", "3Q", "Max")
 	    rq <- if (length(dim(resid)) == 2) 
@@ -363,20 +363,20 @@ function(x, file = .HTML.file,append=TRUE,...)
 	}
 	if (nsingular <- df[3] - df[1]) 
 
-		HTMLli(paste("Coefficients (",nsingular, "not defined because of singularities)<br>\n",sep=""),file=file,append=TRUE,...)
-	else HTMLli("Coefficients\n",file=file,append=TRUE,...)		
+		HTMLli(paste("Coefficients (",nsingular, "not defined because of singularities)<br>\n",sep=""),file=file,append=TRUE)
+	else HTMLli("Coefficients\n",file=file,append=TRUE)		
 
 
 	HTML.coefmat(x$coef, digits = digits, signif.stars = signif.stars, file=file,append=TRUE,...)
 	
-	HTMLli(paste("Residuals standard error: ",round(x$sigma,digits)," on ",rdf," degrees of freedom\n",sep=""),file=file,append=TRUE,...)
+	HTMLli(paste("Residuals standard error: ",round(x$sigma,digits)," on ",rdf," degrees of freedom\n",sep=""),file=file,append=TRUE,)
  
 	
 
 	if (!is.null(x$fstatistic)) {
-		HTMLli(paste("Multiple R-Squared:<b>",round(x$r.squared,digits),"</b>",sep=""),file=file,append=TRUE,...)
-		HTMLli(paste("Adjusted R-Squared:<b>",round(x$adj.r.squared,digits),"</b>",sep=""),file=file,append=TRUE,...)
-	    	HTMLli(paste("F-statistics: <b>", round(x$fstatistic[1],digits), "</b> on ",x$fstatistic[2], " and ", x$fstatistic[3], " DF. P-value:<b>",round(1-pf(x$fstatistic[1],x$fstatistic[2],x$fstatistic[3]),digits),"</b>." ,sep=""),file=file,append=TRUE,...)
+		HTMLli(paste("Multiple R-Squared:<b>",round(x$r.squared,digits),"</b>",sep=""),file=file,append=TRUE)
+		HTMLli(paste("Adjusted R-Squared:<b>",round(x$adj.r.squared,digits),"</b>",sep=""),file=file,append=TRUE)
+	    	HTMLli(paste("F-statistics: <b>", round(x$fstatistic[1],digits), "</b> on ",x$fstatistic[2], " and ", x$fstatistic[3], " DF. P-value:<b>",round(1-pf(x$fstatistic[1],x$fstatistic[2],x$fstatistic[3]),digits),"</b>." ,sep=""),file=file,append=TRUE)
 	 	}
 	correl <- x$correlation
 	if (!is.null(correl)) {
@@ -3828,7 +3828,7 @@ function(x)
 	
 	# Creation of required HTML files
 
-	try(.HTML.file <- HTMLInitFile(outdir = outdir,filename=filename,extension=extension,HTMLframe=HTMLframe, BackGroundColor = BackGroundColor, BackGroundImg = BackGroundImg, Title = Title,CSSFile=CSSFile))
+	try(.HTML.file <- HTMLInitFile(outdir = outdir,filename=filename,extension=extension,HTMLframe=HTMLframe, BackGroundColor = BackGroundColor, BackGroundImg = BackGroundImg, Title = Title,CSSFile=CSSFile,useLaTeX=TRUE))
 	
 
 	ToHTML <- function(file,echo,HTMLframe,HTMLMenuFile,target,outdir)
@@ -3938,7 +3938,7 @@ else	{
 
 	cat("<html><head><link rel=stylesheet href=",CSSFile," type=text/css> </head><body bgcolor=#E5F5FF>  <center> <img src=R2HTMLlogo.gif> <hr size=1></center><br>",sep="",append=FALSE,file=absfilemenu)
 
-     txt <- ifelse(useLaTex,"<html xmlns:mml=\"http://www.w3.org/1998/Math/MathML\">","<html>")
+     txt <- ifelse(useLaTeX,"<html xmlns:mml=\"http://www.w3.org/1998/Math/MathML\">","<html>")
   #<HEAD>
     txt <- c(txt, "<head>")
     txt <- c(txt, paste("<title>",Title,"</title>"))

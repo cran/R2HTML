@@ -150,6 +150,10 @@
 \alias{HTML.tukeysmooth}
 \alias{HTML.unit}
 \alias{HTML.viewport}  
+\alias{HTML.reStruct}
+\alias{HTML.summary.lme}   
+\alias{HTML.summary.pdDiag}
+
 
 
 \title{Outputs an object to a HTML file}
