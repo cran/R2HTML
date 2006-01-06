@@ -8,11 +8,7 @@
 \synopsis{HTML.data.frame(x, file = .HTML.file, Border = 1, innerBorder = 0, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",digits=getOption("R2HTML.format.digits"),nsmall = getOption("R2HTML.format.nsmall"), big.mark = getOption("R2HTML.format.big.mark"), big.interval = getOption("R2HTML.format.big.interval"), decimal.mark = getOption("R2HTML.format.decimal.mark"),sortableDF=getOption("R2HTML.sortableDF"),...)
 }
 \usage{
-HTML.data.frame(x, file = .HTML.file, Border = 1, innerBorder=0,classfirstline = "firstline",\cr 
-classfirstcolumn = "firstcolumn", classcellinside = "cellinside", \cr
-append = TRUE, align = "center", caption = "", captionalign = "bottom", \cr
-classcaption = "captiondataframe", classtable = "dataframe", \cr
-digits=2,nsmall = 0, big.mark = "", big.interval = 3, decimal.mark = ",",sortableDF=FALSE, ...)
+HTML.data.frame(x, file = .HTML.file, Border = 1, innerBorder=0,classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside", append = TRUE, align = "center", caption = "", captionalign = "bottom", classcaption = "captiondataframe", classtable = "dataframe", digits=2,nsmall = 0, big.mark = "", big.interval = 3, decimal.mark = ",",sortableDF=FALSE, ...)
 HTML.data.frame(x,file=)
 }
 

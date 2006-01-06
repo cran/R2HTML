@@ -1,4 +1,4 @@
-
+#     $Id: HTMLcore.R 6 2006-01-06 11:52:37Z mentus $
 #     R2HTML - Library of exportation to HTML for R
 #     Copyright (C) 2002-2004 - Eric Lecoutre 
 

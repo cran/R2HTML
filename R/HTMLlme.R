@@ -1,3 +1,4 @@
+# $Id: HTMLlme.R 6 2006-01-06 11:52:37Z mentus $
 # R2HTML.lme.r
 # Formattted HTML printout of lme/nlme results
 # Remove R2HTML:::  when in namespace

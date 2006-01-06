@@ -6,24 +6,26 @@
   Exports the active graphic to a JPEG or GIF file and add it to a target HTML output, by writing the <IMG> tag.
 }
 \usage{
-"HTMLplot" <- function (Caption = "", file = .HTML.file, GraphDirectory = ".", 
-    GraphFileName = "", GraphSaveAs = "png", GraphBorder = 1, 
-    Align = "center", width=500,height=NULL,WidthHTML=500,HeightHTML=NULL,append=TRUE,...) 
+HTMLplot(Caption = "", file = .HTML.file, append = TRUE, GraphDirectory = ".",   GraphFileName = "", GraphSaveAs = "png", GraphBorder = 1,  Align = "center", Width = 500, Height = 500, WidthHTML = NULL,     HeightHTML = NULL, GraphPointSize = 12, GraphBackGround = "white",     GraphRes = 72, plotFunction = NULL, ...) 
 }
 
 \arguments{
   \item{Caption}{text to be placed below the graphic, as a caption}
   \item{file}{ the target HTML file }
+  \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
   \item{GraphDirectory}{ path where file should be stored }
   \item{GraphFileName}{ name of the file to produce (could be missing) }
   \item{GraphSaveAs}{ an existing exportation device, such as jpg or gif }
   \item{GraphBorder}{ HTML border option for the <IMG> tag }
   \item{Align}{ HTML align option for the <IMG> tag}
-  \item{width}{width of the image to create (passed to the driver)}
-  \item{height}{height of the image to create (passed to the driver) (NULL: not specified)}
+  \item{Width}{width of the image to create (passed to the driver)}
+  \item{Height}{height of the image to create (passed to the driver) (NULL: not specified)}
   \item{WidthHTML}{ Width of the image in HTML}
   \item{HeightHTML}{ Height of the image in HTML (NULL for not specified)}
-  \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
+  \item{GraphPointSize}{ To be passed to the device creator function}
+  \item{GraphBackGround}{ To be passed to the device creator function}
+  \item{GraphRes}{ To be passed to the device creator function}
+  \item{plotFunction}{Function to be evaluated for the on-the-fly creation of the graph to be exported}	
   \item{\dots}{ ... }
 }
 \details{

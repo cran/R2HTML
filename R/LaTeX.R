@@ -1,3 +1,5 @@
+# $Id: LaTeX.R 6 2006-01-06 11:52:37Z mentus $ 
+
 as.latex <- function(x,label=NULL,inline=ifelse(is.null(label),TRUE,FALSE),count=ifelse(is.null(label),FALSE,TRUE))
 {
   out <- list(alt=x,inline=inline,count=count,label=label)  

@@ -1,4 +1,4 @@
-
+# $Id: grid.R 6 2006-01-06 11:52:37Z mentus $ 
 
 "HTMLgrid_summary" <- function(
     x,

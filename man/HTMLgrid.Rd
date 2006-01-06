@@ -11,28 +11,9 @@
 
 
 \usage{
-HTMLgrid(x, file = .HTML.file, append = TRUE, includeref = TRUE, \\
- align = "center", digits = getOption("R2HTML.format.digits"), \\
- nsmall = getOption("R2HTML.format.nsmall"), \\
- big.mark = getOption("R2HTML.format.big.mark"), \\
- big.interval = getOption("R2HTML.format.big.interval"), \\
- decimal.mark = getOption("R2HTML.format.decimal.mark"), \\
- asDF = TRUE, browse = FALSE, classes = NULL, showimages = TRUE)
-HTMLgrid_inline(x,file = .HTML.file,append=TRUE ,includeref=FALSE,\\
-   align="center",digits=getOption("R2HTML.format.digits"),\\
-   nsmall = getOption("R2HTML.format.nsmall"),\\
-   big.mark = getOption("R2HTML.format.big.mark"),\\
-   big.interval = getOption("R2HTML.format.big.interval"),\\
-   decimal.mark = getOption("R2HTML.format.decimal.mark"),\\
-   asDF=TRUE,browse=FALSE, classes=sapply(x,class),\\
-   showimages=TRUE)
-HTMLgrid_summary(x,file=NULL,append=TRUE, \\
- digits=getOption("R2HTML.format.digits"),\\
- nsmall = getOption("R2HTML.format.nsmall"),\\ 
- big.mark = getOption("R2HTML.format.big.mark"),\\
- big.interval = getOption("R2HTML.format.big.interval"), \\
- decimal.mark = getOption("R2HTML.format.decimal.mark"),\\
- browse=FALSE)
+HTMLgrid(x, file = .HTML.file, append = TRUE, includeref = FALSE, align = "center", digits = getOption("R2HTML.format.digits"), nsmall = getOption("R2HTML.format.nsmall"),  big.mark = getOption("R2HTML.format.big.mark"),  big.interval = getOption("R2HTML.format.big.interval"),  decimal.mark = getOption("R2HTML.format.decimal.mark"),  asDF = TRUE, browse = FALSE, classes = NULL, showimages = TRUE)
+HTMLgrid_inline(x,file = .HTML.file,append=TRUE ,includeref=FALSE, align="center",digits=getOption("R2HTML.format.digits"),   nsmall = getOption("R2HTML.format.nsmall"),   big.mark = getOption("R2HTML.format.big.mark"),   big.interval = getOption("R2HTML.format.big.interval"),   decimal.mark = getOption("R2HTML.format.decimal.mark"),   asDF=TRUE,browse=FALSE, classes=sapply(x,class),   showimages=TRUE)
+HTMLgrid_summary(x,file=NULL,append=TRUE,  digits=getOption("R2HTML.format.digits"), nsmall = getOption("R2HTML.format.nsmall"), big.mark = getOption("R2HTML.format.big.mark"), big.interval = getOption("R2HTML.format.big.interval"),  decimal.mark = getOption("R2HTML.format.decimal.mark"), browse=FALSE)
 HTMLgrid_references(file=)
 }
 
@@ -52,7 +33,6 @@ HTMLgrid_references(file=)
   \item{browse}{ logical. If 'TRUE', the output file will directly be called within a browser. }
   \item{classes}{ vector of classes for the object. If \code{NULL}, the default, will be created using real classes. Could be used to bypass defaukt formatting associated with each class}
   \item{showimages}{ logicial. Display or not little icons in columns headers }
-  \item{\dots}{ ... }
 }
 \details{
   Those exportation methods require severall external files, including the runtime version of ActiveWidgets grid.

@@ -6,7 +6,7 @@
   Write the HTML <img> tag to an output, so that a existant graph could be displayed in the HTML report
 }
 \usage{
-function(GraphFileName="",Caption="",GraphBorder=1,Align="center",WidthHTML=500,HeightHTML=NULL,file=.HTML.file,append=TRUE,...)
+HTMLInsertGraph(GraphFileName="", Caption="", GraphBorder=1, Align="center", WidthHTML=500, HeightHTML=NULL, file=.HTML.file, append=TRUE,...)
 }
 
 \arguments{
