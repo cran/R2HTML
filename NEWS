@@ -1,3 +1,10 @@
+# 25/01/2006 - Version 1.56
+
+- Replaced instances of format.char (now deprecated in
+  R 2.2.0) by formatC.
+- Enclosed HTMLInsertGraph examples in \dontrun{}, so 
+  that R CMD check runs fine without an interactive display.
+
 # 28/02/2005 - Version 1.52
 
 - Added methods for lme/nlme, submitted by:

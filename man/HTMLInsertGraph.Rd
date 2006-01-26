@@ -36,9 +36,9 @@ HTMLInsertGraph(GraphFileName="", Caption="", GraphBorder=1, Align="center", Wid
 	HTMLoutput=file.path(directory,"output.html")
 	graph1="graph1.png"
 	# Write graph to a file
-	png(file.path(directory,graph1))
-	plot(table(rpois(100,5)), type = "h", col = "red", lwd=10,main="rpois(100,lambda=5)")
-	dev.off()
+	\dontrun{png(file.path(directory,graph1))}
+	\dontrun{plot(table(rpois(100,5)), type = "h", col = "red", lwd=10,main="rpois(100,lambda=5)")}
+	\dontrun{dev.off()}
 	# Insert graph to the HTML output
 	HTMLInsertGraph(graph1,file=HTMLoutput,caption="Sample discrete distribution plot")
 }

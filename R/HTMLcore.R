@@ -466,7 +466,7 @@ function(x, file = .HTML.file,append=TRUE,...)
                 Signif <- symnum(pv, corr = FALSE, na = FALSE, 
                   cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
                   symbols = c("***", "**", "*", ".", " "))
-                Cf <- cbind(Cf, format.char(Signif))
+                Cf <- cbind(Cf, formatC(Signif))
             }
         }
         else signif.stars <- FALSE
@@ -1697,7 +1697,7 @@ NextMethod("HTML")
     HTMLli(paste(x$method,"<br>"), file=file)
     note <- x$note
     x[c("method", "note")] <- NULL
-    HTML(paste(paste(format.char(names(x), width = 15, flag = "+"), 
+    HTML(paste(paste(formatC(names(x), width = 15, flag = "+"), 
         format(x), sep = " = 	"), sep = "\n<br>",collapse="\n<br>"),file=file)
     if (!is.null(note)) 
         HTML(paste("\n<p>", "NOTE:", note, "\n</p>\n"),file=file)
