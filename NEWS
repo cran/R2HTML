@@ -1,3 +1,11 @@
+# 4/07/2006 - Version 1.57
+- Added the HTML2clip wrapper, suggested by Gabor 
+  Gronthendieck.
+- Miscelaneous fixes to documentation (contributed
+  by Tobias Verbeke)
+- Cleaning up of man directory of spurious files as
+  suggested by Kurt Honik
+
 # 25/01/2006 - Version 1.56
 
 - Replaced instances of format.char (now deprecated in

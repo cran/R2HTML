@@ -1,4 +1,4 @@
-#     $Id: HTMLcore.R 6 2006-01-06 11:52:37Z mentus $
+#     $Id: HTMLcore.R 18 2006-06-05 05:45:50Z mentus $
 #     R2HTML - Library of exportation to HTML for R
 #     Copyright (C) 2002-2004 - Eric Lecoutre 
 
@@ -4239,6 +4239,12 @@ else	{
     options
 }
 
+#----------------------------------------------------------------------------------------------------#
+# Function contributed by Gabor Grothendieck (ggrothendieck_at_gmail.com)
+
+HTML2clip <- function(x, filename = file("clipboard", ifelse(.Platform$OS == "windows","w",stop("Writing to clipboard only supported on Windows"))), append = FALSE, ...) {
+    HTML(x, file = filename, append = append, ...)
+}
 
 
 #----------------------------------------------------------------------------------------------------#

@@ -11,7 +11,7 @@ HTMLInsertGraph(GraphFileName="", Caption="", GraphBorder=1, Align="center", Wid
 
 \arguments{
   \item{GraphFileName}{ Name of the target graph (GIF, JPEG or PNG) }
-  \item{Caption}{ If non empty, text to be written under the graph, as it's caption}
+  \item{Caption}{ If non empty, text to be written under the graph, as its caption}
   \item{GraphBorder}{ Size of the border, in pixels }
   \item{Align}{ Alignment of the graph (center, left or right) }
   \item{WidthHTML}{ Width of the image in HTML}

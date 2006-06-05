@@ -27,7 +27,8 @@ export(HTML,
        HTMLgrid_references,
        HTMLgrid,
        HTMLgrid_inline,
-       HTMLgrid_summary
+       HTMLgrid_summary,
+       HTML2clip
        )
 
 S3method(HTML, default)

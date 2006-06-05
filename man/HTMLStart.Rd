@@ -46,7 +46,7 @@ The user may need to know the following points which describe how R2HTML does wo
 \references{ }
 \author{ Eric Lecoutre }
 
-\note{ The argument \code{echo} is very usefull for teaching purpose.}
+\note{ The argument \code{echo} is very usefull for teaching purposes.}
 
 \seealso{  \code{\link{HTML}}}
 

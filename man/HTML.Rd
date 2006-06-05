@@ -170,7 +170,7 @@ HTML(x, ...)
 }
 \details{
  \code{HTML} function acts like \code{cat}, with a \code{file} argument, which has to be used and a \code{append} argument, which is set by default to TRUE. A convenient default value for \code{file} argument is set to hidden variable \code{.HTML.file}, so that one may begin to set this variable and omit the argument thereafter.
- Most of the current classes are handled by \code{HTML} function. Some specific methods such as \code{HTML.matrix} or \code{HTML.data.frame} do own a lot of arguments to precise the way the data are exported.
+ Most of the current classes are handled by \code{HTML} function. Some specific methods such as \code{HTML.matrix} or \code{HTML.data.frame} do own a lot of arguments to specify the way the data are exported.
 }
 \value{
 	no value returned.  
@@ -185,7 +185,7 @@ HTML(x, ...)
 \examples{
 dir.create(file.path(tempdir(),"R2HTML"))
 target <- HTMLInitFile(file.path(tempdir(),"R2HTML"),filename="sample", BackGroundColor="#BBBBEE")
-HTML("<br>Don't forget to use the CSS file in order to benefit from fixed size police",file=target)
+HTML("<br>Don't forget to use the CSS file in order to benefit from fixed-width font",file=target)
 tmp <- as.data.frame(matrix(rnorm(100),ncol=10))
 HTML(tmp,file=target)
 HTMLEndFile()
