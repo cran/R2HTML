@@ -1,8 +1,27 @@
+# 28/09/2006 - Version 1.58
+
+- Fixed bug in HTMLcore.R (unintended \ interpolation)
+
+- Fixed bug in HTMLfi() call inside HTML.summary.lm, 
+  which made R CMD check fail on Windows.
+
+- Uniformization of capitalization of HTML tags
+  (to lowercase), in conformity with the
+  XHTML 1.0 standard.
+
+- Updated HTML.data.frame to include row.names
+  option, as contributed by Tobias Verbeke on
+  2006-05-27.
+
+
 # 4/07/2006 - Version 1.57
+
 - Added the HTML2clip wrapper, suggested by Gabor 
   Gronthendieck.
+
 - Miscelaneous fixes to documentation (contributed
   by Tobias Verbeke)
+
 - Cleaning up of man directory of spurious files as
   suggested by Kurt Honik
 
@@ -10,6 +29,7 @@
 
 - Replaced instances of format.char (now deprecated in
   R 2.2.0) by formatC.
+
 - Enclosed HTMLInsertGraph examples in \dontrun{}, so 
   that R CMD check runs fine without an interactive display.
 

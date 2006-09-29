@@ -1,4 +1,4 @@
-#     $Id: HTMLcore.R 18 2006-06-05 05:45:50Z mentus $
+#     $Id: HTMLcore.R 32 2006-09-29 03:07:26Z mentus $
 #     R2HTML - Library of exportation to HTML for R
 #     Copyright (C) 2002-2004 - Eric Lecoutre 
 
@@ -369,7 +369,7 @@ function(x, file = .HTML.file,append=TRUE,...)
 
 	HTML.coefmat(x$coef, digits = digits, signif.stars = signif.stars, file=file,append=TRUE,...)
 	
-	HTMLli(paste("Residuals standard error: ",round(x$sigma,digits)," on ",rdf," degrees of freedom\n",sep=""),file=file,append=TRUE,)
+	HTMLli(paste("Residuals standard error: ",round(x$sigma,digits)," on ",rdf," degrees of freedom\n",sep=""),file=file,append=TRUE)
  
 	
 
@@ -616,70 +616,141 @@ function(x, file = .HTML.file,append=TRUE,...)
 
 #----------------------------------------------------------------------------------------------------#
 
+# row.names option contributed by 
+# Tobias Verbeke on 2006-05-27
+#
 
-"HTML.data.frame" <- function(x, file = .HTML.file, Border = 1, innerBorder = 0, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",digits=getOption("R2HTML.format.digits"),nsmall = getOption("R2HTML.format.nsmall"), big.mark = getOption("R2HTML.format.big.mark"), big.interval = getOption("R2HTML.format.big.interval"), decimal.mark = getOption("R2HTML.format.decimal.mark"),sortableDF=getOption("R2HTML.sortableDF"),...)
+"HTML.data.frame" <- function(
+            x, file = .HTML.file,
+            Border = 1, innerBorder = 0,
+            classfirstline = "firstline",
+            classfirstcolumn = "firstcolumn",
+            classcellinside = "cellinside",
+            append = TRUE,
+            align = "center",
+            caption = "",
+            captionalign = "bottom",
+            classcaption = "captiondataframe",
+            classtable = "dataframe",
+            digits = getOption("R2HTML.format.digits"),
+            nsmall = getOption("R2HTML.format.nsmall"),
+            big.mark = getOption("R2HTML.format.big.mark"),
+            big.interval = getOption("R2HTML.format.big.interval"),
+            decimal.mark = getOption("R2HTML.format.decimal.mark"),
+            sortableDF = getOption("R2HTML.sortableDF"), 
+            row.names = TRUE,
+            ...)
 {
-   cat("\n", file=file,append=append)
+   cat("\n", file = file, append = append)
 
     # Handle sortableDF argument
-    if (is.null(sortableDF)) sortableDF=FALSE
-    if (sortableDF==TRUE) cat(paste(c("<style>",".tablesort  {","cursor: pointer ;"," behavior:url(tablesort.htc);"," -moz-binding: url(moz-behaviors.xml#tablesort.htc);","}","</style>"),collapse="\n"),file=file,append=TRUE)
-   
-   
-  # if (!is.null(digits)) x[] = lapply(x, FUN = function(vec) if (is.numeric(vec)) round(vec, digits) else vec)
+    if (is.null(sortableDF)) sortableDF = FALSE
+    if (sortableDF) 
+      cat(paste(c("<style>", ".tablesort  {", 
+                  "cursor: pointer ;",
+                  " behavior:url(tablesort.htc);",
+                  " -moz-binding: url(moz-behaviors.xml#tablesort.htc);",
+                  "}",
+                  "</style>"),
+                  collapse="\n"),
+          file = file, append = TRUE)
+
+
+   # if (!is.null(digits)) x[] = lapply(x, FUN = function(vec) if (is.numeric(vec)) round(vec, digits) else vec)
 
    txt <- paste("<p align=",align,">")
-   txtcaption <- ifelse(is.null(caption),"",paste("\n<caption align=",captionalign," class=",classcaption,">",caption,"</caption>\n",sep=""))
+   txtcaption <- ifelse(is.null(caption), 
+                        "", 
+                        paste("\n<caption align=", captionalign,
+                              " class=", classcaption, ">",
+                              caption,
+                              "</caption>\n", sep=""))
 
-   if (!is.null(Border)) txt <- paste(txt, "\n<table cellspacing=0 border=",Border,">",txtcaption,"<tr><td>","\n\t<table border=", innerBorder, " class=",classtable,">", sep = "")
-   else txt <- paste(txt, "\n<table border=", innerBorder, " class=",classtable," cellspacing=0>", txtcaption, sep = "")
-   txt <- paste(txt,"\t<TBODY>",sep="\n")
+   if (!is.null(Border)) 
+     txt <- paste(txt, "\n<table cellspacing=0 border=", Border, ">",
+                  txtcaption,"<tr><td>",
+                  "\n\t<table border=", innerBorder, " class=",classtable,">", 
+                  sep = "")
+   else txt <- paste(txt, "\n<table border=", innerBorder, 
+                     " class=",classtable," cellspacing=0>", 
+                     txtcaption, sep = "")
+   txt <- paste(txt,"\t<tbody>",sep="\n")
 
-   if(is.null(dimnames(x)[[2]]) == FALSE) {
-      VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-            "\n\t\t<th>",if(sortableDF) '<b class="tablesort">', sep = "",collapse=""),rep(paste("\n\t\t<th>",if(sortableDF) '<b class="tablesort">', sep = "",collapse=""), ncol(x) - 1))
-      VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "&nbsp;",
-         as.character(dimnames(x)[[2]]))
-      VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(if(sortableDF) '</b>',"","</th>",collapse=""), rep(
-         paste(if(sortableDF) '</b>',"","</th>",collapse=""), ncol(x) - 1), "</th>")
-      txt <- paste(txt,"\n\t<tr class=",classfirstline,">", paste(VecDebut, VecMilieu, VecFin, sep = "",
-         collapse = ""),"\n\t</tr>")
-   }
- 
-   x.formatted <- format(x, digits=digits, nsmall=nsmall, big.mark=big.mark, big.interval=big.interval, decimal.mark=decimal.mark)
+   VecDebut <- c(
+        if(row.names) 
+          paste("\n\t\t<th>",
+                if(sortableDF) '<b class="tablesort">', 
+                sep = "", collapse = ""),
+        rep(paste("\n\t\t<th>", 
+                  if(sortableDF) '<b class="tablesort">', 
+                  sep = "", collapse = ""), ncol(x) - 1)
+                )
+   VecMilieu <- c(
+                 if(row.names) "&nbsp;",
+                 as.character(dimnames(x)[[2]])
+                 )
+   VecFin <- c(
+              if(row.names) 
+                paste(if(sortableDF) '</b>', "", "</th>", collapse = ""), 
+              rep(
+                  paste(if(sortableDF) '</b>',"", "</th>", collapse = ""), ncol(x) - 1
+                 ), 
+              "</th>"
+              )
+   txt <- paste(txt, "\n\t<tr class=", classfirstline, ">", 
+                paste(VecDebut, VecMilieu, VecFin, sep = "", collapse = ""),
+                "\n\t</tr>"
+                )
+   
+   x.formatted <- format(x, digits = digits, nsmall = nsmall, 
+                         big.mark = big.mark, big.interval = big.interval, 
+                         decimal.mark = decimal.mark)
    x.formatted <- as.matrix(x.formatted)
    x.formatted[is.na(x.formatted)] <- " "
    x.formatted[is.nan(x.formatted)] <- " "
-   
+
    for(i in 1:dim(x)[1]) {
       if(i == 1) {
-         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-              "<tr><td class=", classfirstcolumn, ">", sep = ""),
-            paste("<td class=", classcellinside, ">", sep = ""),
-            rep(paste("<td class=", classcellinside, ">", sep =
-            ""), dim(x)[2] - 1))
-         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
-              dimnames(x)[[1]][i],
-              HTMLReplaceNA(x.formatted[i,]))
-         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
-            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+         VecDebut <- c(if(row.names) 
+                         paste("<tr><td class=", classfirstcolumn, ">", 
+                               sep = ""),
+                       paste("<td class=", classcellinside, ">", sep = ""),
+                       rep(paste("<td class=", classcellinside, ">", 
+                                 sep = ""), 
+                           dim(x)[2] - 1)
+                      )
+         VecMilieu <- c(if(row.names)
+                          dimnames(x)[[1]][i],
+                        HTMLReplaceNA(x.formatted[i,])
+                       )
+         VecFin <- c(if(row.names) "</td>",
+                     rep("</td>", dim(x)[2] - 1), 
+                     "</td></tr>\n"
+                    )
       }
       else {
-         VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-              "<tr><td class=", classfirstcolumn, ">", sep = ""),
-            paste(rep(paste("<td class=", classcellinside, ">", sep
-             = ""), dim(x)[2])))
-         VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
-              dimnames(x)[[1]][i], 
-              HTMLReplaceNA(x.formatted[i,]))
-         VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
-            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+         VecDebut <- c(if(row.names) 
+                         paste("<tr><td class=", classfirstcolumn, ">", 
+                               sep = ""),
+                       paste(rep(paste("<td class=", classcellinside, ">", 
+                                       sep = ""), 
+                                 dim(x)[2])
+                            )
+                      )
+         VecMilieu <- c(if(row.names)
+                          dimnames(x)[[1]][i],
+                        HTMLReplaceNA(x.formatted[i,]))
+         VecFin <- c(if(row.names) "</td>",
+                     rep("</td>", dim(x)[2] - 1), 
+                     "</td></tr>\n")
       }
-      txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "",collapse = ""))
+      txt <- paste(txt, 
+                   paste(VecDebut, VecMilieu, VecFin, sep = "", collapse = ""))
    }
-   txt <- paste(txt, "\n\t</TBODY>\n</table>\n",if (!is.null(Border)) "</td></table>\n","<br>")
-   cat(txt, "\n", file = file, sep = "", append=TRUE)
- 
+   txt <- paste(txt, "\n\t</tbody>\n</table>\n",
+                if (!is.null(Border)) "</td></table>\n","<br>")
+   cat(txt, "\n", file = file, sep = "", append = TRUE)
+
 }
 
 #----------------------------------------------------------------------------------------------------#
@@ -740,7 +811,7 @@ function(x, file = .HTML.file,append=TRUE,...)
       }
       txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "",collapse = ""))
    }
-   txt <- paste(txt, "\n\t</TBODY>\n</table>\n",if (!is.null(Border)) "</td></table>\n","<br>")
+   txt <- paste(txt, "\n\t</tbody>\n</table>\n",if (!is.null(Border)) "</td></table>\n","<br>")
    cat(txt, "\n", file = file, sep = "", append=TRUE)
    }
 
@@ -2160,13 +2231,13 @@ NextMethod("HTML")
 {
     cat("\n",file=file,append=append,...)
     if (!is.null(x$call)) 
-        HTMLli(paste("Call : ", deparse(x$call), "\n<UL>\n", sep = ""),file=file)
+        HTMLli(paste("Call : ", deparse(x$call), "\n<ul>\n", sep = ""),file=file)
     if (!is.null(x$method)) 
         HTMLli(paste("Cluster method :", x$method, "\n"),file=file)
     if (!is.null(x$dist.method)) 
         HTMLli(paste("Distance : ", x$dist.method, "\n"),file=file)
     HTMLli(paste("Number of objects: ", length(x$height) + 1, "\n"),file=file)
-	HTML("</UL><br>&nbsp;<br>",file=file)
+	HTML("</ul><br>&nbsp;<br>",file=file)
 	invisible(x)
 }
 
@@ -3163,7 +3234,7 @@ NextMethod("HTML")
         HTML("\n<p align=center><table cellspacing=0 border=1><td><table cellspacing=0> <tr class= firstline >        <th></th><th>Estimate</th><th>std.err.</th><th>t ratio</th><th>Pr(>|t[)</th></tr>\n",file=file)
 
         
-        for (i in 1:length(x$p.coeff)) HTML(paste("<tr><td class=firstcolumn>",formatC(names(x$p.coeff)[i], width = width),"</TD><TD CLASS=CellInside>", formatC(x$p.coeff[i], width = 10,digits = 5),"</TD><TD CLASS=CellInside>", formatC(x$se[i], width = 10, digits = 4),"</TD><TD CLASS=CellInside>",formatC(x$p.t[i], width = 10, digits = 4), "</TD><TD CLASS=CellInside>",format.pval(x$p.pv[i]),"</TD></TR>\n", sep = ""),file=file)
+        for (i in 1:length(x$p.coeff)) HTML(paste("<tr><td class=firstcolumn>",formatC(names(x$p.coeff)[i], width = width),"</td><td class=\"CellInside\">", formatC(x$p.coeff[i], width = 10,digits = 5),"</td><td class=\"CellInside\">", formatC(x$se[i], width = 10, digits = 4),"</td><td class=\"CellInside\">",formatC(x$p.t[i], width = 10, digits = 4), "</td><td class=\"CellInside\">",format.pval(x$p.pv[i]),"</td></tr>\n", sep = ""),file=file)
             
            HTML("\n</table></td></table></center>",file=file) 
         
@@ -3239,7 +3310,7 @@ NextMethod("HTML")
         HTML("<p>node), split, n, loss, yval, (yprob)\n</p>",file=file)
     else HTML("<p>node), split, n, deviance, yval\n</p>",file=file)
     HTML("<p>      * denotes terminal node\n\n</p>",file=file)
-    HTML(paste("<XMP>", paste(z, sep = "\n",collapse="\n"),"</XMP>"),file=file)
+    HTML(paste("<xmp>", paste(z, sep = "\n",collapse="\n"),"</xmp>"),file=file)
     invisible(x)
 }
 
@@ -3314,14 +3385,14 @@ NextMethod("HTML")
         HTML(format(signif(x$s, digits)),file=file) 
     HTML("<p>Trace of smoother matrix:</p>",file=file)
     HTML(format(round(x$trace.hat,2)), file=file)
-    HTML("\n<p>Control settings:\n</p><UL>",file=file)
+    HTML("\n<p>Control settings:\n</p><ul>",file=file)
     HTMLli(paste("normalize: ", x$pars$normalize, "\n"),file=file)
     HTMLli(paste("  span     : ", format(x$pars$span), "\n"),file=file)
     HTMLli(paste("  degree   : ", x$pars$degree, "\n"),file=file)
     HTMLli(paste("  family   : ", x$pars$family),file=file)
     if (x$pars$family != "gaussian") 
         HTMLli(paste("       iterations =", x$pars$iterations),file=file)
-    	HTML("</UL>",file=file)
+    	HTML("</ul>",file=file)
     HTML(paste("\n<p>  surface  : ", x$pars$surface, if (x$pars$surface == "interpolate")  paste("  cell =", format(x$pars$cell)),"</p>"),file=file)
     invisible(x)
 }
@@ -3941,7 +4012,7 @@ else	{
 
 	cat(paste("<html><head>	\n <title>",Title,"</title>\n <meta http-equiv=content-type content=text/html;charset=iso-8859-1>\n <frameset cols=250,* border=1 frameborder=yes><frame src=",filemenu," name=menu scrolling=yes><frame src=",filemain," name=main scrolling=yes></frameset></body></html>"), append = FALSE, sep = "", file = absfileindex)
 
-	cat("<html><head><link rel=stylesheet href=",CSSFile," type=text/css> </head><body bgcolor=#E5F5FF>  <center> <img src=R2HTMLlogo.gif> <hr size=1></center><br>",sep="",append=FALSE,file=absfilemenu)
+	cat("<html><head><link rel=stylesheet href=",CSSFile," type=text/css> </head><body bgcolor=\"#E5F5FF\">  <center> <img src=R2HTMLlogo.gif> <hr size=1></center><br>",sep="",append=FALSE,file=absfilemenu)
 
      txt <- ifelse(useLaTeX,"<html xmlns:mml=\"http://www.w3.org/1998/Math/MathML\">","<html>")
   #<HEAD>
@@ -3977,7 +4048,7 @@ else	{
 
 "HTMLEndFile"<- function(file = .HTML.file)
 {
-	cat("\n<hr size=1>\n<font size=-1>\n\t Generated on: <I>", date(), 
+	cat("\n<hr size=1>\n<font size=-1>\n\t Generated on: <i>", date(), 
 		"</i> - <b>R2HTML</b> \n<hr size=1>\n\t</body>\n</html>",
 		sep = "", append=TRUE, file = file)
 }
@@ -4139,10 +4210,10 @@ else	{
         }
     }
     if(openSinput){
-        cat("\n<!--\end{Sinput}!-->\n", file=chunkout, append=TRUE)
+        cat("\n<!--\\end{Sinput}!-->\n", file=chunkout, append=TRUE)
     }
     if(openSchunk){
-        cat("\n<!--\end{Schunk}!-->\n", file=chunkout, append=TRUE)
+        cat("\n<!--\\end{Schunk}!-->\n", file=chunkout, append=TRUE)
     }
 
     if(is.null(options$label) & options$split)
