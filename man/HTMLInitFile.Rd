@@ -9,7 +9,7 @@
 
 \usage{
 HTMLInitFile(outdir = tempdir(),filename="index",extension="html",HTMLframe=FALSE, BackGroundColor = "FFFFFF", BackGroundImg = "", Title = "R output",CSSFile="R2HTML.css",useLaTeX=TRUE,useGrid=TRUE)
-HTMLEndFile(file = .HTML.file)
+HTMLEndFile(file = get(".HTML.file"))
 }
 
 

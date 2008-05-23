@@ -1,12 +1,11 @@
 \name{HTML.function}
 \alias{HTML.function}
 
-\title{ Writes the code of a function to a target HTML file }
+\title{Writes the code of a function to a target HTML file }
 \description{
   Writes the code of a function to a target HTML file 
 }
-\usage{
-HTML.function(x, file = .HTML.file, append=TRUE,...)
+\usage{\method{HTML}{function}(x, file = get(".HTML.file"), append=TRUE,...)
 }
 
 \arguments{

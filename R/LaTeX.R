@@ -1,4 +1,4 @@
-# $Id: LaTeX.R 6 2006-01-06 11:52:37Z mentus $ 
+# $Id: LaTeX.R 45 2008-05-23 15:50:48Z mentus $ 
 
 as.latex <- function(x,label=NULL,inline=ifelse(is.null(label),TRUE,FALSE),count=ifelse(is.null(label),FALSE,TRUE))
 {
@@ -8,7 +8,7 @@ as.latex <- function(x,label=NULL,inline=ifelse(is.null(label),TRUE,FALSE),count
 }
 
 
-"HTML.latex" <- function(x,file = .HTML.file,...)
+"HTML.latex" <- function(x,file = get(".HTML.file"),...)
 {
   ### Note: no append argument as it could ONLY be happened to work...
   # count: add a (#)

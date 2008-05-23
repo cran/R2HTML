@@ -1,15 +1,13 @@
 \name{HTML.data.frame}
 \alias{HTML.data.frame}
 \alias{HTML.matrix}
-\title{ Write a data.frame (or matrix) to a HTML output}
+\title{Write a data.frame (or matrix) to a HTML output}
 \description{
   This function exports a data.frame to a HTML file. Many arguments allow to customize the layout of the HTML table.
 }
-\synopsis{HTML.data.frame(x, file = .HTML.file, Border = 1, innerBorder = 0, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",digits=getOption("R2HTML.format.digits"),nsmall = getOption("R2HTML.format.nsmall"), big.mark = getOption("R2HTML.format.big.mark"), big.interval = getOption("R2HTML.format.big.interval"), decimal.mark = getOption("R2HTML.format.decimal.mark"),sortableDF=getOption("R2HTML.sortableDF"),row.names = TRUE,...)
+\synopsis{HTML.data.frame(x, file = get(".HTML.file"), Border = 1, innerBorder = 0, classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside",  append=TRUE,align="center",caption="",captionalign="bottom",classcaption="captiondataframe",classtable="dataframe",digits=getOption("R2HTML.format.digits"),nsmall = getOption("R2HTML.format.nsmall"), big.mark = getOption("R2HTML.format.big.mark"), big.interval = getOption("R2HTML.format.big.interval"), decimal.mark = getOption("R2HTML.format.decimal.mark"),sortableDF=getOption("R2HTML.sortableDF"),row.names = TRUE,...)
 }
-\usage{
-HTML.data.frame(x, file = .HTML.file, Border = 1, innerBorder=0,classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside", append = TRUE, align = "center", caption = "", captionalign = "bottom", classcaption = "captiondataframe", classtable = "dataframe", digits=2,nsmall = 0, big.mark = "", big.interval = 3, decimal.mark = ",",sortableDF=FALSE, row.names = TRUE,...)
-HTML.data.frame(x,file=)
+\usage{\method{HTML}{data.frame}(x, file = get(".HTML.file"), Border = 1, innerBorder=0,classfirstline = "firstline", classfirstcolumn = "firstcolumn", classcellinside = "cellinside", append = TRUE, align = "center", caption = "", captionalign = "bottom", classcaption = "captiondataframe", classtable = "dataframe", digits=2,nsmall = 0, big.mark = "", big.interval = 3, decimal.mark = ",",sortableDF=FALSE, row.names = TRUE,...)
 }
 
 \arguments{

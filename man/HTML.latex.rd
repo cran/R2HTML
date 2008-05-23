@@ -2,13 +2,13 @@
 \alias{HTML.latex}
 \alias{as.latex}
 
-\title{ Insert a piece of LaTeX into a HTML file}
+\title{Insert a piece of LaTeX into a HTML file}
 \description{
   This makes use of \code{AsciiMathML} javascript functions. Standard LaTeX input will be turned into MathML and displayed through any brower extension that can handle MathML (such as MathPlayer)
 }
 \usage{
 as.latex(x,label=NULL,inline=ifelse(is.null(label),TRUE,FALSE),count=ifelse(is.null(label),FALSE,TRUE))
-HTML.latex(x, file = .HTML.file, ...)
+\method{HTML}{latex}(x, file = get(".HTML.file"), ...)
 }
 
 \arguments{

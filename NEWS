@@ -1,4 +1,48 @@
-# 28/09/2006 - Version 1.58
+# 2008-05-23 - Version 1.59
+
+- Corrected call of unexported function from 
+  Sweave.R (utils package) in RweaveHTMLWritedoc.
+
+- Corrected explicit call of S3Method print from 
+  package xtable.
+
+- Corrected explicit call of S3Method from package
+  nnet.
+
+- Corrected explicit call of isInitialized from
+  nlme package.
+
+- Corrected explicit call of volume from 
+  cluster package.
+
+- Corrected explicit calls of imp.moments
+  from boot package.
+
+- Corrected explicit calls of splineOrder and 
+  splineKnots from splines package.
+
+- Corrected explicit call of date.ddmmmyy from 
+  survival package.
+
+- Fixed rpart HTML S3 method to include tree.depth
+  function  defined internally, as rpart package is not 
+  exporting it anymore.
+
+- Fixed .HTML.file warning of no visible bindings
+  in almost every function of the package. 
+
+- Fixed bug in HTML.data.frame outputing invalid
+  code (missing opening <tr>) when row.names was
+  set to FALSE. As patch submited by Michael Irskens and
+  also reported by Rik Schoemaker.
+
+- Fixed bug in HTML.matrix, opening of <tbody>
+  wasn't being carried. Pending the fixing of
+  excess of </tr>'s.
+
+- Fixed miscelaneous bugs in CSS files.
+
+# 2006-09-28 - Version 1.58
 
 - Fixed bug in HTMLcore.R (unintended \ interpolation)
 
@@ -14,7 +58,7 @@
   2006-05-27.
 
 
-# 4/07/2006 - Version 1.57
+# 2006-07-04 - Version 1.57
 
 - Added the HTML2clip wrapper, suggested by Gabor 
   Gronthendieck.
@@ -25,7 +69,7 @@
 - Cleaning up of man directory of spurious files as
   suggested by Kurt Honik
 
-# 25/01/2006 - Version 1.56
+# 2006-01-25 - Version 1.56
 
 - Replaced instances of format.char (now deprecated in
   R 2.2.0) by formatC.
@@ -33,19 +77,19 @@
 - Enclosed HTMLInsertGraph examples in \dontrun{}, so 
   that R CMD check runs fine without an interactive display.
 
-# 28/02/2005 - Version 1.52
+# 2005-02-28 - Version 1.52
 
 - Added methods for lme/nlme, submitted by:
   Dieter Menne, (Dr. Menne Biomed Software Tübingen)
 
-# 13/01/2005 - Version 1.51
+# 2005-01-13 - Version 1.51
 
 - Added as.latex and HTML.latex to write pieces of equations in Latex. 
   They will be displayed using AsciiMathML 
 
 
 
-# 20/11/2004 - Version 1.5
+# 2004-11-20 - Version 1.5
 
 - Includes a grid xHTML/css/Javascript compoment from ActiveWidgets
   <http://www.activewidgets.comhttp://www.activewidgets.com>.
@@ -58,7 +102,7 @@
 
 
 
-# 19/10/2004 - Version 1.4-3
+# 2004-10-19 - Version 1.4-3
 
 - HTML.matrix and HTML.data.frame now can use several new output options
   as they call now 'format. This allows using a comma "," as decimal

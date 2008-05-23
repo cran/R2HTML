@@ -1,4 +1,4 @@
-# $Id: HTMLlme.R 6 2006-01-06 11:52:37Z mentus $
+# $Id: HTMLlme.R 47 2008-05-23 17:29:31Z mentus $
 # R2HTML.lme.r
 # Formattted HTML printout of lme/nlme results
 # Remove R2HTML:::  when in namespace
@@ -24,7 +24,7 @@
 
 # -------------------- HTML.summary.lme --------------------------------
 # After print.summary.lme
-HTML.summary.lme = function (x, file=.HTML.file,
+HTML.summary.lme = function (x, file=get(".HTML.file"),
   digits = max(3,getOption("digits")-3),
   use.cormat = TRUE, # no symbolic.cor used when true
   symbolic.cor = p>4,
@@ -114,9 +114,9 @@ HTML.summary.lme = function (x, file=.HTML.file,
 # Modelled after print.reStruct in nlme
 # This function used internally
 HTML.reStruct = function (x, sigma = 1, reEstimates, verbose = FALSE,
-  file=.HTML.file,digits=max(3,getOption("digits")-3),use.cormat=FALSE,...)
+  file=get(".HTML.file"),digits=max(3,getOption("digits")-3),use.cormat=FALSE,...)
 {
-  if (isInitialized(x)) {
+  if (nlme::isInitialized(x)) {
     nobj <- length(x)
     if (is.null(namx <- names(x)))
        names(x) <- nobj:1
