@@ -40,7 +40,7 @@
 "HTML.default"<-
 function(x, file=get(".HTML.file"),append=TRUE,...)
 {
-	HTML(paste(capture.output(x),collapse="<br>"),file=file,append=append,...)
+	HTML(paste(capture.output(x),collapse="\n<br>\n"),file=file,append=append,...)
 	invisible(x)
 }
 
@@ -48,13 +48,13 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
 #----------------------------------------------------------------------------------------------------#
  
 "HTML.atomic"<- function(x, file=get(".HTML.file"),append=TRUE, ...){ 
-	cat(paste("<p class='atomic'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("\n<p class='atomic'>",paste(x,collapse="&nbsp; "),"</p>\n",sep="",collapse=""), file= file, append = append, sep = " ")
 }
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.complex"<- function(x, file=get(".HTML.file"), append=TRUE,...){
-	cat(paste("<p><font class='complexRe'>",Re(x),"</font>",ifelse(sign(Im(x))<0,"-","+"),"<font class='complexIm'>",Im(x),"</font><font class='complexI'>i</font>","</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("\n<p><font class='complexRe'>",Re(x),"</font>",ifelse(sign(Im(x))<0,"-","+"),"<font class='complexIm'>",Im(x),"</font><font class='complexI'>i</font>","</p>\n",sep="",collapse=""), file= file, append = append, sep = " ")
 	}
 
 #----------------------------------------------------------------------------------------------------#
@@ -64,25 +64,25 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
 		HTML(as.table(x),file=file,append=append,...) 
 		}
 	else {
-		cat(paste("<p class='numeric'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+		cat(paste("\n<p class='numeric'>",paste(x,collapse="&nbsp; "),"</p>\n",sep="",collapse=""), file= file, append = append, sep = " ")
 		}
 	}
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.integer"<- function(x, file=get(".HTML.file"),append=TRUE, ...){
-	cat(paste("<p class='integer'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("\n<p class='integer'>",paste(x,collapse="&nbsp; "),"</p>\n",sep="",collapse=""), file= file, append = append, sep = " ")
 	}
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.logical"<- function(x, file=get(".HTML.file"), append=TRUE,...){ 
-	cat(paste("<p class='logical'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("\n<p class='logical'>",paste(x,collapse="&nbsp; "),"</p>\n",sep="",collapse=""), file= file, append = append, sep = " ")
 	}
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.character"<- function(x, file=get(".HTML.file"),append=TRUE, ...){ 
-	cat(paste("<p class='character'>",paste(x,collapse="&nbsp; "),"</p>",sep="",collapse=""), file= file, append = append, sep = " ")
+	cat(paste("\n<p class='character'>",paste(x,collapse="&nbsp; "),"</p>\n",sep="",collapse=""), file= file, append = append, sep = " ")
 	}
 
 #----------------------------------------------------------------------------------------------------#
@@ -94,16 +94,16 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.function"<-function(x,file=get(".HTML.file"),append=TRUE,...){
-	 cat(paste("<br><xmp class=function>",
-	 paste(capture.output(x),collapse="\n"),"</xmp><br>",sep=""),
-	file=file,append=append,sep="<br>")
+	 cat(paste("\n<br>\n<xmp class=function>",
+	 paste(capture.output(x),collapse="\n"),"\n</xmp><br>\n",sep=""),
+	file=file,append=append,sep="\n<br>\n")
 	invisible(x)
 }
 
 #----------------------------------------------------------------------------------------------------#
 
 "HTML.environment"<-function(x,file=get(".HTML.file"),append=TRUE,...){
-	cat(paste("<br>environment: <font class='environment'>",attributes(x)$name,"</font><br>\n",sep=""),
+	cat(paste("\n<br>environment: <font class='environment'>",attributes(x)$name,"</font><br>\n",sep=""),
 	file=file,append=append)
 	invisible(x)
 }
@@ -214,11 +214,11 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
 
 "HTML.factor" <- function (x, file=get(".HTML.file"),append=TRUE,...) 
 {
-    HTML("\n<font class='factor'>",file=file,append=append,...)
+    HTML("\n\n<font class='factor'>",file=file,append=append,...)
     if (length(x) <= 0) 
-        HTML("factor(0)\n<br>",file=file,append=TRUE,...)
+        HTML("factor(0)\n<br>\n",file=file,append=TRUE,...)
     else HTML(as.character(x), file=file,append=TRUE, ...)
-    HTML("</font>",file=file,append=TRUE,...)
+    HTML("</font>\n",file=file,append=TRUE,...)
     HTMLbr(file=file,append=TRUE,...)
     HTML(paste("Levels:<font class='factorlevels'> ", paste(levels(x), collapse = " "), "</font>\n<br>",sep=""),file=file,append=TRUE,...)
     invisible(x)
@@ -594,7 +594,7 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
 		cat("</ul>",file=file,append=TRUE,sep="\n")
 	
 	}
-	cat("<br><hr class='hr'>",file=file,append=TRUE,sep="\n")
+	cat("\n<br><hr class='hr'>",file=file,append=TRUE,sep="\n")
 }
 #----------------------------------------------------------------------------------------------------#
 
@@ -609,7 +609,7 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
 		cat("</ul>",file=file,append=TRUE,sep="\n")
 	
 	}
-	cat("<br><hr class='hr'>",file=file,append=TRUE,sep="\n")
+	cat("\n<br><hr class='hr'>",file=file,append=TRUE,sep="\n")
 }
 
 
@@ -650,19 +650,19 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
     # Handle sortableDF argument
     if (is.null(sortableDF)) sortableDF = FALSE
     if (sortableDF) 
-      cat(paste(c("<style>", ".tablesort  {", 
+      cat(paste(c("\n<style>", ".tablesort  {", 
                   "cursor: pointer ;",
                   " behavior:url(tablesort.htc);",
                   " -moz-binding: url(moz-behaviors.xml#tablesort.htc);",
                   "}",
-                  "</style>"),
+                  "</style>\n"),
                   collapse="\n"),
           file = file, append = TRUE)
 
 
    # if (!is.null(digits)) x[] = lapply(x, FUN = function(vec) if (is.numeric(vec)) round(vec, digits) else vec)
 
-   txt <- paste("<p align=",align,">")
+   txt <- paste("\n<p align=",align,">")
    txtcaption <- ifelse(is.null(caption), 
                         "", 
                         paste("\n<caption align=", captionalign,
@@ -716,10 +716,10 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
    for(i in 1:dim(x)[1]) {
       if(i == 1) {
          VecDebut <- c(if(row.names) 
-                         paste("<td class=", classfirstcolumn, ">", 
+                         paste("\n<td class=", classfirstcolumn, ">", 
                                sep = ""),
-                       paste("<td class=", classcellinside, ">", sep = ""),
-                       rep(paste("<td class=", classcellinside, ">", 
+                       paste("\n<td class=", classcellinside, ">", sep = ""),
+                       rep(paste("\n<td class=", classcellinside, ">", 
                                  sep = ""), 
                            dim(x)[2] - 1)
                       )
@@ -727,16 +727,16 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
                           dimnames(x)[[1]][i],
                         HTMLReplaceNA(x.formatted[i,])
                        )
-         VecFin <- c(if(row.names) "</td>",
-                     rep("</td>", dim(x)[2] - 1), 
-                     "</td></tr>\n"
+         VecFin <- c(if(row.names) "\n</td>",
+                     rep("\n</td>", dim(x)[2] - 1), 
+                     "\n</td></tr>\n"
                     )
       }
       else {
          VecDebut <- c(if(row.names) 
-                         paste("<td class=", classfirstcolumn, ">", 
+                         paste("\n<td class=", classfirstcolumn, ">", 
                                sep = ""),
-                       paste(rep(paste("<td class=", classcellinside, ">", 
+                       paste(rep(paste("\n<td class=", classcellinside, ">", 
                                        sep = ""), 
                                  dim(x)[2])
                             )
@@ -744,11 +744,11 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
          VecMilieu <- c(if(row.names)
                           dimnames(x)[[1]][i],
                         HTMLReplaceNA(x.formatted[i,]))
-         VecFin <- c(if(row.names) "</td>",
-                     rep("</td>", dim(x)[2] - 1), 
-                     "</td></tr>\n")
+         VecFin <- c(if(row.names) "\n</td>",
+                     rep("\n</td>", dim(x)[2] - 1), 
+                     "\n</td></tr>\n")
       }
-      txt <- paste(txt,  "<tr>",
+      txt <- paste(txt,  "\n<tr>",
                    paste(VecDebut, VecMilieu, VecFin, sep = "", collapse = ""))
    }
    txt <- paste(txt, "\n\t</tbody>\n</table>\n",
@@ -765,8 +765,8 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
   
    # if (is.numeric(x) & !is.null(digits)) x<-round(x,digits=digits)
    
-   txt <- paste("<p align=",align,">")
-   txtcaption <- ifelse(is.null(caption),"",paste("<caption align=",captionalign," class=",classcaption,">",caption,"</caption>",sep=""))
+   txt <- paste("\n<p align=",align,">")
+   txtcaption <- ifelse(is.null(caption),"",paste("<caption align=",captionalign," class=",classcaption,">",caption,"</caption>\n",sep=""))
 
    if (!is.null(Border)) txt <- paste(txt, "\n<table cellspacing=0 border=",Border,">",txtcaption,"<tr><td>","\n\t<table border=", innerBorder,  " class=",classtable,">", sep = "")
    else txt <- paste(txt, "\n\t<table border=", innerBorder, " class=", classtable," cellspacing=0>", txtcaption, sep = "")
@@ -795,9 +795,9 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
    for(i in 1:dim(x)[1]) {
       if(i == 1) {
          VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-              "<tr><td class=", classfirstcolumn, ">", sep = ""),
-            paste("<td class=", classcellinside, ">", sep = ""),
-            rep(paste("<td class=", classcellinside, ">", sep =
+              "\n<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste("\n<td class=", classcellinside, ">", sep = ""),
+            rep(paste("\n<td class=", classcellinside, ">", sep =
             ""), dim(x)[2] - 1))
          VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
               dimnames(x)[[1]][i],
@@ -807,8 +807,8 @@ function(x, file=get(".HTML.file"),append=TRUE,...)
       }
       else {
          VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
-              "<tr><td class=", classfirstcolumn, ">", sep = ""),
-            paste(rep(paste("<td class=", classcellinside, ">", sep
+              "\n<tr><td class=", classfirstcolumn, ">", sep = ""),
+            paste(rep(paste("\n<td class=", classcellinside, ">", sep
              = ""), dim(x)[2])))
          VecMilieu <- c(if(is.null(dimnames(x)[[1]]) == FALSE)
               dimnames(x)[[1]][i], 
@@ -3643,7 +3643,7 @@ HTML(x$table, file=file,append=append,...)
 "HTML.title"<-
 function(x, HR = 2,CSSclass=NULL,file=get(".HTML.file"),append=TRUE, ...)
 {
-	cat(paste("\n <h", HR, if(!is.null(CSSclass)) paste(" class=",CSSclass,sep="") ," > ", x, "</h", HR, ">", sep = 
+	cat(paste("\n <h", HR, if(!is.null(CSSclass)) paste(" class=",CSSclass,sep="") ," > ", x, "</h", HR, ">\n", sep = 
 		""), file = file, append=append, sep = "")
 }
 
@@ -3659,11 +3659,11 @@ function(x, HR = 2,CSSclass=NULL,file=get(".HTML.file"),append=TRUE, ...)
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLhr"<- function(file=get(".HTML.file"), Width = "100%", Size = "1",CSSclass=NULL,append=TRUE){ cat(paste("<hr ", ifelse(!is.null(CSSclass),paste("class=",CSSclass,sep=""),""), " width=", Width, " size=", Size, ">", sep = ""), file = file, append=append, sep = "")}
+"HTMLhr"<- function(file=get(".HTML.file"), Width = "100%", Size = "1",CSSclass=NULL,append=TRUE){ cat(paste("\n<hr ", ifelse(!is.null(CSSclass),paste("class=",CSSclass,sep=""),""), " width=", Width, " size=", Size, ">", sep = ""), file = file, append=append, sep = "")}
 
 #----------------------------------------------------------------------------------------------------#
 
-"HTMLli"<- function(txt="", file=get(".HTML.file"),append=TRUE) { cat(paste("<br><li>", txt, sep = ""), sep = "", append=append, file = file)}
+"HTMLli"<- function(txt="", file=get(".HTML.file"),append=TRUE) { cat(paste("\n<br><li>", txt, sep = ""), sep = "", append=append, file = file)}
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -3763,7 +3763,7 @@ function(x, HR = 2,CSSclass=NULL,file=get(".HTML.file"),append=TRUE, ...)
 "HTMLCSS" <- function(file=get(".HTML.file"),append=TRUE,CSSfile="R2HTML.css")
 {
   
-  cat(paste("\n<link rel=stylesheet type=text/css href=",CSSfile,">",sep=""),file=file,append=append)
+  cat(paste("\n<link rel=stylesheet type=text/css href=",CSSfile,">\n",sep=""),file=file,append=append)
   
 }
 
@@ -3792,7 +3792,7 @@ function(x, HR = 2,CSSclass=NULL,file=get(".HTML.file"),append=TRUE, ...)
 	cat(paste("<br><li><a class=command href='./",target,"#Num",Num,"' target=main> ",paste(x,collapse=""),"</a>",sep=""),file=file,append=TRUE,sep="")
 	else {
 	if (Num!="") cat(paste("<a name=Num",Num,">&nbsp;</a>",sep=""),file=file,append=TRUE,sep="")
-	cat(paste("<p><xmp class=command>> ",x,"</xmp></p>",sep=""),file=file,append=TRUE,sep="")
+	cat(paste("\n<p><xmp class=command>> ",x,"</xmp></p>\n",sep=""),file=file,append=TRUE,sep="")
 	}
 	}
 
