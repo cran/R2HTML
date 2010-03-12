@@ -27,7 +27,7 @@ In order to work properly, noweb codes have to be located at the beginning of a 
 }
 
 
-\seealso{ \code{\link[tools]{Sweave}}}
+\seealso{ \code{\link[utils]{Sweave}}}
 \examples{
 
 \dontrun{

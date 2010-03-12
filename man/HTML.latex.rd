@@ -33,18 +33,18 @@ as.latex(x,label=NULL,inline=ifelse(is.null(label),TRUE,FALSE),count=ifelse(is.n
 
 \seealso{ \code{\link{HTMLInitFile}},\code{\link{HTML}} }
 \examples{
- fic = HTMLInitFile()
- HTML.title("sample page",1,file=fic)  
- HTML("First paragraph",file=fic)
- cat("Some text and then an equation:",file=fic,append=TRUE)
- HTML(as.latex("\int_{-\infty}^{1}f(x)dx") ,file=fic)
- cat(". Nice isn't it?",file=fic,append=TRUE)
- HTML(as.latex("\int_{-\infty}^{1}f(x)dx",inline=FALSE) ,file=fic)   
- HTML(as.latex("\int_{-\infty}^{1}f(x)dx",inline=FALSE,count=TRUE) ,file=fic)   
- HTML(as.latex("\int_{-\infty}^{1}f(x)dx",inline=FALSE,label="My equation") ,file=fic)      
- cat("file:", fic, "is created")
-
- \dontrun{browseURL(fic)}		   
+\dontrun{
+	 fic = HTMLInitFile()
+	 HTML.title("sample page",1,file=fic)  
+	 HTML("First paragraph",file=fic)
+	 cat("Some text and then an equation:",file=fic,append=TRUE)
+	 HTML(as.latex("\int_{-\infty}^{1}f(x)dx") ,file=fic)
+	 cat(". Nice isn't it?",file=fic,append=TRUE)
+	 HTML(as.latex("\int_{-\infty}^{1}f(x)dx",inline=FALSE) ,file=fic)   
+	 HTML(as.latex("\int_{-\infty}^{1}f(x)dx",inline=FALSE,count=TRUE) ,file=fic)   
+	 HTML(as.latex("\int_{-\infty}^{1}f(x)dx",inline=FALSE,label="My equation") ,file=fic)      
+	 cat("file:", fic, "is created")
+	 browseURL(fic)}		   
 }
 \keyword{ print }
 \keyword{ IO }

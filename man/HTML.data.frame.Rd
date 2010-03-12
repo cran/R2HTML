@@ -18,7 +18,7 @@
   \item{classfirstline}{ CSS class for the first line (header - variable names) }
   \item{classfirstcolumn}{ CSS class for the first column (rownames)}
   \item{classcellinside}{ CSS class for others cells}
-  \item{append}{ logical. If \code{TRUE} output will be appended to \code{file}; otherwise, it will overwrite the contents of \code{file}}
+  \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
   \item{align}{ alignment to be used: center, left or right}
   \item{caption}{ optional caption to append to the table }
   \item{captionalign}{ alignment to be used for the caption: could be bottom or top}
@@ -34,22 +34,22 @@
   \item{\dots}{ ...}
 }
 \details{
-    For the moment, \code{HTML.matrix} and \code{HTML.data.frame} do have the same options.
-    Tables are build using two different HTML tables, one beeing encapsulated within the other, which allows to have a table without borders inside but with a border outside. It is nevertheless recommended to rely on CSS to obtain such results...
+	For the moment, \code{HTML.matrix} and \code{HTML.data.frame} do have the same options.
+	Tables are build using two different HTML tables, one beeing encapsulated within the other, which allows to have a table without borders inside but with a border outside. It is nevertheless recommended to rely on CSS to obtain such results...
 
-    Now \code{format} is called to format numerical values (modif. suggested by Arne Henningsen). The corresponding arguments are: \code{digits}, \code{nsmall}, \code{big.mark}, \code{big.intervall} and \code{decimal.mark}. For each argument, one can supply either a single value or a vector. In the second case, the size of the vector has to be the number of columns of the data.frame and formatting options will be used element-wise (column by column).
-    
+	Now \code{format} is called to format numerical values (modif. suggested by Arne Henningsen). The corresponding arguments are: \code{digits}, \code{nsmall}, \code{big.mark}, \code{big.intervall} and \code{decimal.mark}. For each argument, one can supply either a single value or a vector. In the second case, the size of the vector has to be the number of columns of the data.frame and formatting options will be used element-wise (column by column).
+	
 
-    Some options are used to pass default values.
-    You can see those options with (by example): 
-    \code{getOption("R2HTML.format.decimal.mark")} and \code{options("R2HTML.format.decimal.mark"=",")}
-    
-    Sortable data.frame uses a DHTML behavior, as explained and shown in \url{http://goblet.molgen.mpg.de/moz-behaviors-example/findex.html}. This requires the file \file{tablesort.htc} which comes with \pkg{R2THML} to be placed in the same directory than the output. This functionality only works for HTML files located on a web server (not on local computer).
-    
+	Some options are used to pass default values.
+	You can see those options with (by example): 
+	\code{getOption("R2HTML.format.decimal.mark")} and {options("R2HTML.format.decimal.mark"=",")}
+	
+	Sortable data.frame uses a DHTML behavior, as explained and shown in \url{http://goblet.molgen.mpg.de/moz-behaviors-example/findex.html}. This requires the file \file{tablesort.htc} which comes with \pkg{R2THML} to be placed in the same directory than the output. This functionality only works for HTML files located on a web server (not on local computer).
+	
 
 }
 \value{
-    no value returned.  
+	no value returned.  
 }
 
 \author{ Eric Lecoutre}
