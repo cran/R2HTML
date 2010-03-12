@@ -14,9 +14,6 @@
 \usage{
 RweaveHTML()
 }
-%- maybe also 'usage' for other objects documented here.
-\details{
-}
 \value{
 	None value is returned. From a .snw noweb file, the corresponding .html is produced (as eventuals png files for graphs).
 }

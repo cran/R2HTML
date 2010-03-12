@@ -1,3 +1,6 @@
+# 2010-10-04
+- Correction of a minor bug in HTMLInitFile discovered by Benoît Beck
+
 # 2010-05-19 - Version 2.1
 - Add line breaks in HTML generation for better readability. 
 

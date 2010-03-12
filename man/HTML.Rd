@@ -175,7 +175,6 @@ HTML(x, ...)
 \value{
 	no value returned.  
 }
-\references{ }
 \author{ Eric Lecoutre }
 
 \note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }

@@ -43,7 +43,6 @@ The user may need to know the following points which describe how R2HTML does wo
 \value{
 	no useful output is returned.
 }
-\references{ }
 \author{ Eric Lecoutre }
 
 \note{ The argument \code{echo} is very usefull for teaching purposes.}

@@ -19,12 +19,9 @@ as.title(x)
   \item{append}{ logical. If 'TRUE' output will be appended to 'file'; otherwise, it will overwrite the contents of 'file'}
   \item{\dots}{ ... }
 }
-\details{
-}
 \value{
 	no value returned.  
 }
-\references{  }
 \author{ Eric Lecoutre }
 
 \note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }

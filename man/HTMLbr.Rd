@@ -27,7 +27,6 @@ HTMLhr(file = get(".HTML.file"), Width = "100\%", Size = "1",CSSclass=NULL,appen
 	no value returned.
 }
 
-\references{}
 \author{ Eric Lecoutre}
 
 \note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }

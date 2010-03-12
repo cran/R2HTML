@@ -23,7 +23,4 @@ HTMLcode(x,...)
 \details{
      These are not to be called by the user.
 }
-\examples{
-
-}
 \keyword{misc}

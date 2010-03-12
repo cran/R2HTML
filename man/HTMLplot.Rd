@@ -34,7 +34,6 @@ Note that this function is coded to work automatically when using automatic expo
 \value{
 	no value returned.  
 }
-\references{}
 
 \author{ Eric Lecoutre }
 \note{ For a discussion about .HTML.outdir and HTLMenv, refer to \code{\link{HTMLStart}} }

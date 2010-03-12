@@ -27,13 +27,10 @@ HTMLEndFile(file = get(".HTML.file"))
   \item{useGrid}{ boolean - add required references to javascript grid in order to use R2HTML grid fonctions}
   \item{file}{target HTML file to end}
 }
-\details{
-}
 
 \value{
 	physical path of the main HTML file that will serve for the report.
 }
-\references{ }
 \author{ Eric Lecoutre }
 
 \note{ For a discussion about .HTML.file default value for file argument, refer to \code{\link{HTMLStart}} }

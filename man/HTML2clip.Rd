@@ -22,7 +22,6 @@
 	no value returned.
 }
 
-\references{}
 \author{ Eric Lecoutre}
 
 \note{ This function was contributed by Gabor Grothendieck.}
