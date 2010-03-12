@@ -5,11 +5,7 @@
 \description{
   Although the class \sQuote{cormat} is not defined, the function is called to \code{HTML.cormat}, to highlight the fact it should be called only with a correlation matrix. 
 }
-\synopsis{
-HTML.cormat(x, file = get(".HTML.file"), digits = 2, append = TRUE, align = "center", caption = "", captionalign = "bottom", classcaption = "captiondataframe", classtable = "cormat", useCSS = TRUE, ...)
-}
 \usage{
-HTML.cormat(x,file=)
 HTML.cormat(x, file = get(".HTML.file"), digits = 2, append = TRUE, align = "center", caption = "", captionalign = "bottom", classcaption = "captiondataframe", classtable = "cormat", useCSS = TRUE, ...)
 }
 

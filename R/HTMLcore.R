@@ -3773,10 +3773,8 @@ function(x, HR = 2,CSSclass=NULL,file=get(".HTML.file"),append=TRUE, ...)
 	target=getwd()
     if (exists("HTMLenv",where=".GlobalEnv")) target=file.path(get(".HTML.outdir",envir=get("HTMLenv",envir=.GlobalEnv)))
 	if (is.null(from)){
-        # PhG: .R2HTMLpath does not exist any more.  .find.package(package = "R2HTML") has the same effect!
-        #if (!exists(".R2HTMLpath")) stop("The package R2HTML is not properly loaded")
-		#from=file.path(.R2HTMLpath,"output")
-		from=file.path(.find.package(package = "R2HTML"),"output")
+##		from=file.path(.find.package(package = "R2HTML"),"output")
+                from=system.file(package = "R2HTML","output")
 	}
 	fromfile=file.path(from,paste(newCSS,"css",sep="."))
 	if (!file.exists(fromfile)) stop(paste("Source CSS file",fromfile,"not found"))

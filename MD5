@@ -1,9 +1,8 @@
-bf31cfa0bc786a0f6b9264a5630f69fc *DESCRIPTION
+ca0ec3145c119487f060d5313f8b2b4c *DESCRIPTION
 5508ead03f1be0f0b705d6959d13be5f *INDEX
 4dbcbe14102dd3bf40cad92dc4c8294f *NAMESPACE
-90384bbfc15ead36c9aadf5f79c20044 *NAMESPACE.old
 08234383bb2e32719de9ada56a02f291 *NEWS
-cd683f6d91f98dad856f9f3c2af61ea2 *R/HTMLcore.R
+915a32002aa6381d664ac0da50cc5174 *R/HTMLcore.R
 7ea23ece33eedf5b4a18cdef95482eb6 *R/HTMLlme.R
 31e27d85b383cc0b338d03073d928f00 *R/LaTeX.R
 785e8de81cb26ef5b2580a44f482c21e *R/grid.R
@@ -78,8 +77,8 @@ f7225453dd3455bd9bb52a7e8dd00c80 *inst/samples/example3-002.png
 4c95339d2daa7569234c1ba6c799eeeb *inst/samples/index.html
 b4a66206d803611a8f4fced46e01d701 *inst/samples/toothbig.png
 5c1cebff379120a001cac9bd19bfb2df *man/HTML.Rd
-aa5163a791b84579acb5cf8142b7c343 *man/HTML.cormat.Rd
-4a438f4b6ea86087334e602a6d0c3c81 *man/HTML.data.frame.Rd
+96e88f60988477492f0aa3b455df302d *man/HTML.cormat.Rd
+c4af408aa7033a441d2c09c764d6ef20 *man/HTML.data.frame.Rd
 860f0a61e99a80fa0057dcbc0cb472e1 *man/HTML.function.Rd
 5c0f6a208a8ff00882bbd4f3723c8d22 *man/HTML.latex.Rd
 f33944f78faa4429966cf9c6975acd1d *man/HTML.title.Rd
