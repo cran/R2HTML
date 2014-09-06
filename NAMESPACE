@@ -1,6 +1,8 @@
 import(graphics,utils)
 
 export(HTML,
+       HTMLSetFile,
+       HTMLGetFile,
        HTML.title,
        HTMLstem,
        HTMLbr,
@@ -179,7 +181,6 @@ S3method(HTML, nls)
 S3method(HTML, summary.nls)
 S3method(HTML, ecdf)
 S3method(HTML, stepfun)
-S3method(HTML, date)
 S3method(HTML, cox.zph)
 S3method(HTML, coxph.null)
 S3method(HTML, xtable)
