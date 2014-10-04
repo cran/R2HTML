@@ -1,6 +1,6 @@
 Package: R2HTML
-Version: 2.3.0
-Date: 2014-09-06
+Version: 2.3.1
+Date: 2014-10-04
 Title: HTML exportation for R objects
 Authors@R: c(person("Eric", "Lecoutre", email="eric.lecoutre@gmail.com",
                     role=c("aut")),
@@ -23,11 +23,11 @@ Description: Includes HTML function and methods to write in an HTML
         graphs).
 License: GPL (>= 2)
 URL: https://github.com/nalimilan/R2HTML
-Packaged: 2014-09-06 12:54:57 UTC; milan
+Packaged: 2014-10-04 14:55:55 UTC; milan
 Author: Eric Lecoutre [aut],
   Milan Bouchet-Valat [cre, ctb],
   Thomas Friedrichsmeier [ctb]
 Maintainer: Milan Bouchet-Valat <nalimilan@club.fr>
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2014-09-06 15:29:19
+Date/Publication: 2014-10-04 18:43:50
