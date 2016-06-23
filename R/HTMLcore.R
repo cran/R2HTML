@@ -821,7 +821,7 @@ function(x, file=HTMLGetFile(), append=TRUE,...)
               dimnames(x)[[1]][i],
               HTMLReplaceNA(x.formatted[i,]))
          VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
-            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+            rep("</td>", dim(x)[2] - 1), "</td>")
       }
       else {
          VecDebut <- c(if(is.null(dimnames(x)[[1]]) == FALSE) paste(
@@ -832,9 +832,9 @@ function(x, file=HTMLGetFile(), append=TRUE,...)
               dimnames(x)[[1]][i],
               HTMLReplaceNA(x.formatted[i,]))
          VecFin <- c(if(is.null(dimnames(x)[[1]]) == FALSE) "</td>",
-            rep("</td>", dim(x)[2] - 1), "</td></tr>\n")
+            rep("</td>", dim(x)[2] - 1), "</td>")
       }
-      txt <- paste(txt, paste(VecDebut, VecMilieu, VecFin, sep = "",collapse = ""))
+      txt <- paste(txt, "<tr>", paste(VecDebut, VecMilieu, VecFin, sep = "",collapse = ""), "</tr>\n")
    }
    txt <- paste(txt, "\n\t</tbody>\n</table>\n",if (!is.null(Border)) "</td></table>\n","<br>")
    cat(txt, "\n", file = file, sep = "", append=TRUE)
@@ -986,7 +986,7 @@ function(x, a = attributes(x), prefix = "", file=HTMLGetFile(), append=TRUE, ...
             }
             else rn <- "Sum of Squares"
             dimnames(tmp) <- list(c(rn, "Deg. of Freedom"), "Residuals")
-            HTML(as.data.frame(tmp), file=file,..)
+            HTML(as.data.frame(tmp), file=file,...)
             HTMLli(paste("Residual standard error:", paste(sapply(sqrt(ss/rdf),format),collapse=" "), "\n"),file=file)
         }
         else HTML.matrix(matrix(0, 2, 1, dimnames = list(c("Sum of Squares","Deg. of Freedom"), "<empty>")),file=file)
