@@ -309,6 +309,10 @@ function(x, file=HTMLGetFile(), append=TRUE,...)
     }
     xrv <- attr(x, "row.vars")
     xcv <- attr(x, "col.vars")
+    if (length(xcv) < 1) {
+        # in the case that there are no column variables, we still need a single (unlabeled) column
+        xcv <- list(" "="")
+    }
     LABS <- cbind(rbind(matrix("", nrow = length(xcv), ncol = length(xrv)), makeNames(xrv), makeLabels(xrv)), c(makeNames(xcv),rep("", times = nrow(x) + 1)))
     DATA <- rbind(t(makeLabels(xcv)), rep("", times = ncol(x)), format(unclass(x), digits = digits))
     x <- cbind(apply(LABS, 2, format, justify = "left"), apply(DATA, 2, format, justify = "right"))
@@ -1591,7 +1595,7 @@ NextMethod("HTML")
     attr(x, "orig.call") <- attr(x, "conf.level") <- attr(x, "ordered") <- NULL
 	lapply(unclass(x),HTML,file=file,append=TRUE,...)
     #HTML.default(unclass(x), file=file,...)
-    invisible(return(x))
+    return(invisible(x))
 }
 
 
@@ -3746,7 +3750,7 @@ function(x, HR = 2,CSSclass=NULL,file=HTMLGetFile(), append=TRUE, ...)
     }
     cat("</p>", file = file, append=TRUE, sep = "\n")
     if (substitute(file)=="HTMLGetFile()") try(assign(".HTML.graph", TRUE, envir = .HTMLEnv))
-    invisible(return(TRUE))
+    return(invisible(TRUE))
 }
 
 #----------------------------------------------------------------------------------------------------#
@@ -3756,7 +3760,7 @@ function(x, HR = 2,CSSclass=NULL,file=HTMLGetFile(), append=TRUE, ...)
     cat("\n", file=file, append=append,...)
     cat(paste("<p align=", Align, "><img src='", GraphFileName, "' border=", GraphBorder, if (!is.null(WidthHTML)) paste(" width=",WidthHTML,sep="") else "",if (!is.null(HeightHTML)) paste(" height=",HeightHTML,sep="") else "",">", sep = "", collapse = ""),         file = file, append=TRUE, sep = "")
     if (Caption != "") cat(paste("<br><i class=caption>", Caption, "</i>"), file = file, append=TRUE, sep = "")
-    invisible(return(TRUE))
+    return(invisible(TRUE))
 }
 
 
@@ -3859,7 +3863,7 @@ function(Vec, Replace = " ")
 		}
 	txt <- paste(txt, "</table></td></table></td></table>")
 	cat(txt, "\n", file = file, sep = "", append=TRUE,...)
-	invisible(return(x))
+	return(invisible(x))
 
 	}
 
@@ -3934,13 +3938,13 @@ function(x)
 		}
 
 		if (autobrowse) browseURL(url=get("HTMLtorefresh",envir=.HTMLTmpEnv))
-		invisible(return(TRUE))
+		return(invisible(TRUE))
 		}
 	}
 	on.exit(addTaskCallback(ToHTML(.HTML.file,echo=echo,HTMLframe=HTMLframe,HTMLMenuFile=file.path(outdir,paste(filename,"_menu.",extension,sep="")),target=paste(filename,"_main.",extension,sep=""),outdir=outdir),name="HTML"),add=TRUE)
 	cat("\n *** Output redirected to directory: ", outdir)
 	cat("\n *** Use HTMLStop() to end redirection.")
-	invisible(return(TRUE))
+	return(invisible(TRUE))
 
 }
 #----------------------------------------------------------------------------------------------------#
@@ -4019,7 +4023,7 @@ else	{
 
 }
 
-	invisible(return(file))
+	return(invisible(file))
 }
 
 #----------------------------------------------------------------------------------------------------#
@@ -4042,7 +4046,7 @@ else	{
 	.tmp=get(".HTML.file",envir=.HTMLTmpEnv)
 	HTMLEndFile(file=get(".HTML.file",envir=.HTMLTmpEnv))
 	rm(".HTMLTmpEnv", envir=.HTMLEnv)
-	invisible(return(.tmp))
+	return(invisible(.tmp))
 }
 
 #----------------------------------------------------------------------------------------------------#
