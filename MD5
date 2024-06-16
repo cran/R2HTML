@@ -1,6 +1,6 @@
-b4e6790b7f14e1d8323c707b65b726c8 *DESCRIPTION
-11db0ef936d5ae92c50149144c665d9f *NAMESPACE
-82a02e36d269449de81d24aefb58b699 *NEWS
+b9a85f86191dd05153391764aab29bac *DESCRIPTION
+53fb49831302be9a439fbd74432cf001 *NAMESPACE
+b4123671307eb02f8470e3bc671ad40f *NEWS
 31f5060f72201f93d3014424ec7d7c60 *R/HTMLcore.R
 aa75b8e9d11b623f4b0b15f340f3c53b *R/HTMLlme.R
 5e9d039b8deb2a36a46b4cf18d5c7e74 *R/LaTeX.R
@@ -10,7 +10,7 @@ af1af2df9d1d7b76df4fb6cc59895a2c *demo/00Index
 dc9e43999167ec4bcc97a51a5f0e6e51 *demo/dataframe.R
 4b6558a93ed2c7e76af16b2a7d91c8e0 *demo/equations.R
 87dc689011758d2dd5fa30a5daa0e373 *demo/grids.R
-927f36fd474affcea9805baa76158356 *inst/CITATION
+e9e7461f96301df8d8d50f5d9760456b *inst/CITATION
 89f73ecd9c26e5a6836f46d46947bab3 *inst/doc/GRAPH_Nov05_124329.png
 03497bcaf94f1ae440b936a86130e8e4 *inst/doc/R2HTML.css
 786691a3b5bb6dc2a26a7211602bd9fd *inst/doc/R2HTML.pdf
@@ -78,7 +78,7 @@ c064838928741634ba0d20069c38797e *inst/samples/index.html
 b4a66206d803611a8f4fced46e01d701 *inst/samples/toothbig.png
 b532e5edcf01e669b6a4e18f90530a89 *man/HTML.Rd
 358cb91011ad8f8cb25be927351ec671 *man/HTML.cormat.Rd
-b473a26be0d4c366a6be1e1d80d8162a *man/HTML.data.frame.Rd
+1164d290b65fdc7f0e5b21295236c4da *man/HTML.data.frame.Rd
 cbb0d91b46aeb6d6c5130e4ebd1eecda *man/HTML.function.Rd
 ad7ba578675841afc77a2d53a4d54fa1 *man/HTML.latex.Rd
 27737d80c8b94f906fb6851e7402da22 *man/HTML.title.Rd
@@ -86,7 +86,7 @@ ad7ba578675841afc77a2d53a4d54fa1 *man/HTML.latex.Rd
 10c928e3fc75a3282a4debee00f0eab7 *man/HTMLCSS.Rd
 584eb30616ad26de6505f2c77aa34022 *man/HTMLChangeCSS.Rd
 77a55e9f56f2f92038630eb47ed63445 *man/HTMLInitFile.Rd
-0e228ebd3618eb7b89047d0dcc5e3e53 *man/HTMLInsertGraph.Rd
+fac5e13bbd5edf00a03d28d8802f17d4 *man/HTMLInsertGraph.Rd
 025d8c7a7af2b3fc182a903dbdbbca69 *man/HTMLStart.Rd
 44a7ab052f99acce88717b9ff038d7c6 *man/HTMLbr.Rd
 327fb78a21a773c70eec184c5e99d621 *man/HTMLgrid.Rd
